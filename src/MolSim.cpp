@@ -72,13 +72,27 @@ int main(int argc, char *argsv[]) {
   return 0;
 }
 
+double euclideanNorm(const std::array<double, 3>& arr) {
+    double sum = 0.0;
+    for (const auto& element : arr) {
+        sum += element * element;
+    }
+    return std::sqrt(sum);
+}
+
+
 void calculateF() {
   std::list<Particle>::iterator iterator;
   iterator = particles.begin();
 
   for (auto &p1 : particles) {
     for (auto &p2 : particles) {
-      // @TODO: insert calculation of forces here!
+      if(!(p1 == p2)){
+        // @TODO: insert calculation of forces here!
+        double scalar = p1.getM() * p2.getM() / std::pow(euclideanNorm(p1.getX() - p1.getX()), 3);
+        std::array<double, 3> force = scalar * (p2.getX() - p1.getX());
+        //TODO apply force to particle
+      }
     }
   }
 }
