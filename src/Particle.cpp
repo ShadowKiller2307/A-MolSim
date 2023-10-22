@@ -49,6 +49,10 @@ const std::array<double, 3> &Particle::getF() const { return f; }
 
 const std::array<double, 3> &Particle::getOldF() const { return old_f; }
 
+void Particle::setF(std::array<double, 3> &force) {
+    f = force;
+}
+
 double Particle::getM() const { return m; }
 
 int Particle::getType() const { return type; }
