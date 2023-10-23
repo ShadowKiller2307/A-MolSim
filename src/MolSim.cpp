@@ -23,6 +23,7 @@ void calculateX();
  */
 void calculateV();
 
+
 /**
  * plot the particles to a xyz-file
  */
@@ -72,6 +73,21 @@ int main(int argc, char *argsv[]) {
   return 0;
 }
 
+/**
+ * This function is used in the velocity calculation.
+ * @param array The array I want to divide by the scalar.
+ * @param scalar The double I want to divide by.
+ * @return A new std::array<double,3> where every value is the value of the parameter array divided by the parameter scalar.
+ */
+
+ std::array<double,3> divide_by_scalar(std::array<double,3> &array, double scalar){
+    std::array<double, 3> new_array{};
+    for (size_t i = 0; i < array.size(); ++i) {
+        new_array[i] = array[i] / scalar;
+    }
+    return new_array;
+}
+
 double euclideanNorm(const std::array<double, 3>& arr) {
     double sum = 0.0;
     for (const auto& element : arr) {
@@ -103,9 +119,19 @@ void calculateX() {
   }
 }
 
+
+ /// Calculates the new velocity according to Velocity-Stormer-Verlet.
+
 void calculateV() {
   for (auto &p : particles) {
+
     // @TODO: insert calculation of veclocity updates here!
+    double two_times_mass = 2 * p.getM();
+    std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
+    std::array<double,3> new_array = divide_by_scalar(sum_of_forces,two_times_mass);
+
+    std::array<double,3> new_velocity = p.getV()+(delta_t*new_array);
+    p.setV(new_velocity);
   }
 }
 
