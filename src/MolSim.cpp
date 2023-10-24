@@ -77,18 +77,19 @@ int main(int argc, char *argsv[]) {
  * This function is used in the velocity calculation.
  * @param array The array I want to divide by the scalar.
  * @param scalar The double I want to divide by.
+ * @param mode The mode of the operation, where false equals division and true equals multiplication.
  * @return A new std::array<double,3> where every value is the value of the parameter array divided by the parameter scalar.
  */
 
- std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, int mode){
-    if (mode == 0) {
-        std::array<double, 3> new_array{};
+ std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool mode){
+    if (mode) {
+        std::array<double, 3> new_array{}; //TODO: Do we need a new array or should we just modify it
         for (size_t i = 0; i < array.size(); ++i) {
             new_array[i] = array[i] / scalar;
         }
         return new_array;
     }
-    if (mode == 1) {
+    else {
         std::array<double, 3> new_array{};
         for (size_t i = 0; i < array.size(); ++i) {
             new_array[i] = array[i] * scalar;
@@ -137,7 +138,7 @@ void calculateV() {
     // @TODO: insert calculation of veclocity updates here!
     double two_times_mass = 2 * p.getM();
     std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
-    std::array<double,3> new_array = scalar_Operations(sum_of_forces,two_times_mass, 0);
+    std::array<double,3> new_array = scalar_Operations(sum_of_forces,two_times_mass, false);
 
     std::array<double,3> new_velocity = p.getV()+(delta_t*new_array);
     p.setV(new_velocity);
