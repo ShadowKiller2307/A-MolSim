@@ -80,12 +80,21 @@ int main(int argc, char *argsv[]) {
  * @return A new std::array<double,3> where every value is the value of the parameter array divided by the parameter scalar.
  */
 
- std::array<double,3> divide_by_scalar(std::array<double,3> &array, double scalar){
-    std::array<double, 3> new_array{};
-    for (size_t i = 0; i < array.size(); ++i) {
-        new_array[i] = array[i] / scalar;
+ std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, int mode){
+    if (mode == 0) {
+        std::array<double, 3> new_array{};
+        for (size_t i = 0; i < array.size(); ++i) {
+            new_array[i] = array[i] / scalar;
+        }
+        return new_array;
     }
-    return new_array;
+    if (mode == 1) {
+        std::array<double, 3> new_array{};
+        for (size_t i = 0; i < array.size(); ++i) {
+            new_array[i] = array[i] * scalar;
+        }
+        return new_array;
+    }
 }
 
 double euclideanNorm(const std::array<double, 3>& arr) {
@@ -128,7 +137,7 @@ void calculateV() {
     // @TODO: insert calculation of veclocity updates here!
     double two_times_mass = 2 * p.getM();
     std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
-    std::array<double,3> new_array = divide_by_scalar(sum_of_forces,two_times_mass);
+    std::array<double,3> new_array = scalar_Operations(sum_of_forces,two_times_mass, 0);
 
     std::array<double,3> new_velocity = p.getV()+(delta_t*new_array);
     p.setV(new_velocity);
