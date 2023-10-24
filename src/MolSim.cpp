@@ -98,6 +98,7 @@ int main(int argc, char *argsv[]) {
     }
 }
 
+//TODO add documentation
 double euclideanNorm(const std::array<double, 3>& arr) {
     double sum = 0.0;
     for (const auto& element : arr) {
@@ -106,26 +107,33 @@ double euclideanNorm(const std::array<double, 3>& arr) {
     return std::sqrt(sum);
 }
 
-
+//TODO add documentation
 void calculateF() {
-  std::list<Particle>::iterator iterator;
-  iterator = particles.begin();
+  std::list<Particle>::iterator it1;
+  std::list<Particle>::iterator it2;
+  it1 = particles.begin();
 
-  for (auto &p1 : particles) {
-    for (auto &p2 : particles) {
-      if(!(p1 == p2)){
-        // @TODO: insert calculation of forces here!
-        double scalar = p1.getM() * p2.getM() / std::pow(euclideanNorm(p1.getX() - p1.getX()), 3);
-        std::array<double, 3> force = scalar * (p2.getX() - p1.getX());
-        //TODO apply force to particle
-      }
+  for (; it1 != (particles.end()--); it1++)
+  {
+    it2 = it1;
+    it2++;
+    for (; it2 != particles.end(); it2++)
+    {
+      double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it1->getX()), 3);
+      std::array<double, 3> force = scalar * (it2->getX() - it1->getX());
+      std::array<double, 3> resultingforce = it1->getF() + force;
+      it1->setF(resultingforce);
+
+      auto inverseForce = scalar_Operations(force, -1.0, false);
+      std::array<double, 3> resultingforce = it2->getF() + inverseForce;
+      it2->setF(resultingforce);
     }
   }
 }
 
 void calculateX() {
   for (auto &p : particles) {
-    // @TODO: insert calculation of position updates here!
+    // TODO: insert calculation of position updates here!
   }
 }
 
@@ -135,7 +143,7 @@ void calculateX() {
 void calculateV() {
   for (auto &p : particles) {
 
-    // @TODO: insert calculation of veclocity updates here!
+    // TODO: insert calculation of veclocity updates here!
     double two_times_mass = 2 * p.getM();
     std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
     std::array<double,3> new_array = scalar_Operations(sum_of_forces,two_times_mass, false);
