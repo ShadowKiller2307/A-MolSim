@@ -177,9 +177,15 @@ void calculateF() {
   }
 }
 
+///Calculates the new position for every particle according to Velocity-Störmer-Verlet
+
 void calculateX() {
   for (auto &p : particles) {
     // TODO: insert calculation of position updates here!
+    std::array<double, 3> force = p.getF();
+    std::array<double, 3> temp_array = scalar_Operations(force,  2*p.getM(), false);
+    std::array<double,3> new_position = p.getX() + delta_t * p.getV() + scalar_Operations(temp_array, std::pow(delta_t, 2), true);
+    p.setF(new_position);
   }
 }
 
