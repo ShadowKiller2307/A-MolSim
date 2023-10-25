@@ -23,7 +23,6 @@ void calculateX();
  */
 void calculateV();
 
-
 /**
  * plot the particles to a xyz-file
  */
@@ -81,33 +80,43 @@ int main(int argc, char *argsv[]) {
  * @return A new std::array<double,3> where every value is the value of the parameter array divided by the parameter scalar.
  */
 
- std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool mode){
-    if (mode) {
-        std::array<double, 3> new_array{}; //TODO: Do we need a new array or should we just modify it
-        for (size_t i = 0; i < array.size(); ++i) {
-            new_array[i] = array[i] / scalar;
-        }
-        return new_array;
+std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool mode){
+  if (mode) {
+    std::array<double, 3> new_array{}; //TODO: Do we need a new array or should we just modify it
+    for (size_t i = 0; i < array.size(); ++i) {
+      new_array[i] = array[i] / scalar;
     }
-    else {
-        std::array<double, 3> new_array{};
-        for (size_t i = 0; i < array.size(); ++i) {
-            new_array[i] = array[i] * scalar;
-        }
-        return new_array;
+    return new_array;
+  }
+  else {
+    std::array<double, 3> new_array{};
+    for (size_t i = 0; i < array.size(); ++i) {
+      new_array[i] = array[i] * scalar;
     }
+    return new_array;
+  }
 }
 
-//TODO add documentation
+/**
+ * @brief Helper function to quickly calculate the euclidean norm of an array
+ * 
+ * @param arr The array in question to calculate the euclidean norm
+ * @return The euclidean norm of the array as a double 
+ */
+
 double euclideanNorm(const std::array<double, 3>& arr) {
-    double sum = 0.0;
-    for (const auto& element : arr) {
-        sum += element * element;
-    }
-    return std::sqrt(sum);
+  double sum = 0.0;
+  for (const auto& element : arr) {
+    sum += element * element;
+  }
+  return std::sqrt(sum);
 }
 
-//TODO add documentation
+/**
+ * @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
+ * 
+ */
+
 void calculateF() {
   std::list<Particle>::iterator it1;
   std::list<Particle>::iterator it2;
@@ -125,7 +134,7 @@ void calculateF() {
       it1->setF(resultingforce);
 
       auto inverseForce = scalar_Operations(force, -1.0, false);
-      std::array<double, 3> resultingforce = it2->getF() + inverseForce;
+      resultingforce = it2->getF() + inverseForce;
       it2->setF(resultingforce);
     }
   }
@@ -138,15 +147,14 @@ void calculateX() {
 }
 
 
- /// Calculates the new velocity according to Velocity-Stormer-Verlet.
+/// Calculates the new velocity according to Velocity-Störmer-Verlet.
 
 void calculateV() {
   for (auto &p : particles) {
-
     // TODO: insert calculation of veclocity updates here!
     double two_times_mass = 2 * p.getM();
     std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
-    std::array<double,3> new_array = scalar_Operations(sum_of_forces,two_times_mass, false);
+    std::array<double,3> new_array = scalar_Operations(sum_of_forces, two_times_mass, false);
 
     std::array<double,3> new_velocity = p.getV()+(delta_t*new_array);
     p.setV(new_velocity);
