@@ -1,0 +1,18 @@
+usage: ./MolSim [options] inputFileName
+
+options:
+
+	[-d | --deltaT] value
+		Sets delta_t to the provided value. It indicates the time between each simulation step.
+
+	[-e | --endTime] value
+		Set end_time to the provided value. It indicates the time up to which simulation should take place.
+	
+	[-h | --help]
+		Print this help page.
+	
+arguments:
+
+	inputFileName
+		Path/Filename from which to load the initialization for the simulation.
+

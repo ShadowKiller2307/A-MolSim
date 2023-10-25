@@ -4,6 +4,8 @@
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
+#include <fstream>
+#include <getopt.h>
 #include <list>
 
 /**** forward declaration of the calculation functions ****/
@@ -28,9 +30,11 @@ void calculateV();
  */
 void plotParticles(int iteration);
 
-constexpr double start_time = 0;
-constexpr double end_time = 1000;
-constexpr double delta_t = 0.014;
+void printHelp();
+
+constexpr double start_time{0};
+double end_time{1000};
+double delta_t{0.014};
 
 // TODO: what data structure to pick?
 std::list<Particle> particles;
@@ -38,13 +42,46 @@ std::list<Particle> particles;
 int main(int argc, char *argsv[]) {
 
   std::cout << "Hello from MolSim for PSE!" << std::endl;
-  if (argc != 2) {
+  if (argc < 2) {
     std::cout << "Erroneous programme call! " << std::endl;
-    std::cout << "./molsym filename" << std::endl;
+    printHelp();
+    return EXIT_FAILURE;
+  }
+
+  option long_opts[] = {
+    {"deltaT", required_argument, NULL, 'd'},
+    {"endTime", required_argument, NULL, 'e'},
+    {"help", no_argument, NULL, 'h'},
+    {NULL, 0, NULL, 0}
+  };
+
+  int long_opts_index = 0;
+  while (int c = getopt_long(argc, argsv, "e:d:h", long_opts, &long_opts_index) != -1)
+  {
+    switch (c)
+    {
+    case 'd':
+      delta_t = std::stod(optarg);
+      break;
+    case 'e':
+      end_time = std::stod(optarg);
+      break;
+    case 'h':
+      printHelp();
+      break;
+    default:
+      break;
+    }
+  }
+
+  if(optind >= argc){
+    std::cout << "Inputfile missing as an argument, aborting" << std::endl;
+    printHelp();
+    return EXIT_FAILURE;
   }
 
   FileReader fileReader;
-  fileReader.readFile(particles, argsv[1]);
+  fileReader.readFile(particles, argsv[optind]);
 
   double current_time = start_time;
 
@@ -167,4 +204,13 @@ void plotParticles(int iteration) {
 
   outputWriter::XYZWriter writer;
   writer.plotParticles(particles, out_name, iteration);
+}
+
+void printHelp()
+{
+  std::ifstream file("help.txt");
+
+  if (file.is_open()){
+    std::cout << file.rdbuf();
+  }
 }
