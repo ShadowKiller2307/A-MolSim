@@ -197,9 +197,9 @@ void calculateV() {
     // TODO: insert calculation of veclocity updates here!
     double two_times_mass = 2 * p.getM();
     std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
-    std::array<double,3> new_array = scalar_Operations(sum_of_forces, two_times_mass, false);
+    std::array<double,3> new_array = scalar_Operations(sum_of_forces, two_times_mass, true);
 
-    std::array<double,3> new_velocity = p.getV()+(delta_t*new_array);
+    std::array<double,3> new_velocity = p.getV()+(scalar_Operations(new_array,delta_t,false));
     p.setV(new_velocity);
   }
 }
