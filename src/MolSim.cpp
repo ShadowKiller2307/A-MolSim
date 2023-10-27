@@ -118,11 +118,11 @@ int main(int argc, char *argsv[]) {
  * This function is used in the velocity calculation.
  * @param array The array I want to divide by the scalar.
  * @param scalar The double I want to divide by.
- * @param mode The mode of the operation, where false equals division and true equals multiplication.
+ * @param isDivision The mode of the operation, where false equals multiplication and true equals division.
  * @return A new std::array<double,3> where every value is the value of the parameter array divided by the parameter scalar.
  */
 
-std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool mode){
+std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool isDivision){
   if (mode) {
     std::array<double, 3> new_array{}; //TODO: Do we need a new array or should we just modify it
     for (size_t i = 0; i < array.size(); ++i) {
@@ -193,8 +193,8 @@ void calculateF() {
 void calculateX() {
   for (auto &p : particles) {
     std::array<double, 3> force = p.getF();
-    std::array<double, 3> temp_array = scalar_Operations(force,  2*p.getM(), false);
-    std::array<double,3> new_position = p.getX() + delta_t * p.getV() + scalar_Operations(temp_array, std::pow(delta_t, 2), true);
+    std::array<double, 3> temp_array = scalar_Operations(force,  2*p.getM(), true);
+    std::array<double,3> new_position = p.getX() + delta_t * p.getV() + scalar_Operations(temp_array, std::pow(delta_t, 2), false);
     p.setF(new_position);
   }
 }
