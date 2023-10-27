@@ -71,6 +71,8 @@ public:
 
   void setV(std::array<double, 3> &velocity);
 
+  void setOldF(std::array<double,3> &force);
+
   double getM() const;
 
   int getType() const;

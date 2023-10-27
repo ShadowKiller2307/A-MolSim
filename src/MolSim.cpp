@@ -160,11 +160,14 @@ void calculateF() {
   std::list<Particle>::iterator it1;
   std::list<Particle>::iterator it2;
   it1 = particles.begin();
+  auto lastParticle = (particles.end()--);
 
-  for (; it1 != (particles.end()--); it1++)
+  for (; it1 != lastParticle; it1++)
   {
     it2 = it1;
     it2++;
+    auto oldF = it1->getF();
+    it1->setOldF(oldF);
     for (; it2 != particles.end(); it2++)
     {
       double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it1->getX()), 3);
@@ -177,6 +180,8 @@ void calculateF() {
       it2->setF(resultingforce);
     }
   }
+  auto oldF = lastParticle->getF();
+  lastParticle->setOldF(oldF);
 }
 
 ///Calculates the new position for every particle according to Velocity-Störmer-Verlet
