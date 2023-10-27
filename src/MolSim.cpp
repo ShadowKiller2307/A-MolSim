@@ -149,10 +149,7 @@ double euclideanNorm(const std::array<double, 3>& arr) {
   return std::sqrt(sum);
 }
 
-/**
- * @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
- * 
- */
+/// @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
 
 void calculateF() {
   std::list<Particle>::iterator it1;
@@ -181,7 +178,6 @@ void calculateF() {
 
 void calculateX() {
   for (auto &p : particles) {
-    // TODO: insert calculation of position updates here!
     std::array<double, 3> force = p.getF();
     std::array<double, 3> temp_array = scalar_Operations(force,  2*p.getM(), false);
     std::array<double,3> new_position = p.getX() + delta_t * p.getV() + scalar_Operations(temp_array, std::pow(delta_t, 2), true);
@@ -194,7 +190,6 @@ void calculateX() {
 
 void calculateV() {
   for (auto &p : particles) {
-    // TODO: insert calculation of veclocity updates here!
     double two_times_mass = 2 * p.getM();
     std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
     std::array<double,3> new_array = scalar_Operations(sum_of_forces, two_times_mass, true);
@@ -212,8 +207,7 @@ void plotParticles(int iteration) {
   writer.plotParticles(particles, out_name, iteration);
 }
 
-void printHelp()
-{
+void printHelp() {
   std::ifstream file("help.txt");
 
   if (file.is_open()){
