@@ -162,15 +162,21 @@ void calculateF() {
   it1 = particles.begin();
   auto lastParticle = (particles.end()--);
 
+  for (auto &i : particles)
+  {
+    auto oldForce = i.getF();
+    std::array<double, 3> zero = {0.0, 0.0, 0.0};
+    i.setF(zero);
+    i.setOldF(oldForce);
+  }
+
   for (; it1 != lastParticle; it1++)
   {
     it2 = it1;
     it2++;
-    auto oldF = it1->getF();
-    it1->setOldF(oldF);
     for (; it2 != particles.end(); it2++)
     {
-      double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it1->getX()), 3);
+      double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it2->getX()), 3);
       std::array<double, 3> force = scalar * (it2->getX() - it1->getX());
       std::array<double, 3> resultingforce = it1->getF() + force;
       it1->setF(resultingforce);
@@ -180,8 +186,6 @@ void calculateF() {
       it2->setF(resultingforce);
     }
   }
-  auto oldF = lastParticle->getF();
-  lastParticle->setOldF(oldF);
 }
 
 ///Calculates the new position for every particle according to Velocity-Störmer-Verlet
