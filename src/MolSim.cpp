@@ -1,6 +1,7 @@
 
 #include "FileReader.h"
 #include "outputWriter/XYZWriter.h"
+#include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
 
 #include <iostream>
@@ -35,6 +36,7 @@ void printHelp();
 constexpr double start_time{0};
 double end_time{1000};
 double delta_t{0.014};
+bool output_mode_VTK = true; // default value
 
 // TODO: what data structure to pick?
 std::list<Particle> particles;
@@ -56,7 +58,7 @@ int main(int argc, char *argsv[]) {
   };
 
   int long_opts_index = 0;
-  while (int c = getopt_long(argc, argsv, "e:d:h", long_opts, &long_opts_index) != -1)
+  while (int c = getopt_long(argc, argsv, "e:d:hx", long_opts, &long_opts_index) != -1)
   {
     switch (c)
     {
@@ -68,6 +70,9 @@ int main(int argc, char *argsv[]) {
       break;
     case 'h':
       printHelp();
+      break;
+    case 'x':
+      output_mode_VTK = false;
       break;
     default:
       break;
@@ -83,8 +88,8 @@ int main(int argc, char *argsv[]) {
   FileReader fileReader;
   fileReader.readFile(particles, argsv[optind]);
 
-  double current_time = start_time;
 
+  double current_time = start_time;
   int iteration = 0;
 
   // for this loop, we assume: current x, current f and current v are known
@@ -200,11 +205,21 @@ void calculateV() {
 }
 
 void plotParticles(int iteration) {
-
-  std::string out_name("MD_vtk");
-
-  outputWriter::XYZWriter writer;
-  writer.plotParticles(particles, out_name, iteration);
+  std::string out_name("output/MD_vtk");
+  if(output_mode_VTK){
+    outputWriter::VTKWriter writer;
+    writer.initializeOutput(particles.size());
+    for (auto &p : particles)
+    {
+      writer.plotParticle(p);
+    }
+    writer.writeFile(out_name, iteration);
+  }
+  else
+  {
+    outputWriter::XYZWriter writer;
+    writer.plotParticles(particles, out_name, iteration);
+  }
 }
 
 void printHelp() {
