@@ -155,7 +155,6 @@ double euclideanNorm(const std::array<double, 3>& arr) {
 }
 
 /// @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
-
 // void calculateF() {
 //   std::list<Particle>::iterator it1;
 //   std::list<Particle>::iterator it2;
@@ -200,10 +199,12 @@ void calculateF(){
     std::array<double, 3> accumulator = {0.0, 0.0, 0.0};
     for (auto &j : particles)
     {
-      double scalar = i.getM() * j.getM() / std::pow(euclideanNorm(i.getX() - j.getX()), 3);
-      auto diff = j.getX() - i.getX();
-      std::array<double, 3> force = scalar_Operations(diff, scalar, false);
-      accumulator = accumulator + force;
+      if(!(i == j)){
+        double scalar = i.getM() * j.getM() / std::pow(euclideanNorm(i.getX() - j.getX()), 3);
+        auto diff = j.getX() - i.getX();
+        std::array<double, 3> force = scalar_Operations(diff, scalar, false);
+        accumulator = accumulator + force;
+      }
     }
     i.setF(accumulator);
   }
@@ -216,7 +217,7 @@ void calculateX() {
     std::array<double, 3> force = p.getF();
     std::array<double, 3> temp_array = scalar_Operations(force,  2*p.getM(), true);
     std::array<double,3> new_position = p.getX() + delta_t * p.getV() + scalar_Operations(temp_array, std::pow(delta_t, 2), false);
-    p.setF(new_position);
+    p.setX(new_position);
   }
 }
 
