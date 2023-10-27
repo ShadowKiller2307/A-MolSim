@@ -123,7 +123,7 @@ int main(int argc, char *argsv[]) {
  */
 
 std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool isDivision){
-  if (mode) {
+  if (isDivision) {
     std::array<double, 3> new_array{}; //TODO: Do we need a new array or should we just modify it
     for (size_t i = 0; i < array.size(); ++i) {
       new_array[i] = array[i] / scalar;
