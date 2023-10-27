@@ -156,35 +156,56 @@ double euclideanNorm(const std::array<double, 3>& arr) {
 
 /// @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
 
-void calculateF() {
-  std::list<Particle>::iterator it1;
-  std::list<Particle>::iterator it2;
-  it1 = particles.begin();
-  auto lastParticle = (particles.end()--);
+// void calculateF() {
+//   std::list<Particle>::iterator it1;
+//   std::list<Particle>::iterator it2;
+//   it1 = particles.begin();
+//   auto lastParticle = (particles.end()--);
 
+//   for (auto &i : particles)
+//   {
+//     auto oldForce = i.getF();
+//     std::array<double, 3> zero = {0.0, 0.0, 0.0};
+//     i.setF(zero);
+//     i.setOldF(oldForce);
+//   }
+
+//   for (; it1 != lastParticle; it1++)
+//   {
+//     it2 = it1;
+//     it2++;
+//     for (; it2 != particles.end(); it2++)
+//     {
+//       double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it2->getX()), 3);
+//       std::array<double, 3> force = scalar * (it2->getX() - it1->getX());
+//       std::array<double, 3> resultingforce = it1->getF() + force;
+//       it1->setF(resultingforce);
+
+//       auto inverseForce = scalar_Operations(force, -1.0, false);
+//       resultingforce = it2->getF() + inverseForce;
+//       it2->setF(resultingforce);
+//     }
+//   }
+// }
+
+void calculateF(){
   for (auto &i : particles)
   {
     auto oldForce = i.getF();
-    std::array<double, 3> zero = {0.0, 0.0, 0.0};
-    i.setF(zero);
     i.setOldF(oldForce);
   }
 
-  for (; it1 != lastParticle; it1++)
+  for (auto &i : particles)
   {
-    it2 = it1;
-    it2++;
-    for (; it2 != particles.end(); it2++)
+    std::array<double, 3> accumulator = {0.0, 0.0, 0.0};
+    for (auto &j : particles)
     {
-      double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it2->getX()), 3);
-      std::array<double, 3> force = scalar * (it2->getX() - it1->getX());
-      std::array<double, 3> resultingforce = it1->getF() + force;
-      it1->setF(resultingforce);
-
-      auto inverseForce = scalar_Operations(force, -1.0, false);
-      resultingforce = it2->getF() + inverseForce;
-      it2->setF(resultingforce);
+      double scalar = i.getM() * j.getM() / std::pow(euclideanNorm(i.getX() - j.getX()), 3);
+      auto diff = j.getX() - i.getX();
+      std::array<double, 3> force = scalar_Operations(diff, scalar, false);
+      accumulator = accumulator + force;
     }
+    i.setF(accumulator);
   }
 }
 
