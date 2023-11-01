@@ -28,7 +28,7 @@ public:
   /**
    * set up internal data structures and prepare to plot a particle.
    */
-  void initializeOutput(int numParticles);
+  void initializeOutput(size_t numParticles);
 
   /**
    * plot type, mass, position, velocity and force of a particle.

@@ -19,7 +19,7 @@ VTKWriter::VTKWriter() = default;
 
 VTKWriter::~VTKWriter() = default;
 
-void VTKWriter::initializeOutput(int numParticles) {
+void VTKWriter::initializeOutput(size_t numParticles) {
 
   vtkFile = new VTKFile_t("UnstructuredGrid");
 
