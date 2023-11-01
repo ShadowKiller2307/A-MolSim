@@ -30,7 +30,7 @@ int main(int argc, char *argsv[]) {
     {"deltaT", required_argument, NULL, 'd'},
     {"endTime", required_argument, NULL, 'e'},
     {"help", no_argument, NULL, 'h'},
-    {NULL, 0, NULL, 0}
+    {nullptr, 0, nullptr, 0}
   };
 
   int longOptsIndex = 0;
@@ -68,7 +68,7 @@ int main(int argc, char *argsv[]) {
   double currentTime = startTime;
   int iteration = 0;
 
-  std::time_t start = std::time(NULL);
+  std::time_t start = std::time(nullptr);
   // for this loop, we assume: current x, current f and current v are known
   while (currentTime < endTime) {
     // calculate new x
@@ -86,7 +86,7 @@ int main(int argc, char *argsv[]) {
 
     currentTime += deltaT;
   }
-  std::time_t end = std::time(NULL);
+  std::time_t end = std::time(nullptr);
   auto diff = end - start;
 
   std::cout << "Output written, took " << diff <<" seconds. Terminating..." << std::endl;
@@ -102,13 +102,13 @@ int main(int argc, char *argsv[]) {
 
 void scalarOperations(std::array<double,3> &array, double scalar, bool isDivision){
   if (isDivision) {
-    for (size_t i = 0; i < array.size(); ++i) {
-      array[i] /= scalar;
+    for (double & i : array) {
+      i /= scalar;
     }
   }
   else {
-    for (size_t i = 0; i < array.size(); ++i) {
-      array[i] *= scalar;
+    for (double & i : array) {
+      i *= scalar;
     }
   }
 }
@@ -131,9 +131,8 @@ double euclideanNorm(const std::array<double, 3>& arr) {
 /// @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
 
 void calculateF() {
-  for (size_t i = 0; i < particles.size(); ++i)
+  for (auto & p : particles)
   {
-    Particle &p = particles.at(i);
     auto oldForce = p.getF();
     std::array<double, 3> zero = {0.0, 0.0, 0.0};
     p.setF(zero);
@@ -148,12 +147,12 @@ void calculateF() {
       Particle &pj = particles.at(j);
       double scalar = pi.getM() * pj.getM() / std::pow(euclideanNorm(pi.getX() - pj.getX()), 3);
       std::array<double, 3> force = scalar * (pj.getX() - pi.getX());
-      std::array<double, 3> resultingforce = pi.getF() + force;
-      pi.setF(resultingforce);
+      std::array<double, 3> resultingForce = pi.getF() + force;
+      pi.setF(resultingForce);
 
       scalarOperations(force, -1.0, false);
-      resultingforce = pj.getF() + force;
-      pj.setF(resultingforce);
+        resultingForce = pj.getF() + force;
+      pj.setF(resultingForce);
     }
   }
 }
