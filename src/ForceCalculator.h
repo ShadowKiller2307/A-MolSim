@@ -3,5 +3,5 @@
 
 class ForceCalculator{
 public:
-    virtual void calculateForces() {};
+    virtual void calculateForces(std::vector<Particle>& particles) {};
 };
