@@ -16,36 +16,43 @@ FileReader::FileReader() = default;
 
 FileReader::~FileReader() = default;
 
-void FileReader::readFile(std::list<Particle> &particles, char *filename) {
+void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
   std::array<double, 3> x;
   std::array<double, 3> v;
   double m;
-  int num_particles = 0;
+  size_t numParticles = 0;
 
-  std::ifstream input_file(filename);
-  std::string tmp_string;
+  std::ifstream inputFile(filename);
+  std::string tmpString;
 
-  if (input_file.is_open()) {
+  if (inputFile.is_open()) {
 
-    getline(input_file, tmp_string);
-    std::cout << "Read line: " << tmp_string << std::endl;
+    getline(inputFile, tmpString);
+    std::cout << "Read line: " << tmpString << std::endl;
 
-    while (tmp_string.empty() or tmp_string[0] == '#') {
-      getline(input_file, tmp_string);
-      std::cout << "Read line: " << tmp_string << std::endl;
+    while (tmpString.empty() or tmpString[0] == '#') {
+      getline(inputFile, tmpString);
+      std::cout << "Read line: " << tmpString << std::endl;
     }
 
-    std::istringstream numstream(tmp_string);
-    numstream >> num_particles;
-    std::cout << "Reading " << num_particles << "." << std::endl;
-    getline(input_file, tmp_string);
-    std::cout << "Read line: " << tmp_string << std::endl;
-
-    for (int i = 0; i < num_particles; i++) {
-      std::istringstream datastream(tmp_string);
+    std::istringstream numstream(tmpString);
+    numstream >> numParticles;
+    particles.resize(numParticles); //reserve enough space for all particles
+    std::cout << "Reading " << numParticles << " particles." << std::endl;
+    for (size_t i = 0; i < numParticles; i++)
+    {
+      getline(inputFile, tmpString);
+      std::cout << "Read line: " << tmpString << std::endl;
+      std::istringstream datastream(tmpString);
 
       for (auto &xj : x) {
         datastream >> xj;
+      }
+      if (datastream.eof()) {
+        std::cout
+            << "Error reading file: eof reached unexpectedly reading from line "
+            << i << std::endl;
+        exit(-1);
       }
       for (auto &vj : v) {
         datastream >> vj;
@@ -57,12 +64,11 @@ void FileReader::readFile(std::list<Particle> &particles, char *filename) {
         exit(-1);
       }
       datastream >> m;
-      particles.emplace_back(x, v, m);
-
-      getline(input_file, tmp_string);
-      std::cout << "Read line: " << tmp_string << std::endl;
+      particles.at(i) = Particle(x, v, m, 0);
     }
-  } else {
+  }
+  else
+  {
     std::cout << "Error: could not open file " << filename << std::endl;
     exit(-1);
   }

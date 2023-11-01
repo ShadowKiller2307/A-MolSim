@@ -1,5 +1,6 @@
 
 #include "FileReader.h"
+#include "MolSim.h"
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
@@ -7,39 +8,14 @@
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
-#include <list>
+#include <vector>
 
-/**** forward declaration of the calculation functions ****/
-
-/**
- * calculate the force for all particles
- */
-void calculateF();
-
-/**
- * calculate the position for all particles
- */
-void calculateX();
-
-/**
- * calculate the position for all particles
- */
-void calculateV();
-
-/**
- * plot the particles to a xyz-file
- */
-void plotParticles(int iteration);
-
-void printHelp();
-
-constexpr double start_time{0};
-double end_time{1000};
-double delta_t{0.014};
-bool output_mode_VTK = true; // default value
-
-// TODO: what data structure to pick?
-std::list<Particle> particles;
+constexpr double startTime{0};
+double endTime{1000};
+double deltaT{0.014};
+bool outputModeVTK = true; // default to VTK
+std::size_t numParticels{0};
+std::vector<Particle> particles;
 
 int main(int argc, char *argsv[]) {
 
@@ -50,29 +26,29 @@ int main(int argc, char *argsv[]) {
     return EXIT_FAILURE;
   }
 
-  option long_opts[] = {
+  option longOpts[] = {
     {"deltaT", required_argument, NULL, 'd'},
     {"endTime", required_argument, NULL, 'e'},
     {"help", no_argument, NULL, 'h'},
     {NULL, 0, NULL, 0}
   };
 
-  int long_opts_index = 0;
-  while (int c = getopt_long(argc, argsv, "e:d:hx", long_opts, &long_opts_index) != -1)
+  int longOptsIndex = 0;
+  while (int c = getopt_long(argc, argsv, "e:d:hx", longOpts, &longOptsIndex) != -1)
   {
     switch (c)
     {
     case 'd':
-      delta_t = std::stod(optarg);
+      deltaT = std::stod(optarg);
       break;
     case 'e':
-      end_time = std::stod(optarg);
+      endTime = std::stod(optarg);
       break;
     case 'h':
       printHelp();
       break;
     case 'x':
-      output_mode_VTK = false;
+      outputModeVTK = false;
       break;
     default:
       break;
@@ -89,11 +65,12 @@ int main(int argc, char *argsv[]) {
   fileReader.readFile(particles, argsv[optind]);
 
 
-  double current_time = start_time;
+  double currentTime = startTime;
   int iteration = 0;
 
+  std::time_t start = std::time(NULL);
   // for this loop, we assume: current x, current f and current v are known
-  while (current_time < end_time) {
+  while (currentTime < endTime) {
     // calculate new x
     calculateX();
     // calculate new f
@@ -107,35 +84,32 @@ int main(int argc, char *argsv[]) {
     }
     std::cout << "Iteration " << iteration << " finished." << std::endl;
 
-    current_time += delta_t;
+    currentTime += deltaT;
   }
+  std::time_t end = std::time(NULL);
+  auto diff = end - start;
 
-  std::cout << "output written. Terminating..." << std::endl;
+  std::cout << "Output written, took " << diff <<" seconds. Terminating..." << std::endl;
   return 0;
 }
 
 /**
  * This function is used in the velocity calculation.
- * @param array The array I want to divide by the scalar.
- * @param scalar The double I want to divide by.
+ * @param array The array to divide by the scalar. The values are changed inplace.
+ * @param scalar The double to divide by.
  * @param isDivision The mode of the operation, where false equals multiplication and true equals division.
- * @return A new std::array<double,3> where every value is the value of the parameter array divided by the parameter scalar.
  */
 
-std::array<double,3> scalar_Operations(std::array<double,3> &array, double scalar, bool isDivision){
+void scalarOperations(std::array<double,3> &array, double scalar, bool isDivision){
   if (isDivision) {
-    std::array<double, 3> new_array{}; //TODO: Do we need a new array or should we just modify it
     for (size_t i = 0; i < array.size(); ++i) {
-      new_array[i] = array[i] / scalar;
+      array[i] /= scalar;
     }
-    return new_array;
   }
   else {
-    std::array<double, 3> new_array{};
     for (size_t i = 0; i < array.size(); ++i) {
-      new_array[i] = array[i] * scalar;
+      array[i] *= scalar;
     }
-    return new_array;
   }
 }
 
@@ -155,58 +129,32 @@ double euclideanNorm(const std::array<double, 3>& arr) {
 }
 
 /// @brief Calculates the force acting on each particle by looping over them pairwise, calculating the force for each pair and adding it to them respectively
-// void calculateF() {
-//   std::list<Particle>::iterator it1;
-//   std::list<Particle>::iterator it2;
-//   it1 = particles.begin();
-//   auto lastParticle = (particles.end()--);
 
-//   for (auto &i : particles)
-//   {
-//     auto oldForce = i.getF();
-//     std::array<double, 3> zero = {0.0, 0.0, 0.0};
-//     i.setF(zero);
-//     i.setOldF(oldForce);
-//   }
-
-//   for (; it1 != lastParticle; it1++)
-//   {
-//     it2 = it1;
-//     it2++;
-//     for (; it2 != particles.end(); it2++)
-//     {
-//       double scalar = it1->getM() * it2->getM() / std::pow(euclideanNorm(it1->getX() - it2->getX()), 3);
-//       std::array<double, 3> force = scalar * (it2->getX() - it1->getX());
-//       std::array<double, 3> resultingforce = it1->getF() + force;
-//       it1->setF(resultingforce);
-
-//       auto inverseForce = scalar_Operations(force, -1.0, false);
-//       resultingforce = it2->getF() + inverseForce;
-//       it2->setF(resultingforce);
-//     }
-//   }
-// }
-
-void calculateF(){
-  for (auto &i : particles)
+void calculateF() {
+  for (size_t i = 0; i < particles.size(); ++i)
   {
-    auto oldForce = i.getF();
-    i.setOldF(oldForce);
+    Particle &p = particles.at(i);
+    auto oldForce = p.getF();
+    std::array<double, 3> zero = {0.0, 0.0, 0.0};
+    p.setF(zero);
+    p.setOldF(oldForce);
   }
 
-  for (auto &i : particles)
+  for (size_t i = 0; i < particles.size() - 1; ++i)
   {
-    std::array<double, 3> accumulator = {0.0, 0.0, 0.0};
-    for (auto &j : particles)
+    Particle &pi = particles.at(i);
+    for (size_t j = i + 1; j < particles.size(); ++j)
     {
-      if(!(i == j)){
-        double scalar = i.getM() * j.getM() / std::pow(euclideanNorm(i.getX() - j.getX()), 3);
-        auto diff = j.getX() - i.getX();
-        std::array<double, 3> force = scalar_Operations(diff, scalar, false);
-        accumulator = accumulator + force;
-      }
+      Particle &pj = particles.at(j);
+      double scalar = pi.getM() * pj.getM() / std::pow(euclideanNorm(pi.getX() - pj.getX()), 3);
+      std::array<double, 3> force = scalar * (pj.getX() - pi.getX());
+      std::array<double, 3> resultingforce = pi.getF() + force;
+      pi.setF(resultingforce);
+
+      scalarOperations(force, -1.0, false);
+      resultingforce = pj.getF() + force;
+      pj.setF(resultingforce);
     }
-    i.setF(accumulator);
   }
 }
 
@@ -215,41 +163,42 @@ void calculateF(){
 void calculateX() {
   for (auto &p : particles) {
     std::array<double, 3> force = p.getF();
-    std::array<double, 3> temp_array = scalar_Operations(force,  2*p.getM(), true);
-    std::array<double,3> new_position = p.getX() + delta_t * p.getV() + scalar_Operations(temp_array, std::pow(delta_t, 2), false);
-    p.setX(new_position);
+    scalarOperations(force,  2*p.getM(), true);
+    scalarOperations(force, std::pow(deltaT, 2), false);
+    std::array<double, 3> newPosition = p.getX() + deltaT * p.getV() + force;
+    p.setX(newPosition);
   }
 }
-
 
 /// Calculates the new velocity according to Velocity-Störmer-Verlet.
 
 void calculateV() {
   for (auto &p : particles) {
-    double two_times_mass = 2 * p.getM();
-    std::array<double,3> sum_of_forces = p.getOldF() + p.getF();
-    std::array<double,3> new_array = scalar_Operations(sum_of_forces, two_times_mass, true);
+    double twoTimesMass = 2 * p.getM();
+    std::array<double,3> sumOfForces = p.getOldF() + p.getF();
+    scalarOperations(sumOfForces, twoTimesMass, true);
 
-    std::array<double,3> new_velocity = p.getV()+(scalar_Operations(new_array,delta_t,false));
-    p.setV(new_velocity);
+    scalarOperations(sumOfForces,deltaT,false);
+    std::array<double, 3> newVelocity = p.getV() + sumOfForces;
+    p.setV(newVelocity);
   }
 }
 
 void plotParticles(int iteration) {
-  std::string out_name("output/MD_vtk");
-  if(output_mode_VTK){
+  std::string outName("output/MD_vtk");
+  if(outputModeVTK){
     outputWriter::VTKWriter writer;
     writer.initializeOutput(particles.size());
     for (auto &p : particles)
     {
       writer.plotParticle(p);
     }
-    writer.writeFile(out_name, iteration);
+    writer.writeFile(outName, iteration);
   }
   else
   {
     outputWriter::XYZWriter writer;
-    writer.plotParticles(particles, out_name, iteration);
+    writer.plotParticles(particles, outName, iteration);
   }
 }
 
