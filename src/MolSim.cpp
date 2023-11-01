@@ -1,9 +1,11 @@
-
 #include "FileReader.h"
 #include "MolSim.h"
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
+#include "ParticleContainer.h"
+#include "ForceV1.h"
+
 
 #include <iostream>
 #include <fstream>
@@ -16,6 +18,9 @@ double deltaT{0.014};
 bool outputModeVTK = true; // default to VTK
 
 std::vector<Particle> particles;
+// ParticleContainer particles
+ParticleContainer particleContainer{};
+
 
 int main(int argc, char *argsv[]) {
 
