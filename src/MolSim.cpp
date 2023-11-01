@@ -14,7 +14,7 @@ constexpr double startTime{0};
 double endTime{1000};
 double deltaT{0.014};
 bool outputModeVTK = true; // default to VTK
-std::size_t numParticels{0};
+
 std::vector<Particle> particles;
 
 int main(int argc, char *argsv[]) {
@@ -27,9 +27,9 @@ int main(int argc, char *argsv[]) {
   }
 
   option longOpts[] = {
-    {"deltaT", required_argument, NULL, 'd'},
-    {"endTime", required_argument, NULL, 'e'},
-    {"help", no_argument, NULL, 'h'},
+    {"deltaT", required_argument, nullptr, 'd'},
+    {"endTime", required_argument, nullptr, 'e'},
+    {"help", no_argument, nullptr, 'h'},
     {nullptr, 0, nullptr, 0}
   };
 
@@ -56,7 +56,7 @@ int main(int argc, char *argsv[]) {
   }
 
   if(optind >= argc){
-    std::cout << "Inputfile missing as an argument, aborting" << std::endl;
+    std::cout << "Input file missing as an argument, aborting" << std::endl;
     printHelp();
     return EXIT_FAILURE;
   }
