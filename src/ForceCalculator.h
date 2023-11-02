@@ -2,6 +2,8 @@
  * @brief The ForceCalculator defines an abstract method calculateForces which is used for the different
  * force calculation approaches
  */
+#include <vector>
+#include "Particle.h"
 
 #pragma once
 
@@ -13,6 +15,6 @@ public:
      * @return void
      */
     //virtual ~ForceCalculator() = default;
-    virtual void calculateForces(std::vector<Particle>& particles) {};
+    virtual void calculateForces(std::vector<Particle>& particles);
 
 };
