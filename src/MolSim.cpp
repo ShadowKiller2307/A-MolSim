@@ -73,6 +73,7 @@ int main(int argc, char *argsv[]) {
 
     ForceV1 forceV1{};
     particleContainer.setForceCalculator(forceV1);
+    particleContainer.setDeltaTTwo(deltaT);
 
     double currentTime = startTime;
     int iteration = 0;

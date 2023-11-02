@@ -4,7 +4,7 @@
 #include "HelperFunctions.h"
 
 
-double deltaT{0.014};
+//double deltaT{0.014};
 
 ParticleContainer::ParticleContainer() = default;
 
@@ -25,8 +25,8 @@ void ParticleContainer::calculatePosition() {
     for (auto &p: particles) {
         std::array<double, 3> force = p.getF();
         HelperFunctions::scalarOperations(force, 2 * p.getM(), true);
-        HelperFunctions::scalarOperations(force, std::pow(deltaT, 2), false);
-        std::array<double, 3> newPosition = p.getX() + deltaT * p.getV() + force;
+        HelperFunctions::scalarOperations(force, std::pow(deltaTTwo, 2), false);
+        std::array<double, 3> newPosition = p.getX() + deltaTTwo * p.getV() + force;
         p.setX(newPosition);
     }
 }
@@ -37,7 +37,7 @@ void ParticleContainer::calculateVelocity() {
         std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
         HelperFunctions::scalarOperations(sumOfForces, twoTimesMass, true);
 
-        HelperFunctions::scalarOperations(sumOfForces, deltaT, false);
+        HelperFunctions::scalarOperations(sumOfForces, deltaTTwo, false);
         std::array<double, 3> newVelocity = p.getV() + sumOfForces;
         p.setV(newVelocity);
     }
@@ -45,6 +45,10 @@ void ParticleContainer::calculateVelocity() {
 
 void ParticleContainer::setForceCalculator(ForceCalculator &forceCalculator1) {
     this->forceCalculator = forceCalculator1;
+}
+
+void ParticleContainer::setDeltaTTwo(double deltaT) {
+    this->deltaTTwo = deltaT;
 }
 
 
