@@ -104,7 +104,7 @@ int main(int argc, char *argsv[]) {
 }
 
 void plotParticles(int iteration) {
-    std::string outName("output/MD_vtk");
+    std::string outName("../output/MD_vtk");
 
     if (outputModeVTK) {
         outputWriter::VTKWriter writer;
@@ -120,7 +120,7 @@ void plotParticles(int iteration) {
 }
 
 void printHelp() {
-    std::ifstream file("help.txt");
+    std::ifstream file("../help.txt");
 
     if (file.is_open()) {
         std::cout << file.rdbuf();
