@@ -108,14 +108,14 @@ void plotParticles(int iteration) {
 
     if (outputModeVTK) {
         outputWriter::VTKWriter writer;
-        writer.initializeOutput(particleContainer.getParticles().size());
-        for (auto &p: particleContainer.getParticles()) {
+        writer.initializeOutput(particleContainer.getParticles()->size());
+        for (auto &p: *particleContainer.getParticles()) {
             writer.plotParticle(p);
         }
         writer.writeFile(outName, iteration);
     } else {
         outputWriter::XYZWriter writer;
-        writer.plotParticles(particleContainer.getParticles(), outName, iteration);
+        writer.plotParticles(*particleContainer.getParticles(), outName, iteration);
     }
 }
 

@@ -8,8 +8,8 @@
 
 ParticleContainer::ParticleContainer() = default;
 
-std::vector<Particle> ParticleContainer::getParticles() {
-    return this->particles;
+std::vector<Particle>* ParticleContainer::getParticles() {
+    return &this->particles;
 }
 
 void ParticleContainer::setParticles(const std::vector<Particle> &particles1) {
