@@ -68,7 +68,7 @@ int main(int argc, char *argsv[]) {
     FileReader fileReader;
     //ParticleContainer particleContainer;
     fileReader.readFile(particles, argsv[optind]);
-    //Initialisieren des ParticleContainer mit particles
+    //Initialising the ParticleContainer with particles
     particleContainer.setParticles(particles);
 
     ForceV1 forceV1{};

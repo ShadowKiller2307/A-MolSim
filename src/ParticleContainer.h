@@ -1,6 +1,6 @@
 /**
  * @brief Class to encapsulate a vector of particles, it has an attribute ForceCalulator
- * to define which calculation method should used on the particles
+ * to define which calculation method should be used on the particles
  */
 #pragma once
 
