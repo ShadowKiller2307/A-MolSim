@@ -1,3 +1,7 @@
+/**
+ * @brief This class implements the approach of force calculation defined by Störmer-Verlet
+ * it inherits the ForceCalculator class so that in can be passed to the ParticleContainer
+ */
 
 #pragma once
 

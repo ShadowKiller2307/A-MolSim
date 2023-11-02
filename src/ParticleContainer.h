@@ -1,3 +1,7 @@
+/**
+ * @brief Class to encapsulate a vector of particles, it has an attribute ForceCalulator
+ * to define which calculation method should used on the particles
+ */
 #pragma once
 
 #include "Particle.h"
@@ -12,8 +16,8 @@ class ParticleContainer {
 
 private:
     std::vector<Particle> particles;
-    static void scalarOperations(std::array<double,3> &array, double scalar, bool isDivision);
-    double euclideanNorm(const std::array<double, 3> &arr);
+    //static void scalarOperations(std::array<double,3> &array, double scalar, bool isDivision);
+    //double euclideanNorm(const std::array<double, 3> &arr);
     ForceCalculator forceCalculator;
 
 

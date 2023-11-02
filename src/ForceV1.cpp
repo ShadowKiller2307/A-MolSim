@@ -1,7 +1,3 @@
-//
-// Created by andreass on 01/11/2023.
-//
-
 #include <vector>
 #include <complex>
 #include "Particle.h"

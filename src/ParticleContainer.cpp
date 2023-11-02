@@ -1,7 +1,7 @@
-
 #include <vector>
 #include "ParticleContainer.h"
 #include "utils/ArrayUtils.h"
+#include "HelperFunctions.h"
 
 
 double deltaT{0.014};
@@ -29,14 +29,15 @@ void ParticleContainer::calculateVelocity() {
     for (auto &p : particles) {
         double twoTimesMass = 2 * p.getM();
         std::array<double,3> sumOfForces = p.getOldF() + p.getF();
-        scalarOperations(sumOfForces, twoTimesMass, true);
+        HelperFunctions::scalarOperations(sumOfForces, twoTimesMass, true);
 
-        scalarOperations(sumOfForces,deltaT,false);
+        HelperFunctions::scalarOperations(sumOfForces,deltaT,false);
         std::array<double, 3> newVelocity = p.getV() + sumOfForces;
         p.setV(newVelocity);
     }
 }
 
+/*
 void ParticleContainer::scalarOperations(std::array<double,3> &array, double scalar, bool isDivision){
     if (isDivision) {
         for (double & i : array) {
@@ -56,7 +57,7 @@ double ParticleContainer::euclideanNorm(const std::array<double, 3> &arr) {
         sum += element * element;
     }
     return std::sqrt(sum);
-}
+}*/
 
 void ParticleContainer::setForceCalculator(ForceCalculator &forceCalculator1) {
     this->forceCalculator = forceCalculator1;
