@@ -17,7 +17,6 @@ public:
     * @return void
     */
     void calculateForces(std::vector<Particle> &particles) override;
-    //void calculateForces(std::vector<Particle> &particles);
 };
 
 

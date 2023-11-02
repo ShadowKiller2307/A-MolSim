@@ -70,9 +70,6 @@ int main(int argc, char *argsv[]) {
     fileReader.readFile(particles, argsv[optind]);
     //Initialising the ParticleContainer with particles
     particleContainer.setParticles(particles);
-
-    ForceCalculator *forceV1;
-    forceV1 = new ForceV1;
     particleContainer.setForceCalculator(0);
     particleContainer.setDeltaTTwo(deltaT);
 

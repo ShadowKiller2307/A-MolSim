@@ -9,7 +9,7 @@
 
 
 void ForceV1::calculateForces(std::vector<Particle> &particles) {
-    std::cout << "Hier sollten wir sein! Yeah!" << std::endl;
+    std::cout << "Richtig" << std::endl;
     for (auto &p: particles) {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};

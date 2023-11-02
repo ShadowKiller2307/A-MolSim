@@ -53,10 +53,9 @@ public:
     void setParticles(const std::vector<Particle>& particles1);
     /**
      * @brief sets the ForceCalculator for the container
-     * @param forceCalculator1 the instance of a ForceCalculator to be set for the container
+     * @param mode represent the different approaches for the force calculation
      * @return void
     */
-    //void setForceCalculator(ForceCalculator& forceCalculator1);
     void setForceCalculator(int mode);
 
     /**
