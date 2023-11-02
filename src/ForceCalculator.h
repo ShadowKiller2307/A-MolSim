@@ -7,5 +7,10 @@
 
 class ForceCalculator{
 public:
+    /**
+     * @brief virtual function which represents the different force calculation approaches
+     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @return void
+     */
     virtual void calculateForces(std::vector<Particle>& particles) {};
 };

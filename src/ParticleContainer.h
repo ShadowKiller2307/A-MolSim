@@ -22,13 +22,38 @@ private:
 public:
     std::vector<Particle> getParticles();
 
+    /**
+     * @brief calculate the force for all particles
+     * @param None
+     * @return void
+    */
     void calculateForces();
+    /**
+     * @brief calculate the velocity for all particles
+     * @param None
+     * @return void
+    */
     void calculateVelocity();
+    /**
+     * @brief calculate the position for all particles
+     * @param None
+     * @return void
+    */
     void calculatePosition();
 
 
     explicit ParticleContainer();
 
+    /**
+     * @brief sets the particles for the container
+     * @param particles1 the particle vector to be set for the container
+     * @return void
+    */
     void setParticles(const std::vector<Particle>& particles1);
+    /**
+     * @brief sets the ForceCalculator for the container
+     * @param forceCalculator1 the instance of a ForceCalculator to be set for the container
+     * @return void
+    */
     void setForceCalculator(ForceCalculator& forceCalculator1);
 };
