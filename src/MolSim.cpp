@@ -102,13 +102,6 @@ int main(int argc, char *argsv[]) {
     return 0;
 }
 
-/**
- * This function is used in the velocity calculation.
- * @param array The array to divide by the scalar. The values are changed inplace.
- * @param scalar The double to divide by.
- * @param isDivision The mode of the operation, where false equals multiplication and true equals division.
- */
-
 void plotParticles(int iteration) {
     std::string outName("output/MD_vtk");
 

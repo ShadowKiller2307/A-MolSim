@@ -16,8 +16,6 @@ class ParticleContainer {
 
 private:
     std::vector<Particle> particles;
-    //static void scalarOperations(std::array<double,3> &array, double scalar, bool isDivision);
-    //double euclideanNorm(const std::array<double, 3> &arr);
     ForceCalculator forceCalculator;
 
 

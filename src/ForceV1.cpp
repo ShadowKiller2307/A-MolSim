@@ -4,7 +4,6 @@
 #include "utils/ArrayUtils.h"
 #include "ForceCalculator.h"
 #include "HelperFunctions.h"
-#include "HelperFunctions.cpp"
 
 class ForceV1 : public ForceCalculator {
 
