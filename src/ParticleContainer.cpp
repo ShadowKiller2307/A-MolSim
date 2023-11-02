@@ -2,6 +2,7 @@
 #include "ParticleContainer.h"
 #include "utils/ArrayUtils.h"
 #include "HelperFunctions.h"
+#include "ForceV1.h"
 
 
 //double deltaT{0.014};
@@ -18,7 +19,7 @@ void ParticleContainer::setParticles(const std::vector<Particle> &particles1) {
 }
 
 void ParticleContainer::calculateForces() {
-    forceCalculator.calculateForces(particles);
+    forceCalculator->calculateForces(particles);
 }
 
 void ParticleContainer::calculatePosition() {
@@ -43,8 +44,10 @@ void ParticleContainer::calculateVelocity() {
     }
 }
 
-void ParticleContainer::setForceCalculator(ForceCalculator &forceCalculator1) {
-    this->forceCalculator = forceCalculator1;
+void ParticleContainer::setForceCalculator(int mode) {
+    if (mode == 0) {
+        forceCalculator = new ForceV1();
+    }
 }
 
 void ParticleContainer::setDeltaTTwo(double deltaT) {

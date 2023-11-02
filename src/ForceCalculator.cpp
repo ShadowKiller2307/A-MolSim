@@ -1,9 +1,11 @@
 #include "ForceCalculator.h"
 #include "utils/ArrayUtils.h"
 #include "HelperFunctions.h"
+#include <iostream>
 
 
 void ForceCalculator::calculateForces(std::vector<Particle> &particles) {
+    std::cout << "Eigentlich sollten wir hier nicht sein" << std::endl;
     for (auto &p: particles) {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};

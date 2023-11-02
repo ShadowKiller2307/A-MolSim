@@ -71,8 +71,9 @@ int main(int argc, char *argsv[]) {
     //Initialising the ParticleContainer with particles
     particleContainer.setParticles(particles);
 
-    ForceV1 forceV1{};
-    particleContainer.setForceCalculator(forceV1);
+    ForceCalculator *forceV1;
+    forceV1 = new ForceV1;
+    particleContainer.setForceCalculator(0);
     particleContainer.setDeltaTTwo(deltaT);
 
     double currentTime = startTime;
@@ -126,3 +127,4 @@ void printHelp() {
         std::cout << file.rdbuf();
     }
 }
+

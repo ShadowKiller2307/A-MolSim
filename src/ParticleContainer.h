@@ -16,7 +16,7 @@ class ParticleContainer {
 
 private:
     std::vector<Particle> particles;
-    ForceCalculator forceCalculator;
+    ForceCalculator *forceCalculator;
     double deltaTTwo;
 
 
@@ -56,7 +56,8 @@ public:
      * @param forceCalculator1 the instance of a ForceCalculator to be set for the container
      * @return void
     */
-    void setForceCalculator(ForceCalculator& forceCalculator1);
+    //void setForceCalculator(ForceCalculator& forceCalculator1);
+    void setForceCalculator(int mode);
 
     /**
      * @brief sets the deltaT for the container

@@ -1,5 +1,6 @@
 #include <vector>
 #include <complex>
+#include <iostream>
 #include "Particle.h"
 #include "utils/ArrayUtils.h"
 #include "ForceCalculator.h"
@@ -8,6 +9,7 @@
 
 
 void ForceV1::calculateForces(std::vector<Particle> &particles) {
+    std::cout << "Hier sollten wir sein! Yeah!" << std::endl;
     for (auto &p: particles) {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};
