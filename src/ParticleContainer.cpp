@@ -44,6 +44,7 @@ void ParticleContainer::calculateVelocity() {
     }
 }
 
+// https://sourcemaking.com/design_patterns/strategy/cpp/1 Looked here how the strategy pattern works
 void ParticleContainer::setForceCalculator(int mode) {
     if (mode == 0) {
         forceCalculator = new ForceV1();
