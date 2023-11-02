@@ -11,6 +11,9 @@ options:
 	[-h | --help]
 		Print this help page.
 	
+	[-x]
+		Output the data in .xyz format instead of vtk
+	
 arguments:
 
 	inputFileName
