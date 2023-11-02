@@ -1,16 +1,41 @@
+/**
+ * @brief Class which reads the input for the calculation, plots the particles
+ * and calls the calculation functions on its attribute particleContainer
+ */
+
 #pragma once
 
-/// calculate the force for all particles
+/**
+ * @brief calculate the force for all particles
+ * @param None
+ * @return void
+ */
 void calculateF();
 
-/// calculate the position for all particles
+/**
+ * @brief calculate the position for all particles
+ * @param None
+ * @return void
+ */
 void calculateX();
 
-/// calculate the position for all particles
+/**
+ * @brief calculate the velocity for all particles
+ * @param None
+ * @return void
+ */
 void calculateV();
 
-/// plot the particles to a xyz-file
+/**
+ * @brief plot the particles to a xyz-file
+ * @param iteration amount of iteration over the particles
+ * @return void
+ */
 void plotParticles(int iteration);
 
-/// print the usage of the program to stdout
+/**
+ * @brief print the usage of the program to stdout
+ * @param None
+ * @return void
+ */
 void printHelp();
