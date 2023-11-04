@@ -21,7 +21,7 @@ std::vector<Particle> particles;
 // ParticleContainer particles
 ParticleContainer particleContainer{};
 
-
+//TODO: Implement mode for runtime measurement which disables all I/O
 int main(int argc, char *argsv[]) {
 
     std::cout << "Hello from MolSim for PSE!" << std::endl;
@@ -71,6 +71,11 @@ int main(int argc, char *argsv[]) {
     //Initialising the ParticleContainer with particles
     particleContainer.setParticles(particles);
     particleContainer.setForceCalculator(0);
+    /*
+     * Mode 0 GravitationalForce
+     * Mode 1 LennardJonesForce
+     * Mode 2 infinity: restliche Forces
+     */
     particleContainer.setDeltaTTwo(deltaT);
 
     double currentTime = startTime;
