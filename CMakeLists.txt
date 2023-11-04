@@ -12,6 +12,14 @@ if(NOT CMAKE_BUILD_TYPE)
             "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
+# according to http://google.github.io/googletest/quickstart-cmake.html
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+FetchContent_MakeAvailable(googletest)
+
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
@@ -24,7 +32,8 @@ add_executable(MolSim ${MY_SRC}
         src/ParticleContainer.cpp
         src/ForceV1.cpp
         src/HelperFunctions.h
-        src/ForceV1.h)
+        src/ForceV1.h
+        src/MolSimTests.cpp)
 
 # set cxx standard. You may raise this if you want.
 target_compile_features(MolSim
@@ -59,3 +68,18 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 
 file(MAKE_DIRECTORY "output")
+
+enable_testing()
+
+add_executable(
+        MolSimTests
+        src/MolSimTests.cpp # file with our tests
+)
+target_link_libraries(
+        MolSimTests
+        GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(MolSimTests)
+
