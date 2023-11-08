@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 # define project name, version
 project(PSEMolDyn_GroupA)
@@ -19,6 +19,11 @@ FetchContent_Declare(
         URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
 )
 FetchContent_MakeAvailable(googletest)
+include(GoogleTest)
+enable_testing()
+add_subdirectory(Tests EXCLUDE_FROM_ALL)
+
+include(GoogleTest)
 
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
@@ -33,12 +38,12 @@ add_executable(MolSim ${MY_SRC}
         src/ForceV1.cpp
         src/HelperFunctions.h
         src/ForceV1.h
-        src/MolSimTests.cpp)
+)
 
 # set cxx standard. You may raise this if you want.
 target_compile_features(MolSim
         PRIVATE
-            cxx_std_17
+            cxx_std_20
 )
 
 target_include_directories(MolSim
@@ -68,18 +73,3 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 include(doxygen)
 
 file(MAKE_DIRECTORY "output")
-
-enable_testing()
-
-add_executable(
-        MolSimTests
-        src/MolSimTests.cpp # file with our tests
-)
-target_link_libraries(
-        MolSimTests
-        GTest::gtest_main
-)
-
-include(GoogleTest)
-gtest_discover_tests(MolSimTests)
-
