@@ -3,6 +3,7 @@
 #include "utils/ArrayUtils.h"
 #include "HelperFunctions.h"
 #include "ForceV1.h"
+#include "LennardJonesForce.h"
 
 
 //double deltaT{0.014};
@@ -20,6 +21,22 @@ void ParticleContainer::setParticles(const std::vector<Particle> &particles1) {
 
 void ParticleContainer::calculateForces() {
     forceCalculator->calculateForces(particles);
+}
+
+void ParticleContainer::iterOverPairs(std::vector<Particle> &particles, const std::function<void (Particle a, Particle b)> &forceLambda){
+    for (auto &p: particles) {
+        auto oldForce = p.getF();
+        std::array<double, 3> zero = {0.0, 0.0, 0.0};
+        p.setF(zero);
+        p.setOldF(oldForce);
+    }
+    for (size_t i = 0; i < particles.size() - 1; ++i) {
+        Particle &pi = particles.at(i);
+        for (size_t j = i + 1; j < particles.size(); ++j) {
+            Particle &pj = particles.at(j);
+            forceLambda(pi, pj);
+        }
+    }
 }
 
 void ParticleContainer::calculatePosition() {
@@ -48,6 +65,12 @@ void ParticleContainer::calculateVelocity() {
 void ParticleContainer::setForceCalculator(int mode) {
     if (mode == 0) {
         forceCalculator = new ForceV1();
+    }
+    if (mode == 1) {
+        forceCalculator = new LennardJonesForce{5, 1};
+    }
+    else {
+        forceCalculator = new ForceV1(); // If the input mode isn't defined, the forceCalculator is set to ForceV1
     }
 }
 

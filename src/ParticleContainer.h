@@ -6,7 +6,7 @@
 
 #include "Particle.h"
 #include <vector>
-
+#include <functional>
 #include "ForceCalculator.h"
 
 // Interne Implementierung die wie encapsulaten
@@ -29,6 +29,10 @@ public:
      * @return void
     */
     void calculateForces();
+
+
+    static void iterOverPairs(std::vector<Particle> &particles, const std::function<void (Particle a, Particle b)> &f);
+
     /**
      * @brief calculate the velocity for all particles
      * @param None
