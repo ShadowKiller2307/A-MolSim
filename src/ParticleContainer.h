@@ -64,4 +64,6 @@ public:
      * @return void
     */
     void setDeltaTTwo(double deltaT);
+
+    double getDeltaTwo();
 };

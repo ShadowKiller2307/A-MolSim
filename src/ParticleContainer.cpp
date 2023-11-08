@@ -55,5 +55,9 @@ void ParticleContainer::setDeltaTTwo(double deltaT) {
     this->deltaTTwo = deltaT;
 }
 
+double ParticleContainer::getDeltaTwo() {
+    return this-> deltaTTwo;
+}
+
 
 

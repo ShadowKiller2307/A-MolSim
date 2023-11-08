@@ -1,12 +1,26 @@
 include(GoogleTest)
 
+# collect all cpp files
+file(GLOB_RECURSE MY_SRC
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        # header don't need to be included but this might be necessary for some IDEs
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+)
+
 add_executable(
-        MolSimTests
+        MolSimTests ${MY_SRC}
         MolSimTests.cpp # file with our tests
 )
 target_link_libraries(
         MolSimTests
         GTest::gtest_main
+)
+
+target_include_directories(MolSimTests
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 gtest_discover_tests(MolSimTests)
