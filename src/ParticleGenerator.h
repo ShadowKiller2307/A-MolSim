@@ -3,7 +3,7 @@
 #include <vector>
 #include "ParticleContainer.h"
 #include "Particle.h"
-#include "utils/MaxwellBoltzmannDistribution.h"
+//#include "utils/MaxwellBoltzmannDistribution.h"
 #include "utils/ArrayUtils.h"
 
 class ParticleGenerator {
@@ -13,6 +13,7 @@ private:
     double h;
     double mass;
     std::array<double, 3> particleVelocity;*/
+
     //TODO: last parameter can be hardcoded but maybe add later
 
     //TODO: Hier werden wir einen Cuboid initialisieren
