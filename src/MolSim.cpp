@@ -5,6 +5,7 @@
 #include "utils/ArrayUtils.h"
 #include "ParticleContainer.h"
 #include "ForceV1.h"
+#include "spdlog/spdlog.h"
 
 
 #include <iostream>
