@@ -9,3 +9,6 @@ MolSim
 doxys_documentation/
 output/
 build/
+Tests/
+!Tests/CMakeLists.txt
+!Tests/MolSimTests.cpp
