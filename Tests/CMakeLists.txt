@@ -9,6 +9,21 @@ file(GLOB_RECURSE MY_SRC
 
 add_executable(
         MolSimTests ${MY_SRC}
+        ../src/ParticleContainer.h
+        ../src/ParticleContainer.cpp
+        ../src/Particle.cpp
+        ../src/Particle.h
+        ../src/Cuboid.cpp
+        ../src/LennardJonesForce.cpp
+        ../src/LennardJonesForce.h
+        ../src/ForceV1.cpp
+        ../src/ForceV1.h
+        ../src/HelperFunctions.cpp
+        ../src/HelperFunctions.h
+        ../src/ForceCalculator.cpp
+        ../src/ForceCalculator.h
+        ../src/FileReader.h
+        ../src/FileReader.cpp
         MolSimTests.cpp # file with our tests
 )
 target_link_libraries(

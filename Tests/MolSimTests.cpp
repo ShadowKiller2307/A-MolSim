@@ -14,7 +14,7 @@
 //
 // unit Test for the particle container
 TEST(ParticleContainerTest, testGetParticles) {
-    //ParticleContainer container;  //Hier also noch  undefined reference to particle container aus irgendeinem Grund
+    ParticleContainer container;  //Hier also noch  undefined reference to particle container aus irgendeinem Grund
     EXPECT_EQ(0, 0); //Normale Tests funktionieren
     //TODO: Error undefined Reference to HelperFunction
     // Es kann noch in der Testklasse nicht auf unsere Klassen aus dem src Ordner zugegriffen werden
