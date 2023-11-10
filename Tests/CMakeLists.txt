@@ -1,4 +1,14 @@
+# according to http://google.github.io/googletest/quickstart-cmake.html
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
+enable_testing()
+
+
 
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
