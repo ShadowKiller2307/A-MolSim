@@ -1,0 +1,32 @@
+name: CI testing
+
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+
+    - name: Building the project
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+    - name: Building the tests
+      run: |
+        mkdir -p Tests/build
+        cd Tests/build
+        cmake ../..
+        make
+
+    - name: Execute our tests
+      run: ./Tests/build/MolSimTests 
