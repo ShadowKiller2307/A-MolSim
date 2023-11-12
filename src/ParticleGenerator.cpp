@@ -5,18 +5,18 @@
 
 void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::array<double, 3> llfc,
                                           std::array<unsigned int, 3> particlePerDimension, double h, double mass,
-                                          std::array<double, 3> particleVelocity) {
+                                          std::array<double, 3> particleVelocity, int generateNumber) {
     double meanValueVelocity{0.0}; // TODO: Is it the Erwartungswert of the normal distribution
-    std::array<double, 3> mbVelocity {0.0, 0.0, 0.0};
-    //std::array<double, 3> mbVelocity = maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); TODO Fehlermeldung multiple def of MB
-    std::vector<Particle> particles_temp; //TODO: reserve space for the vector for Performance
+    std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); //TODO Fehlermeldung multiple def of MB
+    auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] + particlePerDimension[2];
+    std::vector<Particle> particles_temp;
+    particles_temp.reserve(amountOfParticles); //reserve space for amountOfParticles for the vector for performance
     for (unsigned int i = 0; i < particlePerDimension[0]; ++i) {
         for (unsigned int j = 0; j < particlePerDimension[1]; ++j) {
             for (unsigned int k = 0; k < particlePerDimension[2]; ++k) {
-                std::array<double, 3>  x_arg{i*h, j*h, k*h};
-                auto v_arg = particleVelocity + mbVelocity;
-                //std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-                particles_temp.emplace_back(Particle{x_arg, v_arg, mass, 0});
+                std::array<double, 3>  x_arg{i*h + llfc[0], j*h+llfc[1], k*h+llfc[3]};
+                std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
+                particles_temp.emplace_back(Particle{x_arg, v_arg, mass, generateNumber});
             }
         }
     }

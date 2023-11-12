@@ -2,10 +2,11 @@
  * @brief The ForceCalculator defines an abstract method calculateForces which is used for the different
  * force calculation approaches
  */
+#pragma once
+
 #include <vector>
 #include "Particle.h"
 
-#pragma once
 
 class ForceCalculator{
 public:
