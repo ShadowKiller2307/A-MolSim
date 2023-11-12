@@ -22,12 +22,9 @@ jobs:
         cmake ..
         make
 
-    - name: Building the tests
+    - name: Building the tests and executing them
       run: |
-        mkdir -p Tests/build
-        cd Tests/build
-        cmake ../..
+        cd build
+        cd Tests
         make
-
-    - name: Execute our tests
-      run: ./Tests/build/MolSimTests 
+        ./MolSimTests
