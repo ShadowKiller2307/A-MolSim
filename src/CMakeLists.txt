@@ -10,6 +10,13 @@ add_executable(MolSim ${MY_SRC})
 
 target_include_directories(MolSim PUBLIC ../libs/libxsd PRIVATE .)
 
+include(FetchContent)
+
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
+target_link_libraries(MolSim PRIVATE nlohmann_json::nlohmann_json)
+
 target_link_libraries(MolSim PUBLIC xerces-c)
 
 # activate all compiler warnings. Clean up your code :P

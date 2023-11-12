@@ -11,6 +11,8 @@
 #include <fstream>
 #include <getopt.h>
 #include <vector>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 constexpr double startTime{0};
 double endTime{1000};
