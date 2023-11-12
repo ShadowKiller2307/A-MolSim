@@ -2,11 +2,32 @@
 file(GLOB_RECURSE MY_TEST_SRC
     "*.cpp"
     "*.h"
-    "../src/*.cpp"
-    "../src/*.h"
+     #[[../src/Particle.h
+     ../src/ParticleContainer.h
+     ../src/HelperFunctions.h]]
+   # ../src/Particle.h
+    #../src/ParticleGenerator.h
+    #../src/ParticleContainer.h
 )
 
-add_executable(MolSimTests ${MY_TEST_SRC})
+add_executable(MolSimTests ${MY_TEST_SRC}
+        ../src/Particle.h
+        ../src/ParticleContainer.h
+        ../src/HelperFunctions.h
+        ../src/Particle.cpp
+        ../src/ParticleContainer.cpp
+        ../src/HelperFunctions.cpp
+        ../src/ForceCalculator.cpp
+        ../src/ForceCalculator.h
+        ../src/ForceV1.cpp
+        ../src/ForceV1.h
+        ../src/LennardJonesForce.h
+        ../src/LennardJonesForce.cpp
+        ../src/FileReader.cpp
+        ../src/FileReader.h)
+
+add_test(NAME MolSimTests
+         COMMAND MolSimTests)
 
 target_include_directories(MolSimTests PUBLIC ../libs/libxsd PRIVATE ../src)
 
