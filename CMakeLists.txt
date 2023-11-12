@@ -14,6 +14,18 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 file(MAKE_DIRECTORY "output")
 
+include(FetchContent)
+
+# according to http://google.github.io/googletest/quickstart-cmake.html
+FetchContent_Declare(googletest URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip)
+FetchContent_MakeAvailable(googletest)
+include(GoogleTest)
+enable_testing()
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
+FetchContent_MakeAvailable(json)
+FetchContent_Declare(spdlog GIT_REPOSITORY https://github.com/gabime/spdlog.git GIT_TAG v1.x)
+FetchContent_MakeAvailable(spdlog)
+
 add_subdirectory(src)
 add_subdirectory(Tests EXCLUDE_FROM_ALL)
 

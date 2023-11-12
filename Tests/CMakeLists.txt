@@ -1,21 +1,14 @@
 # collect all cpp files
-file(GLOB_RECURSE MY_SRC
+file(GLOB_RECURSE MY_TEST_SRC
     "*.cpp"
     "*.h"
     "../src/*.cpp"
     "../src/*.h"
 )
 
-add_executable(MolSimTests ${MY_SRC})
+add_executable(MolSimTests ${MY_TEST_SRC})
 
 target_include_directories(MolSimTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-# according to http://google.github.io/googletest/quickstart-cmake.html
-include(FetchContent)
-FetchContent_Declare(googletest URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip)
-FetchContent_MakeAvailable(googletest)
-include(GoogleTest)
-enable_testing()
 
 target_link_libraries(MolSimTests PUBLIC xerces-c GTest::gtest_main PRIVATE nlohmann_json::nlohmann_json)
 
