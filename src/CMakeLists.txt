@@ -1,7 +1,6 @@
 # collect all cpp files
 file(GLOB_RECURSE MY_SRC
     "*.cpp"
-    # header don't need to be included but this might be necessary for some IDEs
     "*.h"
 )
 
@@ -15,9 +14,7 @@ include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 FetchContent_MakeAvailable(json)
 
-target_link_libraries(MolSim PRIVATE nlohmann_json::nlohmann_json)
-
-target_link_libraries(MolSim PUBLIC xerces-c)
+target_link_libraries(MolSim PUBLIC xerces-c PRIVATE nlohmann_json::nlohmann_json)
 
 # activate all compiler warnings. Clean up your code :P
 # depending on the compiler different flags are used
