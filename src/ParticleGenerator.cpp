@@ -8,13 +8,13 @@ void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::arr
                                           std::array<double, 3> particleVelocity, int generateNumber) {
     double meanValueVelocity{0.0}; // TODO: Is it the Erwartungswert of the normal distribution
     std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); //TODO Fehlermeldung multiple def of MB
-    auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] + particlePerDimension[2];
+    auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] * particlePerDimension[2];
     std::vector<Particle> particles_temp;
     particles_temp.reserve(amountOfParticles); //reserve space for amountOfParticles for the vector for performance
     for (unsigned int i = 0; i < particlePerDimension[0]; ++i) {
         for (unsigned int j = 0; j < particlePerDimension[1]; ++j) {
             for (unsigned int k = 0; k < particlePerDimension[2]; ++k) {
-                std::array<double, 3>  x_arg{i*h + llfc[0], j*h+llfc[1], k*h+llfc[3]};
+                std::array<double, 3>  x_arg{i*h + llfc[0], j*h+llfc[1], k*h+llfc[2]};
                 std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
                 particles_temp.emplace_back(Particle{x_arg, v_arg, mass, generateNumber});
             }

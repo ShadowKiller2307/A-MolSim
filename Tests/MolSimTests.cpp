@@ -29,16 +29,30 @@ TEST(ParticleGeneratorTest, testGenerateParticlesGenerator) {
     // Instantiate a generator and container for the instantiateCuboid function
     ParticleGenerator particleGenerator;
     ParticleContainer container;
-    particleGenerator.instantiateCuboid(container, {0.0, 0.0, 0.0}, {5, 5, 5}, 1.0, 0.1, {1.0, 1.0, 1.0});
-    // Now check if the cuboid was instantiated as we expect
-
-
+    particleGenerator.instantiateCuboid(container, {0.0, 0.0, 0.0}, {2, 2, 2}, 1.0, 0.1, {1.0, 1.0, 1.0}, 0);
+    // Now check if the cuboid was instantiated with the particle positions as we expect
+    EXPECT_EQ(8, container.getParticles()->size());
+    std::array test{0.0, 0.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(0).getX());
+    test = {0.0, 0.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(1).getX());
+    test = {0.0, 1.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(2).getX());
+    test = {0.0, 1.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(3).getX());
+    test = {1.0, 0.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(4).getX());
+    test = {1.0, 0.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(5).getX());
+    test = {1.0, 1.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(6).getX());
+    test = {1.0, 1.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(7).getX());
 }
 
 
 TEST(ForceTest, testForceV1) {
     // Instantiate particles
-
     // calculate one iteration of the ForceV1 calculation
 
 }
