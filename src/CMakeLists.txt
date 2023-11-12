@@ -9,7 +9,7 @@ add_executable(MolSim ${MY_SRC})
 
 target_include_directories(MolSim PUBLIC ../libs/libxsd PRIVATE .)
 
-target_link_libraries(MolSim PUBLIC xerces-c PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(MolSim PUBLIC xerces-c PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
 
 # activate all compiler warnings. Clean up your code :P
 # depending on the compiler different flags are used
