@@ -6,19 +6,63 @@
 #include "../src/ParticleContainer.h"
 #include "../src/HelperFunctions.h"
 #include "../src/Particle.h"
+#include "../src/ParticleGenerator.h"
+#include "../src/ForceV1.h"
+#include "../src/LennardJonesForce.h"
 
 // Difference ASSERT vs EXPECT macros
-//ASSERT -> fatal failures
+// ASSERT -> fatal failures
 // EXPECT -> nonfatal failures
 
-//
+
 // unit Test for the particle container
 TEST(ParticleContainerTest, testGetParticles) {
-    ParticleContainer container;  //Hier also noch  undefined reference to particle container aus irgendeinem Grund
-    EXPECT_EQ(0, 0); //Normale Tests funktionieren
-    //TODO: Error undefined Reference to HelperFunction
-    // Es kann noch in der Testklasse nicht auf unsere Klassen aus dem src Ordner zugegriffen werden
-//    auto testArray{std::array<double, 3>{0.0, 0.0, 0.0}};
-//    HelperFunctions::scalarOperations(testArray, 1, false);
-//    EXPECT_EQ(0.0, testArray[0]);
+    ParticleContainer container;
+    std::vector particles{Particle(0), Particle(1)};
+    container.setParticles(particles);
+    EXPECT_EQ(2, container.getParticles()->size());
+}
+
+//void instantiateCuboid(ParticleContainer& container, std::array<double, 3> llfc, std::array<unsigned int, 3> particlePerDimension, double h, double mass,
+//                       std::array<double, 3> particleVelocity);
+TEST(ParticleGeneratorTest, testGenerateParticlesGenerator) {
+    // Instantiate a generator and container for the instantiateCuboid function
+    ParticleGenerator particleGenerator;
+    ParticleContainer container;
+    particleGenerator.instantiateCuboid(container, {0.0, 0.0, 0.0}, {2, 2, 2}, 1.0, 0.1, {1.0, 1.0, 1.0}, 0);
+    // Now check if the cuboid was instantiated with the particle positions as we expect
+    EXPECT_EQ(8, container.getParticles()->size());
+    std::array test{0.0, 0.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(0).getX());
+    test = {0.0, 0.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(1).getX());
+    test = {0.0, 1.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(2).getX());
+    test = {0.0, 1.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(3).getX());
+    test = {1.0, 0.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(4).getX());
+    test = {1.0, 0.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(5).getX());
+    test = {1.0, 1.0, 0.0};
+    EXPECT_EQ(test, container.getParticles()->at(6).getX());
+    test = {1.0, 1.0, 1.0};
+    EXPECT_EQ(test, container.getParticles()->at(7).getX());
+}
+
+
+TEST(ForceTest, testForceV1) {
+    // Instantiate particles
+    // calculate one iteration of the ForceV1 calculation
+
+}
+
+
+TEST(ForceTest, testForceLennardJones) {
+    // Instantiate particles
+
+
+
+    // calculate one iteration of the LennardJonesForceIteration
+
 }

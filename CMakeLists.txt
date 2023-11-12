@@ -32,4 +32,4 @@ add_subdirectory(Tests EXCLUDE_FROM_ALL)
 find_package(Doxygen)
 
 #include(doxygen)
-# TODO: Include doxygen 
+# TODO: Include doxygen
