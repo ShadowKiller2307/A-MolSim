@@ -1,41 +1,19 @@
-include(GoogleTest)
-
 # collect all cpp files
-file(GLOB_RECURSE MY_SRC
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-        # header don't need to be included but this might be necessary for some IDEs
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+file(GLOB_RECURSE MY_TEST_SRC
+    "*.cpp"
+    "*.h"
+    "../src/*.cpp"
+    "../src/*.h"
 )
 
-add_executable(
-        MolSimTests ${MY_SRC}
-        ../src/ParticleContainer.h
-        ../src/ParticleContainer.cpp
-        ../src/Particle.cpp
-        ../src/Particle.h
-        ../src/Cuboid.cpp
-        ../src/LennardJonesForce.cpp
-        ../src/LennardJonesForce.h
-        ../src/ForceV1.cpp
-        ../src/ForceV1.h
-        ../src/HelperFunctions.cpp
-        ../src/HelperFunctions.h
-        ../src/ForceCalculator.cpp
-        ../src/ForceCalculator.h
-        ../src/FileReader.h
-        ../src/FileReader.cpp
-        MolSimTests.cpp # file with our tests
-)
-target_link_libraries(
-        MolSimTests
-        GTest::gtest_main
-)
+add_executable(MolSimTests ${MY_TEST_SRC})
 
-target_include_directories(MolSimTests
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+target_include_directories(MolSimTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/libs/libxsd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_link_libraries(MolSimTests PUBLIC xerces-c GTest::gtest_main PRIVATE nlohmann_json::nlohmann_json)
+
+# activate all compiler warnings. Clean up your code :P
+# depending on the compiler different flags are used
+target_compile_options(MolSim PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall> $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>)
 
 gtest_discover_tests(MolSimTests)
