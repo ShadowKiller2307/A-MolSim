@@ -17,24 +17,35 @@ file(GLOB_RECURSE MY_SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
 )
 
-add_executable(
-        MolSimTests ${MY_SRC}
-        ../src/ParticleContainer.h
+set(MOLSIM_SOURCES
         ../src/ParticleContainer.cpp
-        ../src/Particle.cpp
-        ../src/Particle.h
         ../src/Cuboid.cpp
         ../src/LennardJonesForce.cpp
-        ../src/LennardJonesForce.h
-        ../src/ForceV1.cpp
-        ../src/ForceV1.h
+        ../src/Particle.cpp
         ../src/HelperFunctions.cpp
-        ../src/HelperFunctions.h
+        ../src/ForceV1.cpp
         ../src/ForceCalculator.cpp
+        ../src/FileReader.cpp
+        MolSimTests.cpp
+)
+set(MOLSIM_HEADERS
+
+        ../src/ParticleContainer.h
+        ../src/Particle.h
+        ../src/LennardJonesForce.h
+        ../src/ForceV1.h
+        ../src/HelperFunctions.h
         ../src/ForceCalculator.h
         ../src/FileReader.h
-        ../src/FileReader.cpp
-        MolSimTests.cpp # file with our tests
+
+)
+
+add_executable(
+        MolSimTests ${MY_SRC}
+        ${MOLSIM_SOURCES}
+        ${MOLSIM_HEADERS}
+
+         # file with our tests
 )
 target_link_libraries(
         MolSimTests
