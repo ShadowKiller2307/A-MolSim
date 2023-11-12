@@ -1,6 +1,6 @@
 name: CI testing
 
-on: [push]
+on: [push,pull_request]
 
 jobs:
   build-and-test:
@@ -13,6 +13,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake
+        sudo apt install libxerces-c-dev
 
     - name: Building the project
       run: |
