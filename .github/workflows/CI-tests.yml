@@ -30,4 +30,4 @@ jobs:
         make
 
     - name: Execute our tests
-      run: ./MolSimTests 
+      run: .Tests/build/MolSimTests 
