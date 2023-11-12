@@ -39,9 +39,11 @@ ParticleContainer particleContainer{};
 //TODO: Implement mode for runtime measurement which disables all I/O
 int main(int argc, char *argsv[]) {
     spdlog::info("Erste Nachricht durch den Logger");
-    std::cout << "Hello from MolSim for PSE!" << std::endl;
+//    std::cout << "Hello from MolSim for PSE!" << std::endl;
+    spdlog::info("Hello from MolSim for PSE\n");
     if (argc < 2) {
-        std::cout << "Erroneous programme call! " << std::endl;
+//        std::cout << "Erroneous programme call! " << std::endl;
+        spdlog::info("Erroneous program call\n");
         printHelp();
         return EXIT_FAILURE;
     }
@@ -76,7 +78,8 @@ int main(int argc, char *argsv[]) {
     }
 
     if (optind >= argc) {
-        std::cout << "Input file missing as an argument, aborting" << std::endl;
+//        std::cout << "Input file missing as an argument, aborting" << std::endl;
+        spdlog::info("Input file missing as an argument, aborting\n");
         printHelp();
         return EXIT_FAILURE;
     }
@@ -119,13 +122,14 @@ int main(int argc, char *argsv[]) {
         }
         //TODO: das durch logging Nachricht ersetzen
         std::cout << "Iteration " << iteration << " finished." << std::endl;
-
+        spdlog::info("Iteration {} finished.\n",iteration);
         currentTime += deltaT;
     }
     std::time_t end = std::time(nullptr);
     auto diff = end - start;
 
-    std::cout << "Output written, took " << diff << " seconds. Terminating..." << std::endl;
+//    std::cout << "Output written, took " << diff << " seconds. Terminating..." << std::endl;
+    spdlog::info("Output written, took {} seconds. Terminating...\n",diff);
     return 0;
 }
 
@@ -133,6 +137,7 @@ void plotParticles(int iteration) {
     std::string outName("../output/MD_vtk");
 
     if (outputModeVTK) {
+        spdlog::info("Plotting particles with outputModeVTK.\n");
         outputWriter::VTKWriter writer;
         writer.initializeOutput(particleContainer.getParticles()->size());
         for (auto &p: *particleContainer.getParticles()) {
