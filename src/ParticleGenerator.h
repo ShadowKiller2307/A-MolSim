@@ -19,6 +19,6 @@ private:
 
     // TODO: Hier werden wir einen Cuboid initialisieren
 public:
-    void instantiateCuboid(ParticleContainer &container, std::array<double, 3> llfc, std::array<unsigned int, 3> particlePerDimension, double h, double mass,
-                           std::array<double, 3> particleVelocity, int generateNumber);
+    void instantiateCuboid(ParticleContainer &container, std::array<double, 3> llfc, std::array<unsigned int, 3> particlePerDimension,
+                           std::array<double, 3> particleVelocity, double h, double mass, int generateNumber);
 };

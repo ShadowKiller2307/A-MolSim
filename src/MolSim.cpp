@@ -16,27 +16,40 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-//
 constexpr double startTime{0};
-double endTime{1000};
-double deltaT{0.014};
-bool generate = false; // bool which indicates whether the particles are read from a file or generated
-int silenceLevel = 1;
+double endTime{5};
+double deltaT{0.0002};
+enum particleSources
+{
+    generator,
+    picture,
+    txtFile
+};
+particleSources pSource = generator;
+enum LogLevel
+{
+    debug,           // debug, print all, slowest
+    standard,        // default, no debug
+    noCOut,          // disable std::cout and logging but still write Files, minor performance improvement
+    noFiles,         // don't write output to files but still std::cout and logging, big performance improvement but no data :(
+    onlyCalculations // combination of noCOut and noFiles, no output whatsoever, fastest
+};
+LogLevel logLevel = standard;
 bool outputModeVTK = true; // default to VTK
+std::string outName{"MD_vtk"};
 
 // default values for the particle generator
 ParticleGenerator particleGenerator;
-std::array<double, 3> llfc{0.0, 0.0, 0.0}; // lower left frontside corner
-std::array<unsigned int, 3> particlePerDimension{10, 10, 10};
+// std::array<double, 3> llfc{0.0, 0.0, 0.0}; // lower left frontside corner
+// std::array<double, 3> particleVelocity = {1.0, 1.0, 1.0};
+// std::array<unsigned int, 3> particlePerDimension{10, 10, 10};
 double h = 0.5;
 double mass = 1.0; //<- vllt noch was sinnvolleres hierhin
-std::array<double, 3> particleVelocity = {1.0, 1.0, 1.0};
 
 std::vector<Particle> particles;
 // ParticleContainer particles
 ParticleContainer particleContainer{};
 
-// TODO: Implement mode for runtime measurement which disables all I/O
 int main(int argc, char *argsv[])
 {
     spdlog::info("Erste Nachricht durch den Logger");
@@ -49,18 +62,26 @@ int main(int argc, char *argsv[])
     }
 
     option longOpts[] = {
-        {"deltaT", required_argument, nullptr, 'd'},
-        {"endTime", required_argument, nullptr, 'e'}, // how long the simulation should run
-        {"help", no_argument, nullptr, 'h'},          // print the help.txt file to stdout
-        // disable I/O with certain levels. 0 -> debug, print all; 1 -> default, no debug; 2 -> disable std::cout and logging; 3 -> don't write output to files
-        {"silent", required_argument, nullptr, 's'},
+        {"deltaT", required_argument, nullptr, 'd'},   // timestep between each iteration
+        {"endTime", required_argument, nullptr, 'e'},  // how long the simulation should run
+        {"help", no_argument, nullptr, 'h'},           // print the help.txt file to stdout
+        {"logLevel", required_argument, nullptr, 'l'}, // how much output he program generates to stdout and files
+        // TODO: update help.txt with these
+        {"inputGenerator", no_argument, nullptr, 'g'}, // funny
+        {"inputPicture", no_argument, nullptr, 'p'},   // because
+        {"inputText", no_argument, nullptr, 't'},      // GPT
+        {"outName", required_argument, nullptr, 'o'},  // name prefix for each outputfile
         {nullptr, 0, nullptr, 0}};
 
     int longOptsIndex = 0;
     // TODO: Extend with the command line arguments for the generator
-    int c = getopt_long(argc, argsv, "d:e:hs:x", longOpts, &longOptsIndex);
-    while (c != -1)
+    while (true)
     {
+        int c = getopt_long(argc, argsv, "d:e:hl:xgpt", longOpts, &longOptsIndex);
+        if (c == -1)
+        {
+            break;
+        }
         switch (c)
         {
         case 'd':
@@ -72,45 +93,70 @@ int main(int argc, char *argsv[])
         case 'h':
             printHelp();
             break;
-        case 's':
+        case 'l':
         {
             int temp = std::stoi(optarg);
-            if (temp >= 0 && temp < 3)
+            if (temp >= 0 && temp <= 4)
             {
-                silenceLevel = temp;
+                logLevel = static_cast<LogLevel>(temp);
             }
             break;
         }
         case 'x':
             outputModeVTK = false;
+            outName = "MD_xyz";
+            break;
+        case 'g':
+            pSource = generator;
+            break;
+        case 'p':
+            pSource = picture;
+            break;
+        case 't':
+            pSource = txtFile;
+            break;
+        case 'o':
+            outName = optarg;
             break;
         default:
             std::cout << "Error parsing arguments. Maybe you gave one that isn't recognized." << std::endl;
             break;
         }
-        c = getopt_long(argc, argsv, "d:e:hs:x", longOpts, &longOptsIndex);
     }
 
     if (optind >= argc)
     {
-        // std::cout << "Input file missing as an argument, aborting" << std::endl;
-        spdlog::info("Input file missing as an argument, aborting\n");
+        spdlog::info("Input missing as an argument, aborting\n");
         printHelp();
         return EXIT_FAILURE;
     }
 
-    if (!generate)
+    switch (pSource)
     {
+    case generator:
+    {
+        std::ifstream f(std::string("_").compare(argsv[optind]) == 0 ? "../input/collision.json" : argsv[optind]);
+        json jsonParticles = json::parse(f);
+
+        for (size_t i = 0; i < jsonParticles[0]; i++)
+        {
+            std::array<double, 3UL> llfc = jsonParticles[i + 1]["x"];
+            std::array<double, 3UL> particleVelocity = jsonParticles[i + 1]["v"];
+            std::array<unsigned int, 3UL> particlePerDimension = jsonParticles[i + 1]["N"];
+            // Here the particles will be generated by the ParticleGenerator
+            particleGenerator.instantiateCuboid(particleContainer, llfc, particlePerDimension, particleVelocity, h, mass, i);
+        }
+        break;
+    }
+    case picture:
+        break;
+    case txtFile:
         FileReader fileReader;
         // ParticleContainer particleContainer;
-        fileReader.readFile(particles, argsv[optind]);
+        fileReader.readFile(particles, (std::string("_").compare(argsv[optind]) == 0 ? (char *)"../input/eingabe-sonne.txt" : argsv[optind]));
         // Initialising the ParticleContainer with particles
         particleContainer.setParticles(particles);
-    }
-    else
-    {
-        // Here the particles will be generated by the ParticleGenerator
-        particleGenerator.instantiateCuboid(particleContainer, llfc, particlePerDimension, h, mass, particleVelocity, 0);
+        break;
     }
 
     particleContainer.setForceCalculator(0);
@@ -123,7 +169,10 @@ int main(int argc, char *argsv[])
 
     double currentTime = startTime;
     int iteration = 0;
-    spdlog::info(outputModeVTK ? "Plotting particles with VTK." : "Plotting particles with XYZ");
+    if (logLevel < noCOut)
+    {
+        spdlog::info(outputModeVTK ? "Plotting particles with VTK." : "Plotting particles with XYZ");
+    }
     spdlog::info("This might take a while...");
 
     // Start measuring time
@@ -140,10 +189,13 @@ int main(int argc, char *argsv[])
         particleContainer.calculateVelocity();
 
         iteration++;
-        if (silenceLevel < 3 && iteration % 10 == 0)
+        if (iteration % 10 == 0)
         {
-            plotParticles(iteration);
-            if (silenceLevel < 2)
+            if (logLevel < noFiles)
+            {
+                plotParticles(iteration);
+            }
+            if ((logLevel < noCOut || logLevel == noFiles) && iteration % 100 == 0)
             {
                 spdlog::info("Iteration {} finished.", iteration);
             }
@@ -155,38 +207,32 @@ int main(int argc, char *argsv[])
     auto end = std::chrono::high_resolution_clock::now();
     int64_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-    // std::cout << "Output written, took " << diff << " seconds. Terminating..." << std::endl;
-
     spdlog::info("Output written, took {} milliseconds. (about {}) Terminating...\n", diff, (iteration > diff ? std::to_string(iteration / diff) + " iter/ms" : std::to_string(diff / iteration) + " ms/iter"));
     return 0;
 }
 
 void plotParticles(int iteration)
 {
-
     if (outputModeVTK)
     {
-        std::string outName("../output/MD_vtk");
         outputWriter::VTKWriter writer;
-        writer.initializeOutput(particleContainer.getParticles()->size());
-        for (auto &p : *particleContainer.getParticles())
+        writer.initializeOutput(particleContainer.getParticles().size());
+        for (auto &p : particleContainer.getParticles())
         {
             writer.plotParticle(p);
         }
-        writer.writeFile(outName, iteration);
+        writer.writeFile("../output/" + outName, iteration);
     }
     else
     {
-        std::string outName("../output/MD_xyz");
         outputWriter::XYZWriter writer;
-        writer.plotParticles(*particleContainer.getParticles(), outName, iteration);
+        writer.plotParticles(particleContainer.getParticles(), "../output/" + outName, iteration);
     }
 }
 
 void printHelp()
 {
     std::ifstream file("../help.txt");
-
     if (file.is_open())
     {
         std::cout << file.rdbuf();

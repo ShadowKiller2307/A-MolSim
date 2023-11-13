@@ -20,7 +20,7 @@ private:
     double deltaTTwo;
 
 public:
-    std::vector<Particle> *getParticles();
+    std::vector<Particle> &getParticles();
 
     /**
      * @brief calculate the force for all particles

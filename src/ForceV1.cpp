@@ -37,12 +37,12 @@ void ForceV1::calculateForces(std::vector<Particle> &particles)
     }
 }
 
-void calculateForcesWithLambda(std::vector<Particle> &particles)
+void ForceV1::calculateForcesWithLambda(std::vector<Particle> &particles)
 {
     auto forceLambda = [](Particle a, Particle b)
     {
         double scalar =
-                a.getM() * b.getM() / std::pow(HelperFunctions::euclideanNorm(a.getX() - b.getX()), 3);
+            a.getM() * b.getM() / std::pow(HelperFunctions::euclideanNorm(a.getX() - b.getX()), 3);
         std::array<double, 3> force = scalar * (b.getX() - a.getX());
         std::array<double, 3> resultingForce = a.getF() + force;
         a.setF(resultingForce);

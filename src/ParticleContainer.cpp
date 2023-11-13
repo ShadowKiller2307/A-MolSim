@@ -9,9 +9,9 @@
 
 ParticleContainer::ParticleContainer() = default;
 
-std::vector<Particle> *ParticleContainer::getParticles()
+std::vector<Particle> &ParticleContainer::getParticles()
 {
-    return &this->particles;
+    return this->particles;
 }
 
 void ParticleContainer::setParticles(const std::vector<Particle> &particles1)
@@ -77,7 +77,7 @@ void ParticleContainer::setForceCalculator(int mode)
     {
         forceCalculator = new ForceV1();
     }
-    if (mode == 1)
+    else if (mode == 1)
     {
         forceCalculator = new LennardJonesForce{5, 1};
     }
