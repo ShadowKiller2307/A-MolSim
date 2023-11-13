@@ -5,42 +5,49 @@
 #include "ForceV1.h"
 #include "LennardJonesForce.h"
 
-
-//double deltaT{0.014};
+// double deltaT{0.014};
 
 ParticleContainer::ParticleContainer() = default;
 
-std::vector<Particle>* ParticleContainer::getParticles() {
+std::vector<Particle> *ParticleContainer::getParticles()
+{
     return &this->particles;
 }
 
-void ParticleContainer::setParticles(const std::vector<Particle> &particles1) {
+void ParticleContainer::setParticles(const std::vector<Particle> &particles1)
+{
     this->particles = particles1;
-
 }
 
-void ParticleContainer::calculateForces() {
+void ParticleContainer::calculateForces()
+{
     forceCalculator->calculateForces(particles);
 }
 
-void ParticleContainer::iterOverPairs(std::vector<Particle> &particles, const std::function<void (Particle a, Particle b)> &forceLambda){
-    for (auto &p: particles) {
+void ParticleContainer::iterOverPairs(std::vector<Particle> &particles, const std::function<void(Particle a, Particle b)> &forceLambda)
+{
+    for (auto &p : particles)
+    {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};
         p.setF(zero);
         p.setOldF(oldForce);
     }
-    for (size_t i = 0; i < particles.size() - 1; ++i) {
+    for (size_t i = 0; i < particles.size() - 1; ++i)
+    {
         Particle &pi = particles.at(i);
-        for (size_t j = i + 1; j < particles.size(); ++j) {
+        for (size_t j = i + 1; j < particles.size(); ++j)
+        {
             Particle &pj = particles.at(j);
             forceLambda(pi, pj);
         }
     }
 }
 
-void ParticleContainer::calculatePosition() {
-    for (auto &p: particles) {
+void ParticleContainer::calculatePosition()
+{
+    for (auto &p : particles)
+    {
         std::array<double, 3> force = p.getF();
         HelperFunctions::scalarOperations(force, 2 * p.getM(), true);
         HelperFunctions::scalarOperations(force, std::pow(deltaTTwo, 2), false);
@@ -49,8 +56,10 @@ void ParticleContainer::calculatePosition() {
     }
 }
 
-void ParticleContainer::calculateVelocity() {
-    for (auto &p: particles) {
+void ParticleContainer::calculateVelocity()
+{
+    for (auto &p : particles)
+    {
         double twoTimesMass = 2 * p.getM();
         std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
         HelperFunctions::scalarOperations(sumOfForces, twoTimesMass, true);
@@ -62,25 +71,28 @@ void ParticleContainer::calculateVelocity() {
 }
 
 // https://sourcemaking.com/design_patterns/strategy/cpp/1 Looked here how the strategy pattern works
-void ParticleContainer::setForceCalculator(int mode) {
-    if (mode == 0) {
+void ParticleContainer::setForceCalculator(int mode)
+{
+    if (mode == 0)
+    {
         forceCalculator = new ForceV1();
     }
-    if (mode == 1) {
+    if (mode == 1)
+    {
         forceCalculator = new LennardJonesForce{5, 1};
     }
-    else {
+    else
+    {
         forceCalculator = new ForceV1(); // If the input mode isn't defined, the forceCalculator is set to ForceV1
     }
 }
 
-void ParticleContainer::setDeltaTTwo(double deltaT) {
+void ParticleContainer::setDeltaTTwo(double deltaT)
+{
     this->deltaTTwo = deltaT;
 }
 
-double ParticleContainer::getDeltaTwo() {
-    return this-> deltaTTwo;
+double ParticleContainer::getDeltaTwo()
+{
+    return this->deltaTTwo;
 }
-
-
-

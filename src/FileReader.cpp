@@ -16,7 +16,8 @@ FileReader::FileReader() = default;
 
 FileReader::~FileReader() = default;
 
-void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
+void FileReader::readFile(std::vector<Particle> &particles, char *filename)
+{
   std::array<double, 3> x;
   std::array<double, 3> v;
   double m;
@@ -25,19 +26,21 @@ void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
   std::ifstream inputFile(filename);
   std::string tmpString;
 
-  if (inputFile.is_open()) {
+  if (inputFile.is_open())
+  {
 
     getline(inputFile, tmpString);
     std::cout << "Read line: " << tmpString << std::endl;
 
-    while (tmpString.empty() or tmpString[0] == '#') {
+    while (tmpString.empty() or tmpString[0] == '#')
+    {
       getline(inputFile, tmpString);
       std::cout << "Read line: " << tmpString << std::endl;
     }
 
     std::istringstream numstream(tmpString);
     numstream >> numParticles;
-    particles.resize(numParticles); //reserve enough space for all particles
+    particles.resize(numParticles); // reserve enough space for all particles
     std::cout << "Reading " << numParticles << " particles." << std::endl;
     for (size_t i = 0; i < numParticles; i++)
     {
@@ -45,19 +48,23 @@ void FileReader::readFile(std::vector<Particle> &particles, char *filename) {
       std::cout << "Read line: " << tmpString << std::endl;
       std::istringstream datastream(tmpString);
 
-      for (auto &xj : x) {
+      for (auto &xj : x)
+      {
         datastream >> xj;
       }
-      if (datastream.eof()) {
+      if (datastream.eof())
+      {
         std::cout
             << "Error reading file: eof reached unexpectedly reading from line "
             << i << std::endl;
         exit(-1);
       }
-      for (auto &vj : v) {
+      for (auto &vj : v)
+      {
         datastream >> vj;
       }
-      if (datastream.eof()) {
+      if (datastream.eof())
+      {
         std::cout
             << "Error reading file: eof reached unexpectedly reading from line "
             << i << std::endl;

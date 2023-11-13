@@ -10,7 +10,8 @@
 #include <array>
 #include <string>
 
-class Particle {
+class Particle
+{
 
 private:
   /**
@@ -65,13 +66,13 @@ public:
 
   const std::array<double, 3> &getOldF() const;
 
-  void setF(std::array<double,3> &force);
+  void setF(std::array<double, 3> &force);
 
   void setX(std::array<double, 3> &xPosition);
 
   void setV(std::array<double, 3> &velocity);
 
-  void setOldF(std::array<double,3> &force);
+  void setOldF(std::array<double, 3> &force);
 
   double getM() const;
 

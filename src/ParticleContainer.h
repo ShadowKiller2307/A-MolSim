@@ -11,41 +11,38 @@
 
 // Interne Implementierung die wie encapsulaten
 
-
-class ParticleContainer {
+class ParticleContainer
+{
 
 private:
     std::vector<Particle> particles;
     ForceCalculator *forceCalculator;
     double deltaTTwo;
 
-
 public:
-    std::vector<Particle>* getParticles();
+    std::vector<Particle> *getParticles();
 
     /**
      * @brief calculate the force for all particles
      * @param None
      * @return void
-    */
+     */
     void calculateForces();
 
-
-    static void iterOverPairs(std::vector<Particle> &particles, const std::function<void (Particle a, Particle b)> &f);
+    static void iterOverPairs(std::vector<Particle> &particles, const std::function<void(Particle a, Particle b)> &f);
 
     /**
      * @brief calculate the velocity for all particles
      * @param None
      * @return void
-    */
+     */
     void calculateVelocity();
     /**
      * @brief calculate the position for all particles
      * @param None
      * @return void
-    */
+     */
     void calculatePosition();
-
 
     explicit ParticleContainer();
 
@@ -53,20 +50,20 @@ public:
      * @brief sets the particles for the container
      * @param particles1 the particle vector to be set for the container
      * @return void
-    */
-    void setParticles(const std::vector<Particle>& particles1);
+     */
+    void setParticles(const std::vector<Particle> &particles1);
     /**
      * @brief sets the ForceCalculator for the container
      * @param mode represent the different approaches for the force calculation
      * @return void
-    */
+     */
     void setForceCalculator(int mode);
 
     /**
      * @brief sets the deltaT for the container
      * @param deltaT the deltaT passed by the user or the default value
      * @return void
-    */
+     */
     void setDeltaTTwo(double deltaT);
 
     double getDeltaTwo();

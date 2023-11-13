@@ -3,5 +3,4 @@
 #include "HelperFunctions.h"
 #include <iostream>
 
-
 void ForceCalculator::calculateForces(std::vector<Particle> &particles) {}

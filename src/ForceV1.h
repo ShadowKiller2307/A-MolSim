@@ -9,14 +9,13 @@
 #include "Particle.h"
 #include "ForceCalculator.h"
 
-class ForceV1: public ForceCalculator{
+class ForceV1 : public ForceCalculator
+{
 public:
     /**
-    * @brief implementation of the Störmer-Verlet approach for the forces
-    * @param particles The particles from the ParticleContainer for which the force calculation will be executed
-    * @return void
-    */
+     * @brief implementation of the Störmer-Verlet approach for the forces
+     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @return void
+     */
     void calculateForces(std::vector<Particle> &particles) override;
 };
-
-

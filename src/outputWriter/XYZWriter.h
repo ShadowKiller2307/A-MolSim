@@ -12,17 +12,19 @@
 #include <fstream>
 #include <vector>
 
-namespace outputWriter {
+namespace outputWriter
+{
 
-class XYZWriter {
+  class XYZWriter
+  {
 
-public:
-  XYZWriter();
+  public:
+    XYZWriter();
 
-  virtual ~XYZWriter();
+    virtual ~XYZWriter();
 
-  void plotParticles(std::vector<Particle> particles, const std::string &filename,
-                     int iteration);
-};
+    void plotParticles(std::vector<Particle> particles, const std::string &filename,
+                       int iteration);
+  };
 
 } // namespace outputWriter

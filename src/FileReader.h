@@ -11,7 +11,8 @@
 
 #include <vector>
 
-class FileReader {
+class FileReader
+{
 
 public:
   FileReader();
