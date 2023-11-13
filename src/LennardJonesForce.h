@@ -16,5 +16,5 @@ public:
      */
     LennardJonesForce(double epsilon, double sigma);
     void calculateForces(std::vector<Particle> &particles) override;
-    void calculateForcesWithLambda(std::vector<Particle> &particles);
+    void calculateForcesWithLambda(std::vector<Particle> &particles) override;
 };

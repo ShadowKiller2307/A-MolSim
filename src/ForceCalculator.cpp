@@ -4,3 +4,4 @@
 #include <iostream>
 
 void ForceCalculator::calculateForces(std::vector<Particle> &particles) {}
+void ForceCalculator::calculateForcesWithLambda(std::vector<Particle> &particles) {}

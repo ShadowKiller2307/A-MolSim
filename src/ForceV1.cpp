@@ -6,6 +6,7 @@
 #include "ForceCalculator.h"
 #include "HelperFunctions.h"
 #include "ForceV1.h"
+#include "ParticleContainer.h"
 
 void ForceV1::calculateForces(std::vector<Particle> &particles)
 {
@@ -34,4 +35,21 @@ void ForceV1::calculateForces(std::vector<Particle> &particles)
             pj.setF(resultingForce);
         }
     }
+}
+
+void calculateForcesWithLambda(std::vector<Particle> &particles)
+{
+    auto forceLambda = [](Particle a, Particle b)
+    {
+        double scalar =
+                a.getM() * b.getM() / std::pow(HelperFunctions::euclideanNorm(a.getX() - b.getX()), 3);
+        std::array<double, 3> force = scalar * (b.getX() - a.getX());
+        std::array<double, 3> resultingForce = a.getF() + force;
+        a.setF(resultingForce);
+
+        HelperFunctions::scalarOperations(force, -1.0, false);
+        resultingForce = b.getF() + force;
+        b.setF(resultingForce);
+    };
+    ParticleContainer::iterOverPairs(particles, forceLambda);
 }

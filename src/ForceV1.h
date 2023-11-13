@@ -9,8 +9,8 @@
 #include "Particle.h"
 #include "ForceCalculator.h"
 
-class ForceV1 : public ForceCalculator
-{
+class ForceV1 : public ForceCalculator {
+
 public:
     /**
      * @brief implementation of the Störmer-Verlet approach for the forces
@@ -18,4 +18,5 @@ public:
      * @return void
      */
     void calculateForces(std::vector<Particle> &particles) override;
+    void calculateForcesWithLambda(std::vector<Particle> &particles) override;
 };
