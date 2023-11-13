@@ -14,9 +14,9 @@
 // ASSERT -> fatal failures
 // EXPECT -> nonfatal failures
 
-
 // unit Test for the particle container
-TEST(ParticleContainerTest, testGetParticles) {
+TEST(ParticleContainerTest, testGetParticles)
+{
     EXPECT_EQ(2, 2);
     ParticleContainer container;
     std::vector particles{Particle(0), Particle(1)};
@@ -65,7 +65,6 @@ TEST(ForceTest, testForceLennardJones) {
 
 */
 
-
-    // calculate one iteration of the LennardJonesForceIteration
+// calculate one iteration of the LennardJonesForceIteration
 
 //}
