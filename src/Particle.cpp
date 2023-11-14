@@ -36,7 +36,7 @@ Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, dou
   std::cout << "Particle generated!" << std::endl;
 }
 
-Particle::~Particle() { std::cout << "Particle destructed!" << std::endl; }
+Particle::~Particle() {}
 
 const std::array<double, 3> &Particle::getX() const { return x; }
 
