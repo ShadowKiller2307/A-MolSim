@@ -6,7 +6,9 @@
 #include "ParticleContainer.h"
 #include "ForceV1.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/rotating_file_sink.h"
 #include "ParticleGenerator.h"
+#include "LogLevel.h"
 
 #include <iostream>
 #include <fstream>
@@ -26,15 +28,17 @@ enum particleSources
     txtFile
 };
 particleSources pSource = generator;
-enum LogLevel
-{
-    debug,           // debug, print all, slowest
-    standard,        // default, no debug
-    noCOut,          // disable std::cout and logging but still write Files, minor performance improvement
-    noFiles,         // don't write output to files but still std::cout and logging, big performance improvement but no data :(
-    onlyCalculations // combination of noCOut and noFiles, no output whatsoever, fastest
-};
+
 LogLevel logLevel = standard;
+
+auto maxSize = 5 * 1024 * 1024;
+auto maxFiles = 4;
+
+auto fileLogger = spdlog::rotating_logger_mt("fileLogger","/logs/log.txt",maxSize,maxFiles);
+
+
+
+
 bool outputModeVTK = true; // default to VTK
 std::string outName{"MD_vtk"};
 
@@ -52,6 +56,10 @@ ParticleContainer particleContainer{};
 
 int main(int argc, char *argsv[])
 {
+
+    fileLogger->set_level(toSpdLevel(logLevel));
+    fileLogger->set_pattern("[%Y-%m-%d %H:%M] [%l] %v");
+
     spdlog::info("Erste Nachricht durch den Logger");
     spdlog::info("Hello from MolSim for PSE\n");
     if (argc < 2)
@@ -99,6 +107,9 @@ int main(int argc, char *argsv[])
             if (temp >= 0 && temp <= 4)
             {
                 logLevel = static_cast<LogLevel>(temp);
+                spdlog::level::level_enum level = toSpdLevel(logLevel);
+                fileLogger->set_level(level);
+
             }
             break;
         }
@@ -236,5 +247,21 @@ void printHelp()
     if (file.is_open())
     {
         std::cout << file.rdbuf();
+    }
+}
+
+spdlog::level::level_enum toSpdLevel(LogLevel level){
+    switch (level) {
+//TODO
+        case debug:
+            return spdlog::level::debug;
+        case standard:
+            return spdlog::level::info;
+        case noCOut:
+            break;
+        case noFiles:
+            break;
+        case onlyCalculations:
+            break;
     }
 }
