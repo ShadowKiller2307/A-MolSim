@@ -62,7 +62,8 @@ int main(int argc, char *argsv[]) {
     fileLogger->log(fileLogger->level(), "Hello from MolSim for PSE\n");
 
     if (argc < 2) {
-        spdlog::info("Erroneous program call\n");
+        fileLogger->log(fileLogger->level(),"Erroneous program call\n");
+
         printHelp();
         return EXIT_FAILURE;
     }
@@ -250,10 +251,10 @@ spdlog::level::level_enum toSpdLevel(LogLevel level) {
         case standard:
             return spdlog::level::info;
         case noCOut:
-            break;
+            return spdlog::level::off;
         case noFiles:
-            break;
+            return spdlog::level::info;
         case onlyCalculations:
-            break;
+            return spdlog::level::off;
     }
 }
