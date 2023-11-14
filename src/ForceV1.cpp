@@ -37,7 +37,7 @@ void ForceV1::calculateForces(std::vector<Particle> &particles)
     }
 }
 
-void ForceV1::calculateForcesWithLambda(std::vector<Particle> &particles)
+void ForceV1::calculateForcesWithLambda(ParticleContainer &container)
 {
     auto forceLambda = [](Particle a, Particle b)
     {
@@ -51,5 +51,5 @@ void ForceV1::calculateForcesWithLambda(std::vector<Particle> &particles)
         resultingForce = b.getF() + force;
         b.setF(resultingForce);
     };
-    ParticleContainer::iterOverPairs(particles, forceLambda);
+    container.iterOverPairs(forceLambda);
 }

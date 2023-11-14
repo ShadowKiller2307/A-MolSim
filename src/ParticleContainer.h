@@ -9,6 +9,8 @@
 #include <functional>
 #include "ForceCalculator.h"
 
+class ForceCalculator; //needs to be defined so that the compiler doesn't throw an error
+
 // Interne Implementierung die wie encapsulaten
 
 class ParticleContainer
@@ -29,7 +31,7 @@ public:
      */
     void calculateForces();
 
-    static void iterOverPairs(std::vector<Particle> &particles, const std::function<void(Particle a, Particle b)> &f);
+    void iterOverPairs(const std::function<void(Particle a, Particle b)> &f);
 
     /**
      * @brief calculate the velocity for all particles

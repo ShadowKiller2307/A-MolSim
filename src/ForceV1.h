@@ -8,6 +8,7 @@
 #include <vector>
 #include "Particle.h"
 #include "ForceCalculator.h"
+#include "ParticleContainer.h"
 
 class ForceV1 : public ForceCalculator
 {
@@ -19,5 +20,5 @@ public:
      * @return void
      */
     void calculateForces(std::vector<Particle> &particles) override;
-    void calculateForcesWithLambda(std::vector<Particle> &particles) override;
+    void calculateForcesWithLambda(ParticleContainer &container) override;
 };

@@ -24,7 +24,7 @@ void ParticleContainer::calculateForces()
     forceCalculator->calculateForces(particles);
 }
 
-void ParticleContainer::iterOverPairs(std::vector<Particle> &particles, const std::function<void(Particle a, Particle b)> &forceLambda)
+void ParticleContainer::iterOverPairs(const std::function<void(Particle a, Particle b)> &forceLambda)
 {
     for (auto &p : particles)
     {

@@ -6,6 +6,9 @@
 
 #include <vector>
 #include "Particle.h"
+#include "ParticleContainer.h"
+
+class ParticleContainer; //needs to be defined so that the compiler doesn't throw an error
 
 class ForceCalculator
 {
@@ -16,6 +19,7 @@ public:
      * @return void
      */
     // virtual ~ForceCalculator() = default;
+    void setParticleContainer(ParticleContainer &containerArg);
     virtual void calculateForces(std::vector<Particle> &particles);
-    virtual void calculateForcesWithLambda(std::vector<Particle> &particles);
+    virtual void calculateForcesWithLambda(ParticleContainer &container);
 };
