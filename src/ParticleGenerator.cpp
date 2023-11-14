@@ -7,8 +7,8 @@ void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::arr
                                           std::array<unsigned int, 3> particlePerDimension, std::array<double, 3> particleVelocity,
                                           double h, double mass, int generateNumber)
 {
-    double meanValueVelocity{0.0};                                                                                              // TODO: Is it the Erwartungswert of the normal distribution
-    std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); // TODO Fehlermeldung multiple def of MB
+    double meanValueVelocity{0.1};
+    std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); 
     auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] * particlePerDimension[2];
     std::vector<Particle> particles = container.getParticles();
     particles.reserve(particles.size() + amountOfParticles); // reserve space for amountOfParticles in the vector for performance
