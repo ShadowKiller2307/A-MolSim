@@ -2,6 +2,7 @@
 #include <vector>
 #include "HelperFunctions.h"
 #include "utils/ArrayUtils.h"
+#include <iostream>
 
 LennardJonesForce::LennardJonesForce(double epsilon, double sigma)
 {
@@ -46,19 +47,19 @@ void LennardJonesForce::calculateForcesWithLambda(ParticleContainer &container)
 {
     double epsilonCapture = this->epsilon;
     double sigmaCapture = this->sigma;
-    auto forceLambda = [epsilonCapture, sigmaCapture](Particle a, Particle b)
-    {
-        std::array<double, 3> xDiff = a.getX() - b.getX();
-        double scalar = -(24 * epsilonCapture) / (std::pow(HelperFunctions::euclideanNorm(xDiff), 2));
-        double scalar2 = std::pow(sigmaCapture / HelperFunctions::euclideanNorm(xDiff), 6);
-        double scalar3 = 2 * std::pow(sigmaCapture / HelperFunctions::euclideanNorm(xDiff), 12);
+    auto forceLambda = [epsilonCapture, sigmaCapture](Particle &pi, Particle &pj) {
+        std::array<double, 3> xDiff = pi.getX() - pj.getX();
+        double norm = HelperFunctions::euclideanNorm(xDiff);
+        double scalar = -(24 * epsilonCapture) / (std::pow(norm, 2));
+        double scalar2 = std::pow(sigmaCapture / norm, 6);
+        double scalar3 = 2 * std::pow(sigmaCapture / norm, 12);
         HelperFunctions::scalarOperations(xDiff, scalar * (scalar2 - scalar3), false);
         // neue Force ist jetzt in xDiff
-        std::array<double, 3> resultingForce = a.getF() + xDiff;
-        a.setF(resultingForce);
+        std::array<double, 3> resultingForce = pi.getF() + xDiff;
+        pi.setF(resultingForce);
         HelperFunctions::scalarOperations(xDiff, -1.0, false);
-        resultingForce = b.getF() + xDiff;
-        b.setF(resultingForce);
+        resultingForce = pj.getF() + xDiff;
+        pj.setF(resultingForce);
     };
     container.iterOverPairs(forceLambda);
 }

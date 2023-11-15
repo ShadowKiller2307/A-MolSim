@@ -4,6 +4,7 @@
 #include "HelperFunctions.h"
 #include "ForceV1.h"
 #include "LennardJonesForce.h"
+#include <iostream>
 
 // double deltaT{0.014};
 
@@ -24,7 +25,7 @@ void ParticleContainer::calculateForces()
     forceCalculator->calculateForces(particles);
 }
 
-void ParticleContainer::iterOverPairs(const std::function<void(Particle a, Particle b)> &forceLambda)
+void ParticleContainer::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda)
 {
     for (auto &p : particles)
     {

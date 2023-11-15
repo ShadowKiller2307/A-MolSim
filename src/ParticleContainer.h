@@ -31,7 +31,7 @@ public:
      */
     void calculateForces();
 
-    void iterOverPairs(const std::function<void(Particle a, Particle b)> &f);
+    void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &f);
 
     /**
      * @brief calculate the velocity for all particles
