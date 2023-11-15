@@ -18,5 +18,6 @@ jobs:
       run: |
         mkdir build && cd build 
         cmake -DCMAKE_C_FLAGS="-fsanitize=address" -DCMAKE_CXX_FLAGS="-fsanitize=address" ..
+        make
         
 
