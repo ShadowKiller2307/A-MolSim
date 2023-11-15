@@ -46,7 +46,7 @@ protected:
 
 // unit Test for the particle container
 TEST_F(MolSimTest, testGetParticles) {
-    EXPECT_EQ(2, container.getParticles().size());
+    EXPECT_EQ(3, container.getParticles().size());
 }
 
 /**
@@ -60,7 +60,7 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator) {
     particleGenerator.instantiateCuboid(containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
     // Now check if the cuboid was instantiated with the particle positions as we expect
     EXPECT_EQ(8, containerCuboid.getParticles().size());
-    std::array test{0.0, 0.0, 0.0};
+    std::array<double, 3> test{0.0, 0.0, 0.0};
     EXPECT_EQ(test, containerCuboid.getParticles().at(0).getX());
     test = {0.0, 0.0, 1.0};
     EXPECT_EQ(test, containerCuboid.getParticles().at(1).getX());
