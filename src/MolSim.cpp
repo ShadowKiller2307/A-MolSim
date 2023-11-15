@@ -206,7 +206,7 @@ int main(int argc, char *argsv[])
             }
             if ((logLevel < noCOut || logLevel == noFiles) && iteration % 100 == 0)
             {
-                spdlog::info("Iteration {} finished.", iteration);
+                spdlog::info("Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
             }
         }
         currentTime += deltaT;
