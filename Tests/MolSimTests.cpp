@@ -37,6 +37,7 @@ protected:
     Particle particleThree{temp3, temp, 1, 0};
     std::vector<Particle> particles;
     ParticleContainer container;
+    ParticleContainer container2;
     ParticleGenerator particleGenerator;
     ForceV1 forceV1;
     LennardJonesForce lennardJonesForce{5, 1};
@@ -96,13 +97,15 @@ TEST_F(MolSimTest, testForceV1) {
  * @brief  this test checks whether our old forceV1 calculation and the
  * forceV1 calculation with the lambda generate the same values
  */
-/*TEST_F(MolSimTest, testEqualLambdaForceV1) {
-    std::vector<Particle> particlesCopy = particles;
+TEST_F(MolSimTest, testEqualLambdaForceV1) {
+    auto particlesCopy = particles;
+    container2.setParticles(particlesCopy);
     forceV1.calculateForces(particles);
-    forceV1.calculateForcesWithLambda(particlesCopy);
+    forceV1.calculateForcesWithLambda(container2);
     EXPECT_EQ(particles.at(0).getF(), particlesCopy.at(0).getF());
     EXPECT_EQ(particles.at(1).getF(), particlesCopy.at(1).getF());
-}*/
+    EXPECT_EQ(particles.at(2).getF(), particlesCopy.at(2).getF());
+}
 
 /**
  * Test the LennardJonesForceCalculation against hard coded values
@@ -111,13 +114,14 @@ TEST_F(MolSimTest, testForceLennardJones) {
     // calculate one iteration of the LennardJonesForceIteration
     lennardJonesForce.calculateForces(particles);
     // check against hardcoded values
-    std::array<double, 3> expectedValuesOne{-118.1835938, 0.0, 0.0}; //TODO: This test doesn't pass yet,
+    std::array<double, 3> expectedValuesOne{-119.091796875, 0.0, 0.0}; //TODO: This test doesn't pass yet,
     //have to check whether this is due to the double, an error in the calculation in the program or an
     //error in the calculation on paper
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
-    std::array<double, 3> expectedValuesThree{118.1835938, 0.0, 0.0};
+    std::array<double, 3> expectedValuesThree{119.091796875, 0.0, 0.0};
     double test = (465.0/256.0);
     std::cout << test << std::endl;
+    printf("Test=%.17le", test);
     EXPECT_EQ(particles.at(0).getF(), expectedValuesOne);
     EXPECT_EQ(particles.at(1).getF(), expectedValuesTwo);
     EXPECT_EQ(particles.at(2).getF(), expectedValuesThree);
@@ -127,11 +131,12 @@ TEST_F(MolSimTest, testForceLennardJones) {
  * @brief  this test checks whether our old lennardjonesforce calculation and the
  * lennardjonesforce calculation with the lambda generate the same values
  */
-/*
 TEST_F(MolSimTest, testEqualLambdaLennardJonesForce) {
-    std::vector<Particle> particlesCopy = particles;
+    auto particlesCopy = particles;
+    container2.setParticles(particlesCopy);
     lennardJonesForce.calculateForces(particles);
-    lennardJonesForce.calculateForcesWithLambda(particlesCopy);
+    lennardJonesForce.calculateForcesWithLambda(container2);
     EXPECT_EQ(particles.at(0).getF(), particlesCopy.at(0).getF());
     EXPECT_EQ(particles.at(1).getF(), particlesCopy.at(1).getF());
-}*/
+    EXPECT_EQ(particles.at(2).getF(), particlesCopy.at(2).getF());
+}

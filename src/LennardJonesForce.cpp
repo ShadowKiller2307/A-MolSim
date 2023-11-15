@@ -27,9 +27,10 @@ void LennardJonesForce::calculateForces(std::vector<Particle> &particles)
         {
             Particle &pj = particles.at(j);
             std::array<double, 3> xDiff = pi.getX() - pj.getX();
-            double scalar = -(24 * epsilon) / (std::pow(HelperFunctions::euclideanNorm(xDiff), 2));
-            double scalar2 = std::pow(sigma / HelperFunctions::euclideanNorm(xDiff), 6);
-            double scalar3 = 2 * std::pow(sigma / HelperFunctions::euclideanNorm(xDiff), 12);
+            double norm = HelperFunctions::euclideanNorm(xDiff);
+            double scalar = -(24 * epsilon) / (std::pow(norm, 2));
+            double scalar2 = std::pow(sigma / norm, 6);
+            double scalar3 = 2 * std::pow(sigma / norm, 12);
             HelperFunctions::scalarOperations(xDiff, scalar * (scalar2 - scalar3), false);
             // neue Force ist jetzt in xDiff
             std::array<double, 3> resultingForce = pi.getF() + xDiff;
