@@ -1,5 +1,6 @@
 #pragma once
 
+/// @brief how much output the program should generate to stdout and (log-)files
 enum LogLevel
 {
     debug,           // debug, print all, slowest
