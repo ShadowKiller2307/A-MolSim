@@ -18,7 +18,11 @@ public:
      * @param particles The particles from the ParticleContainer for which the force calculation will be executed
      * @return void
      */
-    // virtual ~ForceCalculator() = default;
     virtual void calculateForces(std::vector<Particle> &particles);
+    /**
+     * @brief virtual function which represents the different force calculation approaches with lambdas
+     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @return void
+     */
     virtual void calculateForcesWithLambda(ParticleContainer &container);
 };

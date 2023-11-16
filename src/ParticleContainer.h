@@ -31,6 +31,10 @@ public:
      */
     void calculateForces();
 
+    /**
+     * @brief iterate over every particle pair in the container and apply the lambda function
+     * @param f the lambda function
+     */
     void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &f);
 
     /**

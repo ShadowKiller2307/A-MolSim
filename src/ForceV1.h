@@ -20,5 +20,10 @@ public:
      * @return void
      */
     void calculateForces(std::vector<Particle> &particles) override;
+    /**
+    * @brief implementation of the Störmer-Verlet approach for the forces with a lambda
+    * @param container The container of the particles for which the force calculation will be executed
+    * @return void
+    */
     void calculateForcesWithLambda(ParticleContainer &container) override;
 };

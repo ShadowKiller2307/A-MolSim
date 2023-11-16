@@ -15,7 +15,7 @@
 // EXPECT -> nonfatal failures
 
 /**
- * A test fixture which initializes some Particles and a container for the following tests
+ * @brief: A test fixture which initializes some Particles and a container for the following tests
  */
 class MolSimTest : public testing::Test {
 protected:
@@ -29,9 +29,6 @@ protected:
     std::array<double,3> temp{0.0, 0.0, 0.0};
     std::array<double,3> temp2{1.0, 0.0, 0.0};
     std::array<double, 3> temp3{2.0, 0.0, 0.0};
-    std::array<double,3> temp4{0.0, 0.0, 0.0};
-    std::array<double,3> temp5{1.0, 0.0, 0.0};
-    std::array<double, 3> temp6{2.0, 0.0, 0.0};
     Particle particleOne{temp, temp, 1, 0};
     Particle particleTwo{temp2, temp, 1, 0};
     Particle particleThree{temp3, temp, 1, 0};
@@ -44,13 +41,15 @@ protected:
 };
 
 
-// unit Test for the particle container
+/**
+ * @brief very simple test to check whether the container sets the particles correctly
+ */
 TEST_F(MolSimTest, testGetParticles) {
     EXPECT_EQ(3, container.getParticles().size());
 }
 
 /**
- * Check the values of the particleContainer after the instantiateCuboid method was
+ * @brief Check the position values of the particles in the particleContainer after the instantiateCuboid method was
  * called
  */
 TEST_F(MolSimTest, testGenerateParticlesGenerator) {
@@ -80,7 +79,7 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator) {
 }
 
 /**
- * Test the ForceV1Calculation against hard coded values
+ * @brief: Test the ForceV1Calculation against hard coded values
  */
 TEST_F(MolSimTest, testForceV1) {
     // calculate one iteration of the ForceV1 calculation
@@ -109,7 +108,7 @@ TEST_F(MolSimTest, testEqualLambdaForceV1) {
 }
 
 /**
- * Test the LennardJonesForceCalculation against hard coded values
+ * @brief: Test the LennardJonesForceCalculation against hard coded values
  */
 TEST_F(MolSimTest, testForceLennardJones) {
     // calculate one iteration of the LennardJonesForceIteration
