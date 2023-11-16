@@ -31,8 +31,4 @@ FetchContent_MakeAvailable(spdlog)
 
 add_subdirectory(src)
 add_subdirectory(Tests EXCLUDE_FROM_ALL)
-
-find_package(Doxygen)
-
-#include(doxygen)
-# TODO: Include doxygen
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)

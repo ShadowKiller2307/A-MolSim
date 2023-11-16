@@ -40,7 +40,7 @@ particleSources pSource = generator;
 auto maxSize = 5 * 1024 * 1024;
 auto maxFiles = 4;
 
-auto fileLogger = spdlog::rotating_logger_mt("fileLogger", "../logs/log.txt", maxSize, maxFiles);
+auto fileLogger = spdlog::rotating_logger_mt("fileLogger", "../logs/log.txt", maxSize, maxFiles, true);
 
 /// @brief the current logLevel
 LogLevel logLevel = standard;
