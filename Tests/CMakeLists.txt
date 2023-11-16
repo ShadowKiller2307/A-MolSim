@@ -11,7 +11,6 @@ string(REPLACE "../src/MolSim.cpp" "" MY_TEST_SRC "${MY_TEST_SRC}")
 string(REPLACE "../src/MolSim.h" "" MY_TEST_SRC "${MY_TEST_SRC}")
 
 add_executable(MolSimTests ${MY_TEST_SRC})
-add_test(NAME MolSimTests COMMAND MolSimTests)
 
 target_include_directories(MolSimTests PUBLIC ../libs/libxsd PRIVATE ../src)
 
@@ -22,3 +21,9 @@ target_link_libraries(MolSimTests PUBLIC xerces-c GTest::gtest_main PRIVATE spdl
 target_compile_options(MolSim PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall> $<$<CXX_COMPILER_ID:Intel>:-w3 -wd383,981,1418,1572,2259>)
 
 gtest_discover_tests(MolSimTests)
+gtest_add_tests(TARGET MolSimTests
+                TEST_SUFFIX .noArgs
+                TEST_LIST   noArgsTests
+)
+add_test(NAME MolSimTests
+        COMMAND $<TARGET_FILE:MolSimTests>)
