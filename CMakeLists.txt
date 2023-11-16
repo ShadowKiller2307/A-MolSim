@@ -13,6 +13,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 file(MAKE_DIRECTORY "output")
+file(MAKE_DIRECTORY "logs")
 
 include(FetchContent)
 include(CTest)

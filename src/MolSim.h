@@ -3,6 +3,8 @@
  * and calls the calculation functions on its attribute particleContainer
  */
 #include "ForceCalculator.h"
+#include "LogLevel.h"
+#include "spdlog/spdlog.h"
 
 #pragma once
 
@@ -42,3 +44,4 @@ void plotParticles(int iteration);
 void printHelp();
 
 void SetForceCalculator(int mode);
+spdlog::level::level_enum toSpdLevel(LogLevel level);
