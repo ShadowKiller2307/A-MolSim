@@ -53,7 +53,7 @@ std::string outName{"MD_vtk"};
 
 // default values for the particle generator
 ParticleGenerator particleGenerator;
-double h = 1.1225;
+double h = 1.122462048;
 double mass = 1.0; //<- vllt noch was sinnvolleres hierhin
 
 ParticleContainer particleContainer{};
@@ -179,7 +179,7 @@ int main(int argc, char *argsv[])
         break;
     }
 
-    particleContainer.setForceCalculator(0);
+    particleContainer.setForceCalculator(1);
     /*
      * Mode 0 GravitationalForce
      * Mode 1 LennardJonesForce
@@ -199,6 +199,7 @@ int main(int argc, char *argsv[])
     // Start measuring time
     auto begin = std::chrono::high_resolution_clock::now();
 
+    plotParticles(iteration);
     // for this loop, we assume: current x, current f and current v are known
     while (currentTime < endTime)
     {
@@ -266,7 +267,6 @@ spdlog::level::level_enum toSpdLevel(LogLevel level)
 {
     switch (level)
     {
-        // TODO
     case debug:
         return spdlog::level::debug;
     case standard:
