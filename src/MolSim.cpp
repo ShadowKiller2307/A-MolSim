@@ -53,7 +53,7 @@ std::string outName{"MD_vtk"};
 
 // default values for the particle generator
 ParticleGenerator particleGenerator;
-double h = 0.5;
+double h = 1.1225;
 double mass = 1.0; //<- vllt noch was sinnvolleres hierhin
 
 ParticleContainer particleContainer{};
