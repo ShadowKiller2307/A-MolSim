@@ -19,7 +19,6 @@ public:
      * @return void
      */
     // virtual ~ForceCalculator() = default;
-    void setParticleContainer(ParticleContainer &containerArg);
     virtual void calculateForces(std::vector<Particle> &particles);
     virtual void calculateForcesWithLambda(ParticleContainer &container);
 };

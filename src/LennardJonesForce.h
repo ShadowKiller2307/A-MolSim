@@ -2,6 +2,11 @@
 #include "ForceCalculator.h"
 #include "ParticleContainer.h"
 
+/**
+ * @brief This class implements the approach of force calculation defined by the LennardJones force calculation
+ * it inherits the ForceCalculator class so that in can be passed to the ParticleContainer
+ */
+
 class LennardJonesForce : public ForceCalculator
 {
 private:

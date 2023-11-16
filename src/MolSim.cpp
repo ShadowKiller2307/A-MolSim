@@ -20,13 +20,21 @@
 using json = nlohmann::json;
 
 constexpr double startTime{0};
+/// @brief how long the simulation should run
 double endTime{5};
+
+/// @brief timestep between each iteration
 double deltaT{0.0002};
-enum particleSources {
+
+/// @brief possible ways to obtain a set of particles as well as their starting positions and velocities
+enum particleSources
+{
     generator,
     picture,
     txtFile
 };
+
+/// @brief the current way the program is using to get the particles, for worksheet 2 default to using the particle generator
 particleSources pSource = generator;
 
 LogLevel logLevel = standard;
@@ -36,20 +44,29 @@ auto maxFiles = 4;
 
 auto fileLogger = spdlog::rotating_logger_mt("fileLogger", "/logs/log.txt", maxSize, maxFiles);
 
+/// @brief how much output the program should generate to stdout and (log-)files
+enum LogLevel
+{
+    debug,           // debug, print all, slowest
+    standard,        // default, no debug
+    noCOut,          // disable std::cout and logging but still write Files, minor performance improvement
+    noFiles,         // don't write output to files but still std::cout and logging, big performance improvement but no data :(
+    onlyCalculations // combination of noCOut and noFiles, no output whatsoever, fastest
+};
+/// @brief the current logLevel
+LogLevel logLevel = standard;
 
-bool outputModeVTK = true; // default to VTK
+/// @brief which output filetype to use, default to VTK
+bool outputModeVTK = true;
+
+/// @brief prefix for the name of each outputfile
 std::string outName{"MD_vtk"};
 
 // default values for the particle generator
 ParticleGenerator particleGenerator;
-// std::array<double, 3> llfc{0.0, 0.0, 0.0}; // lower left frontside corner
-// std::array<double, 3> particleVelocity = {1.0, 1.0, 1.0};
-// std::array<unsigned int, 3> particlePerDimension{10, 10, 10};
 double h = 0.5;
 double mass = 1.0; //<- vllt noch was sinnvolleres hierhin
 
-std::vector<Particle> particles;
-// ParticleContainer particles
 ParticleContainer particleContainer{};
 
 int main(int argc, char *argsv[]) {
@@ -69,16 +86,16 @@ int main(int argc, char *argsv[]) {
     }
 
     option longOpts[] = {
-            {"deltaT",         required_argument, nullptr, 'd'},   // timestep between each iteration
-            {"endTime",        required_argument, nullptr, 'e'},  // how long the simulation should run
-            {"help",           no_argument,       nullptr, 'h'},           // print the help.txt file to stdout
-            {"logLevel",       required_argument, nullptr, 'l'}, // how much output he program generates to stdout and files
-            // TODO: update help.txt with these
-            {"inputGenerator", no_argument,       nullptr, 'g'}, // funny
-            {"inputPicture",   no_argument,       nullptr, 'p'},   // because
-            {"inputText",      no_argument,       nullptr, 't'},      // GPT
-            {"outName",        required_argument, nullptr, 'o'},  // name prefix for each outputfile
-            {nullptr, 0,                          nullptr, 0}};
+        {"deltaT", required_argument, nullptr, 'd'},
+        {"endTime", required_argument, nullptr, 'e'},
+        {"help", no_argument, nullptr, 'h'}, // print the help.txt file to stdout
+        {"logLevel", required_argument, nullptr, 'l'},
+        // TODO: update help.txt with these
+        {"inputGenerator", no_argument, nullptr, 'g'}, // funny
+        {"inputPicture", no_argument, nullptr, 'p'},   // because
+        {"inputText", no_argument, nullptr, 't'},      // GPT
+        {"outName", required_argument, nullptr, 'o'},
+        {nullptr, 0, nullptr, 0}};
 
     int longOptsIndex = 0;
     // TODO: Extend with the command line arguments for the generator
@@ -154,17 +171,16 @@ int main(int argc, char *argsv[]) {
             }
             break;
         }
-        case picture:
-            break;
-        case txtFile:
-            FileReader fileReader;
-            // ParticleContainer particleContainer;
-            fileReader.readFile(particles,
-                                (std::string("_").compare(argsv[optind]) == 0 ? (char *) "../input/eingabe-sonne.txt"
-                                                                              : argsv[optind]));
-            // Initialising the ParticleContainer with particles
-            particleContainer.setParticles(particles);
-            break;
+    }
+    case picture:
+        break;
+    case txtFile:
+        FileReader fileReader;
+        std::vector<Particle> particles;
+        fileReader.readFile(particles, (std::string("_").compare(argsv[optind]) == 0 ? (char *)"../input/eingabe-sonne.txt" : argsv[optind]));
+        // Initialising the ParticleContainer with particles
+        particleContainer.setParticles(particles);
+        break;
     }
 
     particleContainer.setForceCalculator(0);
@@ -203,8 +219,7 @@ int main(int argc, char *argsv[]) {
                 plotParticles(iteration);
             }
             if ((logLevel < noCOut || logLevel == noFiles) && iteration % 100 == 0) {
-                fileLogger->log(fileLogger->level(), "Iteration {} finished.\n", iteration);
-
+                fileLogger->log(fileLogger->level(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
             }
         }
         currentTime += deltaT;

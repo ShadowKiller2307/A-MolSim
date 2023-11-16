@@ -5,7 +5,10 @@
 #include "Particle.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
 #include "utils/ArrayUtils.h"
-
+/**
+ * @brief This class creates a cuboid of particles, definded by the command line or default values,
+ * which will be added to a particleContainer
+ */
 class ParticleGenerator
 {
 private:

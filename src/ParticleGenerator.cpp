@@ -7,8 +7,7 @@ void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::arr
                                           std::array<unsigned int, 3> particlePerDimension, std::array<double, 3> particleVelocity,
                                           double h, double mass, int generateNumber)
 {
-    double meanValueVelocity{0.0};                                                                                              // TODO: Is it the Erwartungswert of the normal distribution
-    std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); // TODO Fehlermeldung multiple def of MB
+    double meanValueVelocity{0.1}; //TODO: This can als be passed as a parameter
     auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] * particlePerDimension[2];
     std::vector<Particle> particles = container.getParticles();
     particles.reserve(particles.size() + amountOfParticles); // reserve space for amountOfParticles in the vector for performance
@@ -18,18 +17,13 @@ void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::arr
         {
             for (unsigned int k = 0; k < particlePerDimension[2]; ++k)
             {
+                //Change: I think the mbVelocity has to be calculated for every particle
+                std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); //TODO: Does here the mean of the Brownian Motion mean the same as the average velocity
                 std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
                 std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-                particles.emplace_back(Particle{x_arg, v_arg, mass, generateNumber});
+                particles.emplace_back(x_arg, v_arg, mass, generateNumber);
             }
         }
     }
     container.setParticles(particles);
 }
-
-/* Use this constructor for the initialization
-Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, int type_arg):x(x_arg), v(v_arg), m(m_arg), type(type_arg) {
-    f = {0., 0., 0.};
-    old_f = {0., 0., 0.};
-    std::cout << "Particle generated!" << std::endl;
-}*/

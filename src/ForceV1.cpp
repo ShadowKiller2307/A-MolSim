@@ -39,7 +39,7 @@ void ForceV1::calculateForces(std::vector<Particle> &particles)
 
 void ForceV1::calculateForcesWithLambda(ParticleContainer &container)
 {
-    auto forceLambda = [](Particle a, Particle b)
+    auto forceLambda = [](Particle &a, Particle &b)
     {
         double scalar =
             a.getM() * b.getM() / std::pow(HelperFunctions::euclideanNorm(a.getX() - b.getX()), 3);
