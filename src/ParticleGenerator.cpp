@@ -18,7 +18,7 @@ void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::arr
             for (unsigned int k = 0; k < particlePerDimension[2]; ++k)
             {
                 //Change: I think the mbVelocity has to be calculated for every particle
-                std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 3); //TODO: Does here the mean of the Brownian Motion mean the same as the average velocity
+                std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 2); //TODO: Does here the mean of the Brownian Motion mean the same as the average velocity
                 std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
                 std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
                 particles.emplace_back(x_arg, v_arg, mass, generateNumber);
