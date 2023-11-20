@@ -29,3 +29,5 @@ void HelperFunctions::scalarOperations(std::array<double, 3> &array, double scal
         }
     }
 }
+
+

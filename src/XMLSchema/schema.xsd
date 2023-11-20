@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:simpleType name="doubleList">
+        <xs:list itemType="xs:double"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="unsignedIntList">
+        <xs:list itemType="xs:unsignedInt"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="arrayOfThreeDoubles">
+        <xs:restriction base="doubleList">
+            <xs:length value="3"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="arrayOfThreeUnsignedInts">
+        <xs:restriction base="unsignedIntList">
+            <xs:length value="3"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Cuboid">
+        <xs:sequence>
+            <xs:element name="llfc" type="arrayOfThreeDoubles"/>
+            <xs:element name="particlePerDimension" type="arrayOfThreeUnsignedInts"/>
+            <xs:element name="particleVelocity" type="arrayOfThreeDoubles"/>
+            <xs:element name="h" type="xs:double"/>
+            <xs:element name="mass" type="xs:double"/>
+            <xs:element name="generateNumber" type="xs:int"/>
+        </xs:sequence>
+
+    </xs:complexType>
+    <!--TODO Simulation parameters-->
+
+
+</xs:schema>

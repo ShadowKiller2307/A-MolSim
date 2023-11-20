@@ -8,10 +8,12 @@
 #include <vector>
 #include <functional>
 #include "ForceCalculator.h"
+#include "LogManager.h"
+#include "spdlog/spdlog.h"
 
 class ForceCalculator; //needs to be defined so that the compiler doesn't throw an error
 
-// Interne Implementierung die wie encapsulaten
+
 
 class ParticleContainer
 {
@@ -20,6 +22,7 @@ private:
     std::vector<Particle> particles;
     ForceCalculator *forceCalculator;
     double deltaTTwo;
+
 
 public:
     std::vector<Particle> &getParticles();
@@ -72,5 +75,12 @@ public:
      */
     void setDeltaTTwo(double deltaT);
 
+    /***
+     * @brief Checks if the level of the Log Manager is debug
+     * @return Returns debug mode if true, off mode if false
+     */
+    static spdlog::level::level_enum isDebug();
+
     double getDeltaTwo();
+
 };
