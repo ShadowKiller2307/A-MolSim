@@ -36,11 +36,8 @@ enum particleSources
 /// @brief the current way the program is using to get the particles, for worksheet 2 default to using the particle generator
 particleSources pSource = generator;
 
-
-
-
 auto fileLogger = LogManager::getInstance().getLogger();
-LogManager& logManager = LogManager::getInstance();
+LogManager &logManager = LogManager::getInstance();
 
 /// @brief the current logLevel
 LogLevel logLevel = standard;
@@ -61,12 +58,10 @@ ParticleContainer particleContainer{};
 int main(int argc, char *argsv[])
 {
 
-
-
     logManager.setLogLevel(toSpdLevel(standard));
 
-    fileLogger->log(logManager.getLevel(),"First message from the logger\n");
-    fileLogger->log(logManager.getLevel(), "Hello from MolSim for PSE\n");
+    fileLogger->log(fileLogger->level(), "First message of the logger.\n");
+    fileLogger->log(fileLogger->level(), "Hello from MolSim for PSE\n");
 
     if (argc < 2)
     {
@@ -79,7 +74,7 @@ int main(int argc, char *argsv[])
     option longOpts[] = {
         {"deltaT", required_argument, nullptr, 'd'},
         {"endTime", required_argument, nullptr, 'e'},
-        {"help", no_argument, nullptr, 'h'}, // print the help.txt file to stdout
+        {"help", no_argument, nullptr, 'h'},
         {"logLevel", required_argument, nullptr, 'l'},
         // TODO: update help.txt with these
         {"inputGenerator", no_argument, nullptr, 'g'}, // funny
@@ -200,10 +195,21 @@ int main(int argc, char *argsv[])
     // Start measuring time
     auto begin = std::chrono::high_resolution_clock::now();
 
-    plotParticles(iteration);
     // for this loop, we assume: current x, current f and current v are known
     while (currentTime < endTime)
     {
+        if (iteration % 10 == 0)
+        {
+            if (logLevel < noFiles)
+            {
+                plotParticles(iteration);
+            }
+            if (iteration % 100 == 0)
+            {
+                fileLogger->log(logManager.getLevel(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
+            }
+        }
+
         // calculate new x
         particleContainer.calculatePosition();
         // calculate new f
@@ -212,17 +218,6 @@ int main(int argc, char *argsv[])
         particleContainer.calculateVelocity();
 
         iteration++;
-        if (iteration % 10 == 0)
-        {
-            if (logLevel < noFiles)
-            {
-                plotParticles(iteration);
-            }
-            if ((logLevel < noCOut || logLevel == noFiles) && iteration % 100 == 0)
-            {
-                fileLogger->log(logManager.getLevel(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
-            }
-        }
         currentTime += deltaT;
     }
 
