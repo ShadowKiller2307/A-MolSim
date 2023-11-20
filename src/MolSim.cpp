@@ -4,12 +4,11 @@
 #include "outputWriter/VTKWriter.h"
 #include "utils/ArrayUtils.h"
 #include "ParticleContainer.h"
-#include "ForceV1.h"
-#include "spdlog/spdlog.h"
+
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "ParticleGenerator.h"
 #include "LogLevel.h"
-
+#include "LogManager.h"
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
@@ -37,10 +36,11 @@ enum particleSources
 /// @brief the current way the program is using to get the particles, for worksheet 2 default to using the particle generator
 particleSources pSource = generator;
 
-auto maxSize = 5 * 1024 * 1024;
-auto maxFiles = 4;
 
-auto fileLogger = spdlog::rotating_logger_mt("fileLogger", "../logs/log.txt", maxSize, maxFiles, true);
+
+
+auto fileLogger = LogManager::getInstance().getLogger();
+LogManager& logManager = LogManager::getInstance();
 
 /// @brief the current logLevel
 LogLevel logLevel = standard;
@@ -61,15 +61,16 @@ ParticleContainer particleContainer{};
 int main(int argc, char *argsv[])
 {
 
-    fileLogger->set_level(toSpdLevel(logLevel));
-    fileLogger->set_pattern("[%Y-%m-%d %H:%M] [%l] %v");
 
-    fileLogger->log(fileLogger->level(), "First message of the logger.\n");
-    fileLogger->log(fileLogger->level(), "Hello from MolSim for PSE\n");
+
+    logManager.setLogLevel(toSpdLevel(standard));
+
+    fileLogger->log(logManager.getLevel(),"First message from the logger\n");
+    fileLogger->log(logManager.getLevel(), "Hello from MolSim for PSE\n");
 
     if (argc < 2)
     {
-        fileLogger->log(fileLogger->level(), "Erroneous program call\n");
+        fileLogger->log(logManager.getLevel(), "Erroneous program call\n");
 
         printHelp();
         return EXIT_FAILURE;
@@ -114,7 +115,7 @@ int main(int argc, char *argsv[])
             {
                 logLevel = static_cast<LogLevel>(temp);
                 spdlog::level::level_enum level = toSpdLevel(logLevel);
-                fileLogger->set_level(level);
+                logManager.setLogLevel(level);
             }
             break;
         }
@@ -135,7 +136,7 @@ int main(int argc, char *argsv[])
             outName = optarg;
             break;
         default:
-            fileLogger->log(fileLogger->level(),
+            fileLogger->log(logManager.getLevel(),
                             "Error parsing arguments. Maybe you gave one that isn't recognized.\n");
 
             break;
@@ -144,7 +145,7 @@ int main(int argc, char *argsv[])
 
     if (optind >= argc)
     {
-        fileLogger->log(fileLogger->level(), "Input missing as an argument, aborting\n");
+        fileLogger->log(logManager.getLevel(), "Input missing as an argument, aborting\n");
 
         printHelp();
         return EXIT_FAILURE;
@@ -191,10 +192,10 @@ int main(int argc, char *argsv[])
     int iteration = 0;
     if (logLevel < noCOut)
     {
-        fileLogger->log(fileLogger->level(),
+        fileLogger->log(logManager.getLevel(),
                         outputModeVTK ? "Plotting particles with VTK." : "Plotting particles with XYZ\n");
     }
-    fileLogger->log(fileLogger->level(), "This might take a while\n");
+    fileLogger->log(logManager.getLevel(), "This might take a while\n");
 
     // Start measuring time
     auto begin = std::chrono::high_resolution_clock::now();
@@ -219,7 +220,7 @@ int main(int argc, char *argsv[])
             }
             if ((logLevel < noCOut || logLevel == noFiles) && iteration % 100 == 0)
             {
-                fileLogger->log(fileLogger->level(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
+                fileLogger->log(logManager.getLevel(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
             }
         }
         currentTime += deltaT;
@@ -229,7 +230,7 @@ int main(int argc, char *argsv[])
     auto end = std::chrono::high_resolution_clock::now();
     int64_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-    fileLogger->log(fileLogger->level(), "Output written, took {} milliseconds. (about {}) Terminating...\n", diff,
+    fileLogger->log(logManager.getLevel(), "Output written, took {} milliseconds. (about {}) Terminating...\n", diff,
                     (iteration > diff ? std::to_string(iteration / diff) + " iter/ms" : std::to_string(diff / iteration) + " ms/iter"));
 
     return 0;
