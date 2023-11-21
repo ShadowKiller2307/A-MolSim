@@ -1,6 +1,7 @@
 #include "ParticleContainerLC.h"
 #include "math.h"
 using cell = std::vector<Particle>;
+
 /*
 ParticleContainerLC::ParticleContainerLC(std::array<double, 3> domainSize, double cutoffRadius) {
     this->domainSize = domainSize;
@@ -17,3 +18,13 @@ ParticleContainerLC::ParticleContainerLC(std::array<double, 3> domainSize, doubl
         //TODO: maybe print error message
     }
 }*/
+
+ void ParticleContainerLC::add(Particle &a)  {
+          // compute the cell to which the particle will be added
+          double xIndex = trunc(a.getX()[0] / cutoffRadius);
+          double yIndex = trunc(a.getX()[1]/cutoffRadius);
+          double zIndex = trunc(a.getX()[2]/cutoffRadius);
+          double index = xIndex + cellsX * yIndex + cellsX * cellsY * zIndex;
+          cells.at(index).emplace_back(a);
+}
+
