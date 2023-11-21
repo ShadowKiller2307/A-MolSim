@@ -30,4 +30,5 @@ spdlog::level::level_enum LogManager::getLevel()
 void LogManager::setLogLevel(spdlog::level::level_enum level)
 {
     this->logLevel = level;
+    this->logger->set_level(level);
 }

@@ -80,7 +80,7 @@ public:
      * @brief Checks if the level of the Log Manager is debug
      * @return Returns debug mode if true, off mode if false
      */
-    static spdlog::level::level_enum isDebug();
+
 
     double getDeltaTwo();
 
