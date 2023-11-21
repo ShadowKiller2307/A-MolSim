@@ -29,6 +29,10 @@ public:
     * @brief iterate over every particle pair in the container and apply the lambda function
     * @param f the lambda function
     */
-    void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &f);
+    virtual void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &f);
+    /**
+    * @brief method to add an Particle to an LC container, thus adding it to the according cell
+    */
+    virtual void add(Particle a);
 
 };
