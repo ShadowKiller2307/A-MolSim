@@ -1,4 +1,5 @@
 #pragma once
+
 #include "LogManager.h"
 #include "spdlog/spdlog.h"
 #include "Particle.h"
@@ -7,22 +8,13 @@ class ParticleContainer {
 
 protected:
     template<typename T, typename ...Args>
-static void debugLog(T& message,Args ...args){
-    std::stringstream stream;
-    stream << message;
-
-
-    LogManager::getInstance().getLogger()->log(isDebug(),message);
-}
-
-    template<typename T>
-    static void infoLog(T& message){
-        LogManager::getInstance().getLogger()->log(isInfo(),message);
+    static void debugLog(T &message, Args &&...args) {
+        LogManager::getInstance().getLogger()->log(isDebug(), message, std::forward<Args>(args)...);
     }
 
-static spdlog::level::level_enum isDebug();
 
-static spdlog::level::level_enum isInfo();
+    static spdlog::level::level_enum isDebug();
+
 
 public:
     /**

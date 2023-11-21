@@ -9,10 +9,3 @@ spdlog::level::level_enum ParticleContainer::isDebug(){
     }
     return spdlog::level::off;
 }
-
-spdlog::level::level_enum ParticleContainer::isInfo() {
-    if(LogManager::getInstance().getLevel() == spdlog::level::info){
-        return spdlog::level::info;
-    }
-    return spdlog::level::off;
-}
