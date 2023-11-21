@@ -6,23 +6,23 @@
 
 #include <vector>
 #include "Particle.h"
-#include "ParticleContainer.h"
+#include "ParticleContainerDS.h"
 
-class ParticleContainer; //needs to be defined so that the compiler doesn't throw an error
+class ParticleContainerDS; //needs to be defined so that the compiler doesn't throw an error
 
 class ForceCalculator
 {
 public:
     /**
      * @brief virtual function which represents the different force calculation approaches
-     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @param particles The particles from the ParticleContainerDS for which the force calculation will be executed
      * @return void
      */
     virtual void calculateForces(std::vector<Particle> &particles);
     /**
      * @brief virtual function which represents the different force calculation approaches with lambdas
-     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @param particles The particles from the ParticleContainerDS for which the force calculation will be executed
      * @return void
      */
-    virtual void calculateForcesWithLambda(ParticleContainer &container);
+    virtual void calculateForcesWithLambda(ParticleContainerDS &container);
 };

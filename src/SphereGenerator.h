@@ -1,14 +1,12 @@
-//
-// Created by alex on 21.11.23.
-//
-
-#ifndef PSEMOLDYN_GROUPA_SPHEREGENERATOR_H
-#define PSEMOLDYN_GROUPA_SPHEREGENERATOR_H
-
-
+/**
+ * @brief This class creates a sphere of particles, defined by the command line or default values,
+ * which will be added to a particleContainer
+ */
+#pragma once
+//TODO: maybe work more with namespaces
 class SphereGenerator {
+    void instantiateSphere();
 
 };
 
 
-#endif //PSEMOLDYN_GROUPA_SPHEREGENERATOR_H

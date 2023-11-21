@@ -10,12 +10,13 @@
 #include "ForceCalculator.h"
 #include "LogManager.h"
 #include "spdlog/spdlog.h"
+#include "ParticleContainer.h"
 
 class ForceCalculator; //needs to be defined so that the compiler doesn't throw an error
 
 
 
-class ParticleContainer
+class ParticleContainerDS : ParticleContainer
 {
 
 private:
@@ -53,7 +54,7 @@ public:
      */
     void calculatePosition();
 
-    explicit ParticleContainer();
+    explicit ParticleContainerDS();
 
     /**
      * @brief sets the particles for the container

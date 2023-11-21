@@ -5,7 +5,15 @@ file(GLOB_RECURSE MY_SRC
 )
 
 # create make target
-add_executable(MolSim ${MY_SRC})
+add_executable(MolSim ${MY_SRC}
+        ParticleContainer.cpp
+        ParticleContainer.h
+        ParticleContainerLC.cpp
+        ParticleContainerLC.h
+        ParticleGenerator.cpp
+        ParticleGenerator.h
+        SphereGenerator.cpp
+        SphereGenerator.h)
 
 target_include_directories(MolSim PUBLIC ../libs/libxsd PRIVATE .)
 

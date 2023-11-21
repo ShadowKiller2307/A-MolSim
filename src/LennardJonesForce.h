@@ -1,10 +1,10 @@
 #pragma once
 #include "ForceCalculator.h"
-#include "ParticleContainer.h"
+#include "ParticleContainerDS.h"
 
 /**
  * @brief This class implements the approach of force calculation defined by the LennardJones force calculation
- * it inherits the ForceCalculator class so that in can be passed to the ParticleContainer
+ * it inherits the ForceCalculator class so that in can be passed to the ParticleContainerDS
  */
 
 class LennardJonesForce : public ForceCalculator
@@ -17,7 +17,7 @@ public:
     LennardJonesForce(double epsilon, double sigma);
     /**
      * @brief implementation of the LennardJones approach for the forces
-     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @param particles The particles from the ParticleContainerDS for which the force calculation will be executed
      * @return void
      */
     void calculateForces(std::vector<Particle> &particles) override;
@@ -26,5 +26,5 @@ public:
     * @param container The container of the particles for which the force calculation will be executed
     * @return void
     */
-    void calculateForcesWithLambda(ParticleContainer &container) override;
+    void calculateForcesWithLambda(ParticleContainerDS &container) override;
 };

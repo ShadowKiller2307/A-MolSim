@@ -1,6 +1,6 @@
 /**
  * @brief This class implements the approach of force calculation defined by Störmer-Verlet
- * it inherits the ForceCalculator class so that in can be passed to the ParticleContainer
+ * it inherits the ForceCalculator class so that in can be passed to the ParticleContainerDS
  */
 
 #pragma once
@@ -8,7 +8,7 @@
 #include <vector>
 #include "Particle.h"
 #include "ForceCalculator.h"
-#include "ParticleContainer.h"
+#include "ParticleContainerDS.h"
 
 class ForceV1 : public ForceCalculator
 {
@@ -16,7 +16,7 @@ class ForceV1 : public ForceCalculator
 public:
     /**
      * @brief Implementation of the Störmer-Verlet approach for the forces
-     * @param particles The particles from the ParticleContainer for which the force calculation will be executed
+     * @param particles The particles from the ParticleContainerDS for which the force calculation will be executed
      * @return void
      */
     void calculateForces(std::vector<Particle> &particles) override;
@@ -25,5 +25,5 @@ public:
     * @param container The container of the particles for which the force calculation will be executed
     * @return void
     */
-    void calculateForcesWithLambda(ParticleContainer &container) override;
+    void calculateForcesWithLambda(ParticleContainerDS &container) override;
 };

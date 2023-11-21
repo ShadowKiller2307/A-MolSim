@@ -3,10 +3,10 @@
  */
 
 #include <gtest/gtest.h>
-#include "../src/ParticleContainer.h"
+#include "../src/ParticleContainerDS.h"
 #include "../src/HelperFunctions.h"
 #include "../src/Particle.h"
-#include "../src/ParticleGenerator.h"
+#include "../src/CuboidGenerator.h"
 #include "../src/ForceV1.h"
 #include "../src/LennardJonesForce.h"
 
@@ -33,13 +33,12 @@ protected:
     Particle particleTwo{temp2, temp, 1, 0};
     Particle particleThree{temp3, temp, 1, 0};
     std::vector<Particle> particles;
-    ParticleContainer container;
-    ParticleContainer container2;
-    ParticleGenerator particleGenerator;
+    ParticleContainerDS container;
+    ParticleContainerDS container2;
+    CuboidGenerator particleGenerator;
     ForceV1 forceV1;
     LennardJonesForce lennardJonesForce{5, 1};
 };
-
 
 /**
  * @brief very simple test to check whether the container sets the particles correctly
@@ -55,7 +54,7 @@ TEST_F(MolSimTest, testGetParticles) {
 TEST_F(MolSimTest, testGenerateParticlesGenerator) {
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    ParticleContainer containerCuboid;
+    ParticleContainerDS containerCuboid;
     particleGenerator.instantiateCuboid(containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
     // Now check if the cuboid was instantiated with the particle positions as we expect
     EXPECT_EQ(8, containerCuboid.getParticles().size());

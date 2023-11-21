@@ -1,29 +1,30 @@
 #include <vector>
-#include "ParticleContainer.h"
+#include "ParticleContainerDS.h"
 #include "utils/ArrayUtils.h"
 #include "HelperFunctions.h"
 #include "ForceV1.h"
 #include "LennardJonesForce.h"
 #include <iostream>
+#include "ParticleContainer.h"
 
 // double deltaT{0.014};
 
-ParticleContainer::ParticleContainer() = default;
+ParticleContainerDS::ParticleContainerDS() = default;
 
-std::vector<Particle> &ParticleContainer::getParticles() {
+std::vector<Particle> &ParticleContainerDS::getParticles() {
     return this->particles;
 }
 
-void ParticleContainer::setParticles(const std::vector<Particle> &particles1) {
+void ParticleContainerDS::setParticles(const std::vector<Particle> &particles1) {
     this->particles = particles1;
 }
 
-void ParticleContainer::calculateForces() {
+void ParticleContainerDS::calculateForces() {
     forceCalculator->calculateForces(particles);
 }
 
-void ParticleContainer::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) {
-    LogManager::getInstance().getLogger()->log(isDebug(), "Currently applying iterOverPairs...\n");
+void ParticleContainerDS::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) {
+    debugLog("Currently applying iterOverPairs...\n");
     for (auto &p: particles) {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};
@@ -39,8 +40,9 @@ void ParticleContainer::iterOverPairs(const std::function<void(Particle &a, Part
     }
 }
 
-void ParticleContainer::calculatePosition() {
-    LogManager::getInstance().getLogger()->log(isDebug(), "Currently applying calculatePosition...\n");
+void ParticleContainerDS::calculatePosition() {
+
+    debugLog("Currently applying calculatePosition...\n");
     int i = 0;
     for (auto &p: particles) {
         LogManager::getInstance().getLogger()->
@@ -57,7 +59,7 @@ void ParticleContainer::calculatePosition() {
     }
 }
 
-void ParticleContainer::calculateVelocity() {
+void ParticleContainerDS::calculateVelocity() {
     LogManager::getInstance().getLogger()->log(isDebug(), "Currently applying calculateVelocity...\n");
     int i = 0;
     for (auto &p: particles) {
@@ -78,7 +80,7 @@ void ParticleContainer::calculateVelocity() {
 }
 
 // https://sourcemaking.com/design_patterns/strategy/cpp/1 Looked here how the strategy pattern works
-void ParticleContainer::setForceCalculator(int mode) {
+void ParticleContainerDS::setForceCalculator(int mode) {
     LogManager::getInstance().getLogger()->log(isDebug(), "Setting the mode for the forces to {}.", mode);
     if (mode == 0) {
         forceCalculator = new ForceV1();
@@ -89,15 +91,15 @@ void ParticleContainer::setForceCalculator(int mode) {
     }
 }
 
-void ParticleContainer::setDeltaTTwo(double deltaT) {
+void ParticleContainerDS::setDeltaTTwo(double deltaT) {
     this->deltaTTwo = deltaT;
 }
 
-double ParticleContainer::getDeltaTwo() {
+double ParticleContainerDS::getDeltaTwo() {
     return this->deltaTTwo;
 }
 
-spdlog::level::level_enum ParticleContainer::isDebug() {
+spdlog::level::level_enum ParticleContainerDS::isDebug() {
     if (LogManager::getInstance().getLevel() == spdlog::level::debug) {
         return spdlog::level::debug;
     }

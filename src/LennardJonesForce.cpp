@@ -43,7 +43,7 @@ void LennardJonesForce::calculateForces(std::vector<Particle> &particles)
     }
 }
 
-void LennardJonesForce::calculateForcesWithLambda(ParticleContainer &container)
+void LennardJonesForce::calculateForcesWithLambda(ParticleContainerDS &container)
 {
     double epsilonCapture = this->epsilon;
     double sigmaCapture = this->sigma;

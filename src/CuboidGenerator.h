@@ -9,7 +9,7 @@
  * @brief This class creates a cuboid of particles, defined by the command line or default values,
  * which will be added to a particleContainer
  */
-class ParticleGenerator
+class CuboidGenerator
 {
 public:
     /**

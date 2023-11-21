@@ -6,7 +6,7 @@
 #include "ForceCalculator.h"
 #include "HelperFunctions.h"
 #include "ForceV1.h"
-#include "ParticleContainer.h"
+#include "ParticleContainerDS.h"
 
 void ForceV1::calculateForces(std::vector<Particle> &particles)
 {
@@ -37,7 +37,7 @@ void ForceV1::calculateForces(std::vector<Particle> &particles)
     }
 }
 
-void ForceV1::calculateForcesWithLambda(ParticleContainer &container)
+void ForceV1::calculateForcesWithLambda(ParticleContainerDS &container)
 {
     auto forceLambda = [](Particle &a, Particle &b)
     {
