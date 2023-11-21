@@ -35,4 +35,16 @@
     <!--TODO Simulation parameters-->
 
 
+    <xs:complexType name="simulationConfig">
+        <xs:sequence>
+            <xs:element name="baseName" type="xs:string"/>
+            <xs:element name="writeFrequency" type="xs:double"/>
+            <xs:element name="t_end" type="xs:double"/>
+            <xs:element name="delta_t" type="xs:double"/>
+            <xs:element name="Cuboid" type="Cuboid" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:element name="Configuration" type="simulationConfig"/>
+
 </xs:schema>
