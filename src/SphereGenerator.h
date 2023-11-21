@@ -1,0 +1,14 @@
+//
+// Created by alex on 21.11.23.
+//
+
+#ifndef PSEMOLDYN_GROUPA_SPHEREGENERATOR_H
+#define PSEMOLDYN_GROUPA_SPHEREGENERATOR_H
+
+
+class SphereGenerator {
+
+};
+
+
+#endif //PSEMOLDYN_GROUPA_SPHEREGENERATOR_H
