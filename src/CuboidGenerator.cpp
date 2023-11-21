@@ -7,7 +7,7 @@ void CuboidGenerator::instantiateCuboid(ParticleContainerDS &container, std::arr
                                         std::array<unsigned int, 3> particlePerDimension, std::array<double, 3> particleVelocity,
                                         double h, double mass, int generateNumber)
 {
-    double meanValueVelocity{0.1}; //TODO: This can als be passed as a parameter
+    double meanValueVelocity{0.1}; // TODO: This can als be passed as a parameter
     auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] * particlePerDimension[2];
     std::vector<Particle> particles = container.getParticles();
     particles.reserve(particles.size() + amountOfParticles); // reserve space for amountOfParticles in the vector for performance
@@ -17,8 +17,8 @@ void CuboidGenerator::instantiateCuboid(ParticleContainerDS &container, std::arr
         {
             for (unsigned int k = 0; k < particlePerDimension[2]; ++k)
             {
-                //Change: I think the mbVelocity has to be calculated for every particle
-                std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 2); //TODO: Does here the mean of the Brownian Motion mean the same as the average velocity
+                // Change: I think the mbVelocity has to be calculated for every particle
+                std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanValueVelocity, 2); // TODO: Does here the mean of the Brownian Motion mean the same as the average velocity
                 std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
                 std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
                 particles.emplace_back(x_arg, v_arg, mass, generateNumber);
@@ -28,6 +28,7 @@ void CuboidGenerator::instantiateCuboid(ParticleContainerDS &container, std::arr
     container.setParticles(particles);
 }
 
-//TODO: How does the mesh width work for the sphere
-void CuboidGenerator::instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h) {
+// TODO: How does the mesh width work for the sphere
+void CuboidGenerator::instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h)
+{
 }

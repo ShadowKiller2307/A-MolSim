@@ -9,6 +9,9 @@
 #include "CuboidGenerator.h"
 #include "LogLevel.h"
 #include "LogManager.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
@@ -30,7 +33,8 @@ enum particleSources
 {
     generator,
     picture,
-    txtFile
+    txtFile,
+    xml
 };
 
 /// @brief the current way the program is using to get the particles, for worksheet 2 default to using the particle generator
@@ -45,6 +49,8 @@ LogLevel logLevel = standard;
 /// @brief which output filetype to use, default to VTK
 bool outputModeVTK = true;
 
+bool writeToJSON = false;
+
 /// @brief prefix for the name of each outputfile
 std::string outName{"MD_vtk"};
 
@@ -57,7 +63,6 @@ ParticleContainerDS particleContainer{};
 
 int main(int argc, char *argsv[])
 {
-
     logManager.setLogLevel(toSpdLevel(standard));
 
     fileLogger->log(fileLogger->level(), "First message of the logger.\n");
@@ -84,10 +89,9 @@ int main(int argc, char *argsv[])
         {nullptr, 0, nullptr, 0}};
 
     int longOptsIndex = 0;
-    // TODO: Extend with the command line arguments for the generator
     while (true)
     {
-        int c = getopt_long(argc, argsv, "d:e:hl:xgpt", longOpts, &longOptsIndex);
+        int c = getopt_long(argc, argsv, "d:e:hl:xgptw", longOpts, &longOptsIndex);
         if (c == -1)
         {
             break;
@@ -114,10 +118,6 @@ int main(int argc, char *argsv[])
             }
             break;
         }
-        case 'x':
-            outputModeVTK = false;
-            outName = "MD_xyz";
-            break;
         case 'g':
             pSource = generator;
             break;
@@ -127,8 +127,14 @@ int main(int argc, char *argsv[])
         case 't':
             pSource = txtFile;
             break;
+        case 'x':
+            pSource = xml;
+            break;
         case 'o':
             outName = optarg;
+            break;
+        case 'w':
+            writeToJSON = true;
             break;
         default:
             fileLogger->log(logManager.getLevel(),
@@ -165,14 +171,53 @@ int main(int argc, char *argsv[])
         break;
     }
     case picture:
+    {
+        // gross C code, brace yourself
+
+        int width, height, bpp;
+        uint8_t *rgb_image = stbi_load(std::string("_").compare(argsv[optind]) == 0 ? "../input/Cool MolSim.png" : argsv[optind], &width, &height, &bpp, 3);
+        std::vector<Particle> particles;
+        for (int i = 0; i < height; ++i)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                int index = i * width * 3 + j * 3;
+                uint8_t r = rgb_image[index + 0];
+                uint8_t g = rgb_image[index + 1];
+                uint8_t b = rgb_image[index + 2];
+                if (r != 255 || g != 255 || b != 255)
+                {
+                    std::array<double, 3> x_arg{j * h, -i * h, 0};
+                    std::array<double, 3> v_arg{0.0};
+                    if (r == 255)
+                    {
+                        v_arg = {0.0, -20.0, 0.0};
+                    }
+                    particles.emplace_back(x_arg, v_arg, 1, r == 255 ? 1 : 0);
+                }
+            }
+        }
+        particleContainer.setParticles(particles);
+        stbi_image_free(rgb_image);
         break;
+    }
     case txtFile:
+    {
         FileReader fileReader;
         std::vector<Particle> particles;
         fileReader.readFile(particles, (std::string("_").compare(argsv[optind]) == 0 ? (char *)"../input/eingabe-sonne.txt" : argsv[optind]));
         // Initialising the ParticleContainerDS with particles
         particleContainer.setParticles(particles);
         break;
+    }
+    case xml:
+        // TODO
+        break;
+    }
+
+    if (writeToJSON)
+    {
+        // TODO
     }
 
     particleContainer.setForceCalculator(1);
