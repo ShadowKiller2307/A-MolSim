@@ -29,5 +29,5 @@ void CuboidGenerator::instantiateCuboid(ParticleContainerDS &container, std::arr
 }
 
 //TODO: How does the mesh width work for the sphere
-void CuboidGenerator::instantiateSphere(ParticleContainer &container, int center, unsigned int nrMR, double h) {
+void CuboidGenerator::instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h) {
 }

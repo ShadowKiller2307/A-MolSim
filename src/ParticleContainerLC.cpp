@@ -1,6 +1,7 @@
 #include "ParticleContainerLC.h"
 #include "math.h"
 using cell = std::vector<Particle>;
+/*
 ParticleContainerLC::ParticleContainerLC(std::array<double, 3> domainSize, double cutoffRadius) {
     this->domainSize = domainSize;
     this->cutoffRadius = cutoffRadius;
@@ -15,4 +16,4 @@ ParticleContainerLC::ParticleContainerLC(std::array<double, 3> domainSize, doubl
     else { // the domains size in each dimension has to be a multiple of the cutoff radius
         //TODO: maybe print error message
     }
-}
+}*/

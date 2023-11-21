@@ -16,7 +16,7 @@ class ForceCalculator; //needs to be defined so that the compiler doesn't throw 
 
 
 
-class ParticleContainerDS : ParticleContainer
+class ParticleContainerDS //: ParticleContainer
 {
 
 private:

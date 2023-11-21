@@ -10,10 +10,9 @@ add_executable(MolSim ${MY_SRC}
         ParticleContainer.h
         ParticleContainerLC.cpp
         ParticleContainerLC.h
-        ParticleGenerator.cpp
-        ParticleGenerator.h
-        SphereGenerator.cpp
-        SphereGenerator.h)
+        BoundaryCondition.cpp
+        BoundaryCondition.h
+)
 
 target_include_directories(MolSim PUBLIC ../libs/libxsd PRIVATE .)
 

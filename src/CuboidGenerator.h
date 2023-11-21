@@ -34,5 +34,5 @@ public:
      * @param h meshwidth between the molecules
      * @return void
      */
-    void instantiateSphere(ParticleContainer &container, std::array<double> center, unsigned int nrMR, double h);
+    void instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h);
 };

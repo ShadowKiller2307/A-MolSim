@@ -24,7 +24,7 @@ void ParticleContainerDS::calculateForces() {
 }
 
 void ParticleContainerDS::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) {
-    debugLog("Currently applying iterOverPairs...\n");
+    //debugLog("Currently applying iterOverPairs...\n");
     for (auto &p: particles) {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};
@@ -42,7 +42,7 @@ void ParticleContainerDS::iterOverPairs(const std::function<void(Particle &a, Pa
 
 void ParticleContainerDS::calculatePosition() {
 
-    debugLog("Currently applying calculatePosition...\n");
+    //debugLog("Currently applying calculatePosition...\n");
     int i = 0;
     for (auto &p: particles) {
         LogManager::getInstance().getLogger()->

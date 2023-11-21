@@ -61,6 +61,6 @@ public:
           double yIndex = trunc(a.getX()[1]/cutoffRadius);
           double zIndex = trunc(a.getX()[2]/cutoffRadius);
           double index = xIndex + yIndex * cellsY; //TODO complete the index calculation
-          
+
       }
 };
