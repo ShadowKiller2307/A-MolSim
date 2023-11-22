@@ -55,12 +55,5 @@ public:
      /**
       * @brief method to add an Particle to an LC container, thus adding it to the according cell
       */
-      void add(Particle &a) {
-          // compute the cell to which the particle will be added
-          double xIndex = trunc(a.getX()[0] / cutoffRadius);
-          double yIndex = trunc(a.getX()[1]/cutoffRadius);
-          double zIndex = trunc(a.getX()[2]/cutoffRadius);
-          double index = xIndex + yIndex * cellsY; //TODO complete the index calculation
-
-      }
+      void add(Particle &a);
 };
