@@ -34,7 +34,7 @@ private:
     int logLevel;
     bool inputGenerator, inputPicture,inputXML;
     std::string baseName;
-    double writeFrequency;
+    int writeFrequency;
     std::array<double,3> cuboidLLFC;
     std::array<unsigned int,3> cuboidParticlesPerDimension;
     std::array<double,3> particleVelocity;
@@ -47,48 +47,37 @@ private:
 public:
     explicit XMLReader(std::string &path);
 
+    /// @brief Extracts the simulation parameters from the XML file
     void extractSimulationParameters();
+    /// @brief Extracts the cuboids from the XML file
+    std::vector<CuboidConstructor> extractCuboid();
 
-    double getT_end(){
-        return this->t_end;
-    }
-    double getDelta_t(){
-        return this->delta_t;
-    }
-    int getLogLevel(){
-        return this->logLevel;
-    }
 
-    bool isInputGenerator(){
-        return this->inputGenerator;
-    }
-    bool isInputPicture(){
-        return this->inputPicture;
-    }
-    bool isInputXML(){
-        return this->inputXML;
-    }
-
-    std::string getBaseName(){
-        return this->baseName;
-    }
-    double getWriteFrequency(){
-        return this->writeFrequency;
-    }
 
     /***
  * @brief Constructs an std::array<double,3> from the one in the XML file
  * @param arrayOfThreeDoubles The complex type from the XML file
  * @return the newly constructed std::array<double,3>
  */
-    std::array<double,3>  createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles);
+    static std::array<double,3>  createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles);
 
     /***
  * @brief Constructs an std::array<unsigned int,3> from the one in the XML file
  * @param arrayOfThreeUnsignedInts The complex type from the XML file
  * @return the newly constructed std::array<unsigned int,3>
  */
-    std::array<unsigned int,3> createUnsignedIntArray(arrayOfThreeUnsignedInts arrayOfThreeUnsignedInts);
+    static std::array<unsigned int,3> createUnsignedIntArray(arrayOfThreeUnsignedInts arrayOfThreeUnsignedInts);
+
+
+    double getT_end();
+    double getDelta_t();
+    int getLogLevel();
+    bool isInputGenerator();
+    bool isInputPicture();
+    bool isInputXML();
+    std::string getBaseName();
+    int getWriteFrequency();
+
 
 };
 

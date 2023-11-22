@@ -7,6 +7,7 @@
 XMLReader::XMLReader(std::string &path) {
     try {
         this->simulation = Configuration(path, xml_schema::flags::dont_validate);
+        extractSimulationParameters();
     }
     catch (xml_schema::exception &e) {
         throw std::invalid_argument(std::string(e.what()));
@@ -30,27 +31,24 @@ void XMLReader::extractSimulationParameters() {
     this->baseName = simulation->baseName();
     this->writeFrequency = simulation->writeFrequency();
 
+}
 
+std::vector<CuboidConstructor> XMLReader::extractCuboid(){
     auto cuboids = simulation->Cuboid();
-
-
-    //iterates over every cuboid and creates a cuboidConstructor for each one.
-    //The cuboidConstructor is then added to the vector
-
-    for (auto it = cuboids.begin(); it != cuboids.end(); ++it) {
-        auto llfc = createDoubleArray(it->llfc());
+    for (auto & cuboid : cuboids) {
+        auto llfc = createDoubleArray(cuboid.llfc());
         auto particlesPerDimension =
-                createUnsignedIntArray(it->particlePerDimension());
-        auto velocity = createDoubleArray(it->particleVelocity());
-        double h = it->h();
-        double mass = it->mass();
-        int type = it->generateNumber();
+                createUnsignedIntArray(cuboid.particlePerDimension());
+        auto velocity = createDoubleArray(cuboid.particleVelocity());
+        double h = cuboid.h();
+        double mass = cuboid.mass();
+        int type = cuboid.generateNumber();
 
         CuboidConstructor cuboidConstructor(llfc, particlesPerDimension, velocity, h, mass, type);
         cuboidConstructors.push_back(cuboidConstructor);
 
     }
-
+    return cuboidConstructors;
 }
 
 std::array<double, 3> XMLReader::createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles) {
@@ -65,4 +63,33 @@ std::array<unsigned int, 3> XMLReader::createUnsignedIntArray(arrayOfThreeUnsign
     std::array<unsigned int, 3> createdArray =
             {arrayOfThreeUnsignedInts.at(0), arrayOfThreeUnsignedInts.at(1), arrayOfThreeUnsignedInts.at(2)};
     return createdArray;
+}
+
+// Getter functions
+
+double XMLReader::getT_end(){
+    return this->t_end;
+}
+double XMLReader::getDelta_t(){
+    return this->delta_t;
+}
+int XMLReader::getLogLevel(){
+    return this->logLevel;
+}
+
+bool XMLReader::isInputGenerator(){
+    return this->inputGenerator;
+}
+bool XMLReader::isInputPicture(){
+    return this->inputPicture;
+}
+bool XMLReader::isInputXML(){
+    return this->inputXML;
+}
+
+std::string XMLReader::getBaseName(){
+    return this->baseName;
+}
+int XMLReader::getWriteFrequency(){
+    return this->writeFrequency;
 }
