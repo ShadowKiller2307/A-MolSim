@@ -3,6 +3,7 @@
 #include "XMLReader.h"
 
 
+
 XMLReader::XMLReader(std::string &path) {
     try {
         this->simulation = Configuration(path, xml_schema::flags::dont_validate);
@@ -12,10 +13,12 @@ XMLReader::XMLReader(std::string &path) {
     }
 }
 
+
 /***
  * @brief Extracts each parameter for the simulation from the XML file.
  * It also extracts each Cuboid from the file and uses CuboidConstructor to create them based on the file.
  */
+
 
 void XMLReader::extractSimulationParameters() {
     this->t_end = simulation->t_end();

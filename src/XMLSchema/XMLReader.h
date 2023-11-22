@@ -1,6 +1,7 @@
 #pragma once
-#include "schema.hxx"
+#include "schema.h"
 #include <iostream>
+#include <array>
 
 
 class CuboidConstructor{
