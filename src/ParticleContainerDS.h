@@ -16,43 +16,23 @@ class ForceCalculator; //needs to be defined so that the compiler doesn't throw 
 
 
 
-class ParticleContainerDS //: ParticleContainer
+class ParticleContainerDS : public ParticleContainer
 {
 
-private:
-    std::vector<Particle> particles;
-    ForceCalculator *forceCalculator;
-    double deltaTTwo;
-
-
 public:
-    std::vector<Particle> &getParticles();
 
     /**
-     * @brief calculate the force for all particles
-     * @param None
-     * @return void
-     */
-    void calculateForces();
-
-    /**
-     * @brief iterate over every particle pair in the container and apply the lambda function
-     * @param f the lambda function
-     */
-    void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &f);
-
-    /**
-     * @brief calculate the velocity for all particles
-     * @param None
-     * @return void
-     */
-    void calculateVelocity();
-    /**
-     * @brief calculate the position for all particles
-     * @param None
-     * @return void
-     */
-    void calculatePosition();
+//     * @brief calculate the velocity for all particles
+//     * @param None
+//     * @return void
+//     */
+//    void calculateVelocity();
+//    /**
+//     * @brief calculate the position for all particles
+//     * @param None
+//     * @return void
+//     */
+//    void calculatePosition();
 
     explicit ParticleContainerDS();
 
@@ -60,28 +40,21 @@ public:
      * @brief sets the particles for the container
      * @param particles1 the particle vector to be set for the container
      * @return void
-     */
+     *//*
     void setParticles(const std::vector<Particle> &particles1);
-    /**
-     * @brief sets the ForceCalculator for the container
-     * @param mode represent the different approaches for the force calculation
-     * @return void
-     */
-    void setForceCalculator(int mode);
 
-    /**
-     * @brief sets the deltaT for the container
-     * @param deltaT the deltaT passed by the user or the default value
-     * @return void
-     */
-    void setDeltaTTwo(double deltaT);
-
-    /***
+    *//***
      * @brief Checks if the level of the Log Manager is debug
      * @return Returns debug mode if true, off mode if false
      */
 
-
-    double getDeltaTwo();
-
+    void add(Particle &a) override;
+/*
+    *//**
+    * @brief calculate the force for all particles
+    * @param None
+    * @return void
+    *//*
+    void calculateForces();*/
+    void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) override;
 };

@@ -9,7 +9,7 @@
  * @brief This class provide methods to create a cuboid or sphere of particles, defined by the command line or default values,
  * which will be added to a particleContainer
  */
-class CuboidGenerator
+class ParticleGenerator
 {
 public:
     /**
@@ -23,7 +23,7 @@ public:
     * @param generateNumber to mark to which Cuboid the particles belong (especially for containers which contain more than one cuboid)
     * @return void
     */
-    void instantiateCuboid(ParticleContainerDS &container, std::array<double, 3> llfc, std::array<unsigned int, 3> particlePerDimension,
+    void instantiateCuboid(ParticleContainer &container, std::array<double, 3> llfc, std::array<unsigned int, 3> particlePerDimension,
                            std::array<double, 3> particleVelocity, double h, double mass, int generateNumber);
 
     /**

@@ -7,53 +7,49 @@
 #include <iostream>
 #include "ParticleContainer.h"
 
+
 ParticleContainerDS::ParticleContainerDS() = default;
 
-std::vector<Particle> &ParticleContainerDS::getParticles()
-{
+void ParticleContainerDS::add(Particle &a) {
+    particles.emplace_back(a);
+}
+
+std::vector<Particle> &ParticleContainer::getParticles() {
     return this->particles;
 }
 
-void ParticleContainerDS::setParticles(const std::vector<Particle> &particles1)
-{
+void ParticleContainer::setParticles(const std::vector<Particle> &particles1) {
     this->particles = particles1;
 }
 
-void ParticleContainerDS::calculateForces()
-{
+void ParticleContainer::calculateForces() {
     forceCalculator->calculateForces(particles);
 }
 
-void ParticleContainerDS::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda)
-{
+void ParticleContainerDS::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) {
 
     ParticleContainer::debugLog("Currently applying iterOverPairs...\n");
-    for (auto &p : particles)
-    {
+    for (auto &p: particles) {
         auto oldForce = p.getF();
         std::array<double, 3> zero = {0.0, 0.0, 0.0};
         p.setF(zero);
         p.setOldF(oldForce);
     }
-    for (size_t i = 0; i < particles.size() - 1; ++i)
-    {
+    for (size_t i = 0; i < particles.size() - 1; ++i) {
         Particle &pi = particles.at(i);
-        for (size_t j = i + 1; j < particles.size(); ++j)
-        {
+        for (size_t j = i + 1; j < particles.size(); ++j) {
             Particle &pj = particles.at(j);
             forceLambda(pi, pj);
         }
     }
 }
 
-void ParticleContainerDS::calculatePosition()
-{
+void ParticleContainer::calculatePosition() {
 
 
     ParticleContainer::debugLog("Currently applying calculatePosition...\n");
     int i = 0;
-    for (auto &p : particles)
-    {
+    for (auto &p: particles) {
 
         ParticleContainer::debugLog("Calculating position for particle number {}.\n", i);
         std::array<double, 3> force = p.getF();
@@ -61,21 +57,19 @@ void ParticleContainerDS::calculatePosition()
         HelperFunctions::scalarOperations(force, std::pow(deltaTTwo, 2), false);
         std::array<double, 3> newPosition = p.getX() + deltaTTwo * p.getV() + force;
         ParticleContainer::debugLog("The new position for particle {} is {}.\n", i,
-                                                   HelperFunctions::arrayToString(newPosition));
+                                    HelperFunctions::arrayToString(newPosition));
 
         p.setX(newPosition);
         i++;
     }
 }
 
-void ParticleContainerDS::calculateVelocity()
-{
+void ParticleContainer::calculateVelocity() {
 
     ParticleContainer::debugLog("Currently applying calculateVelocity...\n");
 
     int i = 0;
-    for (auto &p : particles)
-    {
+    for (auto &p: particles) {
 
         ParticleContainer::debugLog("Calculating velocity for particle number {}.\n", i);
         double twoTimesMass = 2 * p.getM();
@@ -86,39 +80,11 @@ void ParticleContainerDS::calculateVelocity()
         std::array<double, 3> newVelocity = p.getV() + sumOfForces;
 
         ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i,
-                                                   HelperFunctions::arrayToString(newVelocity));
+                                    HelperFunctions::arrayToString(newVelocity));
         p.setV(newVelocity);
         i++;
     }
 }
 
-// https://sourcemaking.com/design_patterns/strategy/cpp/1 Looked here how the strategy pattern works
-void ParticleContainerDS::setForceCalculator(int mode)
-{
-
-    ParticleContainer::debugLog("Setting the mode for the forces to {}.", mode);
-    if (mode == 0)
-    {
-        forceCalculator = new ForceV1();
-    }
-    else if (mode == 1)
-    {
-        forceCalculator = new LennardJonesForce{5, 1};
-    }
-    else
-    {
-        forceCalculator = new ForceV1(); // If the input mode isn't defined, the forceCalculator is set to ForceV1
-    }
-}
-
-void ParticleContainerDS::setDeltaTTwo(double deltaT)
-{
-    this->deltaTTwo = deltaT;
-}
-
-double ParticleContainerDS::getDeltaTwo()
-{
-    return this->deltaTTwo;
-}
 
 

@@ -26,5 +26,5 @@ public:
     * @param container The container of the particles for which the force calculation will be executed
     * @return void
     */
-    void calculateForcesWithLambda(ParticleContainerDS &container) override;
+    void calculateForcesWithLambda(ParticleContainer &container) override;
 };

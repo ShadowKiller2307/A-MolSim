@@ -1,11 +1,11 @@
 /**
  * @brief: generates a cuboid of particles specified by the user input
  */
-#include "CuboidGenerator.h"
+#include "ParticleGenerator.h"
 
-void CuboidGenerator::instantiateCuboid(ParticleContainerDS &container, std::array<double, 3> llfc,
-                                        std::array<unsigned int, 3> particlePerDimension, std::array<double, 3> particleVelocity,
-                                        double h, double mass, int generateNumber)
+void ParticleGenerator::instantiateCuboid(ParticleContainer &container, std::array<double, 3> llfc,
+                                          std::array<unsigned int, 3> particlePerDimension, std::array<double, 3> particleVelocity,
+                                          double h, double mass, int generateNumber)
 {
     double meanValueVelocity{0.1}; // TODO: This can als be passed as a parameter
     auto amountOfParticles = particlePerDimension[0] * particlePerDimension[1] * particlePerDimension[2];
@@ -29,6 +29,6 @@ void CuboidGenerator::instantiateCuboid(ParticleContainerDS &container, std::arr
 }
 
 // TODO: How does the mesh width work for the sphere
-void CuboidGenerator::instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h)
+void ParticleGenerator::instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h)
 {
 }

@@ -5,4 +5,4 @@
 #include "ParticleContainerDS.h"
 
 void ForceCalculator::calculateForces(std::vector<Particle> &particles) {}
-void ForceCalculator::calculateForcesWithLambda(ParticleContainerDS &container) {}
+void ForceCalculator::calculateForcesWithLambda(ParticleContainer &container) {}

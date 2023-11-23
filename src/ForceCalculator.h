@@ -7,6 +7,7 @@
 #include <vector>
 #include "Particle.h"
 #include "ParticleContainerDS.h"
+#include "ParticleContainer.h"
 
 class ParticleContainerDS; //needs to be defined so that the compiler doesn't throw an error
 
@@ -24,5 +25,5 @@ public:
      * @param particles The particles from the ParticleContainerDS for which the force calculation will be executed
      * @return void
      */
-    virtual void calculateForcesWithLambda(ParticleContainerDS &container);
+    virtual void calculateForcesWithLambda(ParticleContainer &container);
 };

@@ -6,7 +6,7 @@
 #include "../src/ParticleContainerDS.h"
 #include "../src/HelperFunctions.h"
 #include "../src/Particle.h"
-#include "../src/CuboidGenerator.h"
+#include "../src/ParticleGenerator.h"
 #include "../src/ForceV1.h"
 #include "../src/LennardJonesForce.h"
 
@@ -35,7 +35,7 @@ protected:
     std::vector<Particle> particles;
     ParticleContainerDS container;
     ParticleContainerDS container2;
-    CuboidGenerator particleGenerator;
+    ParticleGenerator particleGenerator;
     ForceV1 forceV1;
     LennardJonesForce lennardJonesForce{5, 1};
 };

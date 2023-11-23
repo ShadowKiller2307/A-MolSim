@@ -2,7 +2,6 @@
 #include "math.h"
 using cell = std::vector<Particle>;
 
-/*
 ParticleContainerLC::ParticleContainerLC(std::array<double, 3> domainSize, double cutoffRadius) {
     this->domainSize = domainSize;
     this->cutoffRadius = cutoffRadius;
@@ -17,14 +16,27 @@ ParticleContainerLC::ParticleContainerLC(std::array<double, 3> domainSize, doubl
     else { // the domains size in each dimension has to be a multiple of the cutoff radius
         //TODO: maybe print error message
     }
-}*/
+}
 
- void ParticleContainerLC::add(Particle &a)  {
+void ParticleContainerLC::add(Particle &a)  {
           // compute the cell to which the particle will be added
           double xIndex = trunc(a.getX()[0] / cutoffRadius);
           double yIndex = trunc(a.getX()[1]/cutoffRadius);
           double zIndex = trunc(a.getX()[2]/cutoffRadius);
           double index = xIndex + cellsX * yIndex + cellsX * cellsY * zIndex;
           cells.at(index).emplace_back(a);
+}
+
+//void ParticleContainer::iterOverPairs(const std::function<void(Particle &, Particle &)> &forceLambda) {}
+
+void ParticleContainerLC::iterBoundary() {
+
+}
+
+void ParticleContainerLC::iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) {
+
+}
+void ParticleContainerLC::iterHalo() {
+
 }
 
