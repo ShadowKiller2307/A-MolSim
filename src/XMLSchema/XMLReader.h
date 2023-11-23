@@ -1,57 +1,37 @@
 #pragma once
+
 #include "schema.h"
 #include <iostream>
 #include <array>
+#include "CuboidGenerator.h"
+#include "XMLSchema/Constructors/CuboidConstructor.h"
+#include "XMLSchema/Constructors/SimulationConstructor.h"
 
-
-class CuboidConstructor{
-private:
-    std::array<double,3> llfc;
-    std::array<unsigned int,3> particlesPerDimension;
-    std::array<double,3> particleVelocity;
-    double h;
-    double mass;
-    double type;
-
-public:
-    CuboidConstructor(std::array<double,3>& llfc,std::array<unsigned int,3> particlesPerDimension,
-                      std::array<double,3> particleVelocity, double h, double mass, double type){
-        this->h = h;
-        this->llfc = llfc;
-        this->mass = mass;
-        this->particleVelocity = particleVelocity;
-        this->particlesPerDimension = particlesPerDimension;
-        this->type = type;
-    }
-};
 
 class XMLReader {
 
 private:
     std::unique_ptr<simulationConfig> simulation;
-    double t_end;
-    double delta_t;
-    int logLevel;
-    bool inputGenerator, inputPicture,inputXML;
-    std::string baseName;
-    int writeFrequency;
-    std::array<double,3> cuboidLLFC;
-    std::array<unsigned int,3> cuboidParticlesPerDimension;
-    std::array<double,3> particleVelocity;
-    double cuboidH;
-    double cuboidMass;
-    double cuboidType;
+
+    ///The vector containing the extracted cuboids
     std::vector<CuboidConstructor> cuboidConstructors;
+
+    ///The object containing all the extracted simulation parameters
+    SimulationConstructor simulationConstructor;
 
 
 public:
+    /***
+     * The use of explicit helps avoiding unexpected conversions
+     * @param path The path to the XMl file we want to read
+     */
     explicit XMLReader(std::string &path);
 
-    /// @brief Extracts the simulation parameters from the XML file
+    /// @brief Extracts the simulation parameters from the XML file and sets the parameters of the simulationConstructor
     void extractSimulationParameters();
-    /// @brief Extracts the cuboids from the XML file
-    std::vector<CuboidConstructor> extractCuboid();
 
+    /// @brief Extracts the cuboids from the XML file
+    void extractCuboid();
 
 
     /***
@@ -59,25 +39,21 @@ public:
  * @param arrayOfThreeDoubles The complex type from the XML file
  * @return the newly constructed std::array<double,3>
  */
-    static std::array<double,3>  createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles);
+    static std::array<double, 3> createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles);
 
     /***
  * @brief Constructs an std::array<unsigned int,3> from the one in the XML file
  * @param arrayOfThreeUnsignedInts The complex type from the XML file
  * @return the newly constructed std::array<unsigned int,3>
  */
-    static std::array<unsigned int,3> createUnsignedIntArray(arrayOfThreeUnsignedInts arrayOfThreeUnsignedInts);
+    static std::array<unsigned int, 3> createUnsignedIntArray(arrayOfThreeUnsignedInts arrayOfThreeUnsignedInts);
 
 
-    double getT_end();
-    double getDelta_t();
-    int getLogLevel();
-    bool isInputGenerator();
-    bool isInputPicture();
-    bool isInputXML();
-    std::string getBaseName();
-    int getWriteFrequency();
 
+    ///Getter for the simulationConstructor
+    SimulationConstructor getSimulationConstructor();
+    ///Getter for the vector of cuboidConstructors
+    std::vector<CuboidConstructor> getCuboidConstructors();
 
 };
 
