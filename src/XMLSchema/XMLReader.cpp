@@ -3,11 +3,10 @@
 #include "XMLReader.h"
 
 
-
 XMLReader::XMLReader(std::string &path) {
     try {
         this->simulation = Configuration(path, xml_schema::flags::dont_validate);
-        extractSimulationParameters();
+        simulationConstructor = SimulationConstructor();
     }
     catch (xml_schema::exception &e) {
         throw std::invalid_argument(std::string(e.what()));
@@ -15,27 +14,25 @@ XMLReader::XMLReader(std::string &path) {
 }
 
 
-/***
- * @brief Extracts each parameter for the simulation from the XML file.
- * It also extracts each Cuboid from the file and uses CuboidConstructor to create them based on the file.
- */
 
 
 void XMLReader::extractSimulationParameters() {
-    this->t_end = simulation->t_end();
-    this->logLevel = simulation->logLevel();
-    this->delta_t = simulation->delta_t();
-    this->inputGenerator = simulation->inputGenerator();
-    this->inputPicture = simulation->inputPicture();
-    this->inputXML = simulation->inputXML();
-    this->baseName = simulation->baseName();
-    this->writeFrequency = simulation->writeFrequency();
+    double t = simulation->t_end();
+    int level = simulation->logLevel();
+    double delta = simulation->delta_t();
+    bool inputG = simulation->inputGenerator();
+    bool inputP = simulation->inputPicture();
+    bool inputX = simulation->inputXML();
+    std::string name = simulation->baseName();
+    int frequency = simulation->writeFrequency();
+    simulationConstructor.setAllSimulationParameters(t,delta,level,frequency,inputG,
+                                                     inputP,inputX,name);
 
 }
 
-std::vector<CuboidConstructor> XMLReader::extractCuboid(){
+void XMLReader::extractCuboid() {
     auto cuboids = simulation->Cuboid();
-    for (auto & cuboid : cuboids) {
+    for (auto &cuboid: cuboids) {
         auto llfc = createDoubleArray(cuboid.llfc());
         auto particlesPerDimension =
                 createUnsignedIntArray(cuboid.particlePerDimension());
@@ -48,7 +45,7 @@ std::vector<CuboidConstructor> XMLReader::extractCuboid(){
         cuboidConstructors.push_back(cuboidConstructor);
 
     }
-    return cuboidConstructors;
+
 }
 
 std::array<double, 3> XMLReader::createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles) {
@@ -65,31 +62,16 @@ std::array<unsigned int, 3> XMLReader::createUnsignedIntArray(arrayOfThreeUnsign
     return createdArray;
 }
 
-// Getter functions
 
-double XMLReader::getT_end(){
-    return this->t_end;
-}
-double XMLReader::getDelta_t(){
-    return this->delta_t;
-}
-int XMLReader::getLogLevel(){
-    return this->logLevel;
+
+
+
+SimulationConstructor XMLReader::getSimulationConstructor(){
+    return this->simulationConstructor;
 }
 
-bool XMLReader::isInputGenerator(){
-    return this->inputGenerator;
-}
-bool XMLReader::isInputPicture(){
-    return this->inputPicture;
-}
-bool XMLReader::isInputXML(){
-    return this->inputXML;
+std::vector<CuboidConstructor> XMLReader::getCuboidConstructors() {
+    return this->cuboidConstructors;
 }
 
-std::string XMLReader::getBaseName(){
-    return this->baseName;
-}
-int XMLReader::getWriteFrequency(){
-    return this->writeFrequency;
-}
+
