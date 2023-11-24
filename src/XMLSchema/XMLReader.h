@@ -3,7 +3,7 @@
 #include "schema.h"
 #include <iostream>
 #include <array>
-#include "CuboidGenerator.h"
+#include "ParticleGenerator.h"
 #include "XMLSchema/Constructors/CuboidConstructor.h"
 #include "XMLSchema/Constructors/SimulationConstructor.h"
 
