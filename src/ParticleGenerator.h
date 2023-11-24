@@ -35,4 +35,8 @@ public:
      * @return void
      */
     void instantiateSphere(ParticleContainer &container, std::array<double, 3> center, unsigned int nrMR, double h);
+
+    void instantiateCuboidNew(ParticleContainer &container, std::array<double, 3> llfc,
+                                                 std::array<unsigned int, 3> particlePerDimension, std::array<double, 3> particleVelocity,
+                                                 double h, double mass, int generateNumber);
 };

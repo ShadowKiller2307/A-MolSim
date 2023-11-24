@@ -13,6 +13,7 @@ protected:
     double deltaTTwo;
     std::vector<Particle> particles;
     using cell = std::vector<Particle>;
+    double amountOfCells = (domainSize[0]/cutoffRadius) * (domainSize[1]/cutoffRadius) * (domainSize[2]/cutoffRadius);
     /**
     * @brief the cells can be divided into inner, boundary and halo cells
     *
@@ -29,9 +30,12 @@ protected:
      * 3D cell: cutoffRadius * cutoffRadius * cutoffRadius
      */
     double cutoffRadius;
-    double cellsX = domainSize[0]/cutoffRadius;
-    double cellsY = domainSize[1]/cutoffRadius;
-    double cellsZ = domainSize[2]/cutoffRadius;
+    /*
+     * amount of Cells in each dimension can only be integer
+     */
+    int cellsX = static_cast<int> (domainSize[0]/cutoffRadius);
+    int cellsY = static_cast<int> (domainSize[1]/cutoffRadius);
+    int cellsZ = static_cast<int> (domainSize[2]/cutoffRadius);
     //TODO: maybe use a std::variant to represent the different particles implementations
 
 public:
@@ -80,8 +84,9 @@ public:
      * @brief iterate over every particle pair in the container and apply the lambda function
      * @param f the lambda function
      */
+    //virtual void iterOverPairs3D(const std::function<void(Particle &a, Particle &b)> &f);
+    //virtual void iterOverPairs2D(const std::function<void(Particle &a, Particle &b)> &f);
     virtual void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &f);
-
     /**
      * @brief method to add an Particle to an LC container, thus adding it to the according cell
      */
@@ -103,6 +108,11 @@ public:
      * @return void
      */
     void calculateForces();
+
+    /**
+    * @brief method to return the overall size of the container
+    */
+   // virtual void getSize();
 };
 
 

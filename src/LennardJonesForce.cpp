@@ -45,7 +45,7 @@ void LennardJonesForce::calculateForces(std::vector<Particle> &particles)
 
 void LennardJonesForce::calculateForcesWithLambda(ParticleContainer &container)
 {
-    /*double epsilonCapture = this->epsilon;
+    double epsilonCapture = this->epsilon;
     double sigmaCapture = this->sigma;
     auto forceLambda = [epsilonCapture, sigmaCapture](Particle &pi, Particle &pj) {
         std::array<double, 3> xDiff = pi.getX() - pj.getX();
@@ -61,5 +61,5 @@ void LennardJonesForce::calculateForcesWithLambda(ParticleContainer &container)
         resultingForce = pj.getF() + xDiff;
         pj.setF(resultingForce);
     };
-    container.iterOverPairs(forceLambda);*/
+    container.iterOverPairs(forceLambda);
 }

@@ -24,4 +24,7 @@ public:
     void add(Particle &a) override;
 
     void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) override;
+    //void iterOverPairs2D(const std::function<void(Particle &a, Particle &b)> &forceLambda) override;
+
+  //  void getSize() override;
 };
