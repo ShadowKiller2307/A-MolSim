@@ -44,7 +44,7 @@ void ParticleContainerDS::iterOverPairs(const std::function<void(Particle &a, Pa
     }
 }
 
-void ParticleContainer::calculatePosition() {
+void ParticleContainerDS::calculatePosition() {
 
 
     ParticleContainer::debugLog("Currently applying calculatePosition...\n");
@@ -64,7 +64,7 @@ void ParticleContainer::calculatePosition() {
     }
 }
 
-void ParticleContainer::calculateVelocity() {
+void ParticleContainerDS::calculateVelocity() {
 
     ParticleContainer::debugLog("Currently applying calculateVelocity...\n");
 

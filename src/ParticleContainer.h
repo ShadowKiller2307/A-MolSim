@@ -13,7 +13,8 @@ protected:
     double deltaTTwo;
     std::vector<Particle> particles;
     using cell = std::vector<Particle>;
-    double amountOfCells = (domainSize[0]/cutoffRadius) * (domainSize[1]/cutoffRadius) * (domainSize[2]/cutoffRadius);
+    double amountOfCells = (domainSize[0]/cutoffRadius) * (domainSize[1]/cutoffRadius) * (domainSize[2]/cutoffRadius)
+                             + 2 * cellsX + 2 * (cellsY-2); // adding the halo cells
     /**
     * @brief the cells can be divided into inner, boundary and halo cells
     *

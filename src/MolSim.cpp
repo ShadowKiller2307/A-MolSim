@@ -258,6 +258,8 @@ int main(int argc, char *argsv[])
             }
         }
 
+        // TODO maybe some sort of iteratorOverTheHaloParticles to delete the particles in the
+        // Halo area
         // calculate new x
         particleContainer->calculatePosition();
         // calculate new f

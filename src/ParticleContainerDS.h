@@ -57,4 +57,6 @@ public:
     *//*
     void calculateForces();*/
     void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) override;
+    void calculatePosition() override;
+    void calculateVelocity() override;
 };

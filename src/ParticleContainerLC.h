@@ -14,8 +14,9 @@ public:
 
     /**
      * @brief iterate over the particles which are currectly located in the boundary zone
+     *  @param boundaryLambda an array of 4 BoundaryConditions so that a different boundary condition can be applied to each side
      */
-     void iterBoundary();
+    void iterBoundary(std::array <const std::function<void(Particle &, Particle &)>, 4> &boundaryLambda);
     /**
      * @brief iterate over the particles which are currectly located in the halo zone
      */
@@ -25,6 +26,9 @@ public:
 
     void iterOverPairs(const std::function<void(Particle &a, Particle &b)> &forceLambda) override;
     //void iterOverPairs2D(const std::function<void(Particle &a, Particle &b)> &forceLambda) override;
+    void calculatePosition() override;
+    void calculateVelocity() override;
+    void calculateCellIndex(double xPos, double yPos, double zPos);
 
   //  void getSize() override;
 };

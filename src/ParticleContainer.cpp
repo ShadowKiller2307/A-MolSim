@@ -38,3 +38,11 @@ void ParticleContainer::setForceCalculator(int mode)
         forceCalculator = new ForceV1(); // If the input mode isn't defined, the forceCalculator is set to ForceV1
     }
 }
+
+void ParticleContainer::calculateVelocity() {
+
+}
+
+void ParticleContainer::calculatePosition() {
+
+}
