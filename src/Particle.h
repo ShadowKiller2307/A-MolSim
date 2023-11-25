@@ -48,8 +48,6 @@ private:
 public:
   explicit Particle(int type = 0);
 
-  Particle(const Particle &other);
-
   Particle(
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second

@@ -170,8 +170,7 @@ namespace ArrayUtils
    * @return Element wise F(lhs, rhs).
    */
   template <class Scalar, class Container, class F>
-  inline Container elementWiseScalarOp(const Scalar &lhs, const Container &rhs,
-                                       F binaryFunction)
+  inline Container elementWiseScalarOp(const Scalar &lhs, const Container &rhs, F binaryFunction)
   {
     Container ret = rhs;
     auto retIter = std::begin(ret);

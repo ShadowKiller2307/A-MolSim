@@ -13,3 +13,4 @@ Tests/
 !Tests/CMakeLists.txt
 !Tests/MolSimTests.cpp
 logs/
+srcOld/
