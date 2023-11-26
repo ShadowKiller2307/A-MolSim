@@ -1,0 +1,15 @@
+<Configuration>
+
+    <baseName>DemoSimulation2</baseName>
+    <writeFrequency>5</writeFrequency>
+    <t_end>101.0</t_end>
+    <delta_t>0.7</delta_t>
+    <logLevel>2</logLevel>
+    <inputGenerator>false</inputGenerator>
+    <inputText>true</inputText>
+    <inputPicture>false</inputPicture>
+    <inputXML>true</inputXML>
+
+
+
+</Configuration>
