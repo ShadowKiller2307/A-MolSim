@@ -24,7 +24,7 @@ void ParticleContainer::add(Particle &a) {}
 void ParticleContainer::setForceCalculator(int mode)
 {
 
-    ParticleContainer::debugLog("Setting the mode for the forces to {}.", mode);
+    LogManager::debugLog("Setting the mode for the forces to {}.", mode);
     if (mode == 0)
     {
         forceCalculator = new ForceV1();

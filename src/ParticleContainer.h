@@ -10,6 +10,7 @@ class ParticleContainer
 {
 protected:
     ForceCalculator *forceCalculator;
+
     double deltaTTwo;
     std::vector<Particle> particles;
     using cell = std::vector<Particle>;
@@ -40,20 +41,8 @@ protected:
     //TODO: maybe use a std::variant to represent the different particles implementations
 
 public:
-    /***
-     * @brief Logs only if the level of the LogManager is debug
-     * @tparam T The type of message to log
-     * @tparam Args The types of the extra arguments
-     * @param message The actual message that needs to be logged
-     * @param args The arguments used for formatting the message
-     */
-    template <typename T, typename... Args>
-    static void debugLog(T &message, Args &&...args)
-    {
-        if(LogManager::getInstance().getLevel()==spdlog::level::debug) {
-            LogManager::getInstance().getLogger()->log(spdlog::level::debug, message, std::forward<Args>(args)...);
-        }
-    }
+
+
 
     /**
     * @brief sets the deltaT for the container

@@ -15,6 +15,7 @@ LogManager::LogManager()
     logger = spdlog::rotating_logger_mt("fileLogger", "../logs/log.txt",
                                         maxSize, maxFiles, true);
     logger->set_level(this->logLevel);
+
 }
 
 std::shared_ptr<spdlog::logger> LogManager::getLogger()
@@ -29,6 +30,7 @@ spdlog::level::level_enum LogManager::getLevel()
 
 void LogManager::setLogLevel(spdlog::level::level_enum level)
 {
+
     this->logLevel = level;
     this->logger->set_level(level);
 }
