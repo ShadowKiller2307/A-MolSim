@@ -25,7 +25,7 @@ public:
      * The use of explicit helps avoiding unexpected conversions
      * @param path The path to the XMl file we want to read
      */
-    explicit XMLReader(std::string &path);
+    explicit XMLReader(const std::string& path);
 
     /// @brief Extracts the simulation parameters from the XML file and sets the parameters of the simulationConstructor
     void extractSimulationParameters();

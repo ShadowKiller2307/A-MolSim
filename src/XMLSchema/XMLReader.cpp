@@ -3,13 +3,15 @@
 #include "XMLReader.h"
 
 
-XMLReader::XMLReader(std::string &path) {
+XMLReader::XMLReader(const std::string& path) {
     try {
         this->simulation = Configuration(path, xml_schema::flags::dont_validate);
         simulationConstructor = SimulationConstructor();
     }
     catch (xml_schema::exception &e) {
+
         throw std::invalid_argument(std::string(e.what()));
+
     }
 }
 
