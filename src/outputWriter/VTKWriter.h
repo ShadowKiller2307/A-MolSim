@@ -37,7 +37,7 @@ namespace outputWriter
      *
      * @note: initializeOutput() must have been called before.
      */
-    void plotParticle(Particle &p);
+    void plotParticle(const Particle &p);
 
     /**
      * writes the final output file.

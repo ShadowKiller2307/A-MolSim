@@ -3,12 +3,12 @@
  */
 
 #include <gtest/gtest.h>
-#include "../src/ParticleContainerDS.h"
-#include "../src/HelperFunctions.h"
-#include "../src/Particle.h"
-#include "../src/ParticleGenerator.h"
-#include "../src/ForceV1.h"
-#include "../src/LennardJonesForce.h"
+#include "particleContainers/ParticleContainerDirSum.h"
+#include "HelperFunctions.h"
+#include "Particle.h"
+#include "particleGenerator/ParticleGenerator.h"
+#include "ForceV1.h"
+#include "LennardJonesForce.h"
 
 // Difference ASSERT vs EXPECT macros
 // ASSERT -> fatal failures
@@ -17,17 +17,19 @@
 /**
  * @brief: A test fixture which initializes some Particles and a container for the following tests
  */
-class MolSimTest : public testing::Test {
+class MolSimTest : public testing::Test
+{
 protected:
-    void SetUp() override {
+    void SetUp() override
+    {
         particles.emplace_back(particleOne);
         particles.emplace_back(particleTwo);
         particles.emplace_back(particleThree);
         container.setParticles(particles);
     }
 
-    std::array<double,3> temp{0.0, 0.0, 0.0};
-    std::array<double,3> temp2{1.0, 0.0, 0.0};
+    std::array<double, 3> temp{0.0, 0.0, 0.0};
+    std::array<double, 3> temp2{1.0, 0.0, 0.0};
     std::array<double, 3> temp3{2.0, 0.0, 0.0};
     Particle particleOne{temp, temp, 1, 0};
     Particle particleTwo{temp2, temp, 1, 0};
@@ -43,7 +45,8 @@ protected:
 /**
  * @brief very simple test to check whether the container sets the particles correctly
  */
-TEST_F(MolSimTest, testGetParticles) {
+TEST_F(MolSimTest, testGetParticles)
+{
     EXPECT_EQ(3, container.getParticles().size());
 }
 
@@ -51,7 +54,8 @@ TEST_F(MolSimTest, testGetParticles) {
  * @brief Check the position values of the particles in the particleContainer after the instantiateCuboid method was
  * called
  */
-TEST_F(MolSimTest, testGenerateParticlesGenerator) {
+TEST_F(MolSimTest, testGenerateParticlesGenerator)
+{
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
     ParticleContainerDS containerCuboid;
@@ -74,13 +78,14 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator) {
     EXPECT_EQ(test, containerCuboid.getParticles().at(6).getX());
     test = {1.0, 1.0, 1.0};
     EXPECT_EQ(test, containerCuboid.getParticles().at(7).getX());
-    //maybe also check the velocities
+    // maybe also check the velocities
 }
 
 /**
  * @brief: Test the ForceV1Calculation against hard coded values
  */
-TEST_F(MolSimTest, testForceV1) {
+TEST_F(MolSimTest, testForceV1)
+{
     // calculate one iteration of the ForceV1 calculation
     forceV1.calculateForces(particles);
     // check against hard coded values
@@ -96,7 +101,8 @@ TEST_F(MolSimTest, testForceV1) {
  * @brief  this test checks whether our old forceV1 calculation and the
  * forceV1 calculation with the lambda generate the same values
  */
-TEST_F(MolSimTest, testEqualLambdaForceV1) {
+TEST_F(MolSimTest, testEqualLambdaForceV1)
+{
     auto particlesCopy = particles;
     container2.setParticles(particlesCopy);
     forceV1.calculateForces(particles);
@@ -109,28 +115,30 @@ TEST_F(MolSimTest, testEqualLambdaForceV1) {
 /**
  * @brief: Test the LennardJonesForceCalculation against hard coded values
  */
-TEST_F(MolSimTest, testForceLennardJones) {
+TEST_F(MolSimTest, testForceLennardJones)
+{
     // calculate one iteration of the LennardJonesForceIteration
     lennardJonesForce.calculateForces(particles);
     // check against hardcoded values
     std::array<double, 3> expectedValuesOne{-119.091796875, 0.0, 0.0};
-    //have to check whether this is due to the double, an error in the calculation in the program or an
-    //error in the calculation on paper
+    // have to check whether this is due to the double, an error in the calculation in the program or an
+    // error in the calculation on paper
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
     std::array<double, 3> expectedValuesThree{119.091796875, 0.0, 0.0};
-    double test = (465.0/256.0);
+    double test = (465.0 / 256.0);
     std::cout << test << std::endl;
     printf("Test=%.17le", test);
     EXPECT_EQ(particles.at(0).getF(), expectedValuesOne);
     EXPECT_EQ(particles.at(1).getF(), expectedValuesTwo);
     EXPECT_EQ(particles.at(2).getF(), expectedValuesThree);
-    }
+}
 
 /**
  * @brief  this test checks whether our old lennardjonesforce calculation and the
  * lennardjonesforce calculation with the lambda generate the same values
  */
-TEST_F(MolSimTest, testEqualLambdaLennardJonesForce) {
+TEST_F(MolSimTest, testEqualLambdaLennardJonesForce)
+{
     auto particlesCopy = particles;
     container2.setParticles(particlesCopy);
     lennardJonesForce.calculateForces(particles);

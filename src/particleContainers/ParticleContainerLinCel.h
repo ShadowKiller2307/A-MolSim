@@ -1,3 +1,4 @@
+#pragma once
 #include "particleContainers/ParticleContainer.h"
 using cell = std::vector<Particle>;
 

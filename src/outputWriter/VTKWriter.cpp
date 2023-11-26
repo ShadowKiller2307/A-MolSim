@@ -64,7 +64,7 @@ namespace outputWriter
     delete vtkFile;
   }
 
-  void VTKWriter::plotParticle(Particle &p)
+  void VTKWriter::plotParticle(const Particle &p)
   {
     if (vtkFile->UnstructuredGrid().present())
     {

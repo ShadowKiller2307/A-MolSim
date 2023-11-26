@@ -14,3 +14,4 @@ Tests/
 !Tests/MolSimTests.cpp
 logs/
 srcOld/
+buildFromScratch.sh
