@@ -12,6 +12,7 @@ XMLReader::XMLReader(const std::string& path) {
 
         throw std::invalid_argument(std::string(e.what()));
 
+
     }
 }
 
