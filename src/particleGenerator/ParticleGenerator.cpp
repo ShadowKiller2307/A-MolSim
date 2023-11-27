@@ -61,7 +61,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		double endTime = optArgs.endTime > 0 ? optArgs.endTime : static_cast<double>(params["endTime"]);
 		(*container) = createContainer(deltaT, endTime);
 	}
-	// jsonContent["lol"] // null
+	// jsonContent["lol"] // returns null
 
 	for (size_t i = 0; i < jsonContent["params"]["numParticles"]; i++)
 	{

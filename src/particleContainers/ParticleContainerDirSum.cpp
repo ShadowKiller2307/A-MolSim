@@ -1,4 +1,5 @@
 #include "particleContainers/ParticleContainerDirSum.h"
+#include <iostream>
 
 ParticleContainerDirSum::ParticleContainerDirSum(double deltaT, double endTime) : ParticleContainer(deltaT, endTime)
 {

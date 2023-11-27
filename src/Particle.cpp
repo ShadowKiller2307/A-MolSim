@@ -39,6 +39,11 @@ void Particle::setF(std::array<double, 3> &force)
   f = force;
 }
 
+void Particle::addF(std::array<double, 3> &force)
+{
+  f = f + force;
+}
+
 void Particle::setX(std::array<double, 3> &xPosition)
 {
   x = xPosition;

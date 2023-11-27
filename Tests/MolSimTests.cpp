@@ -37,7 +37,6 @@ protected:
     std::vector<Particle> particles;
     ParticleContainerDS container;
     ParticleContainerDS container2;
-    ParticleGenerator particleGenerator;
     ForceV1 forceV1;
     LennardJonesForce lennardJonesForce{5, 1};
 };

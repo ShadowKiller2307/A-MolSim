@@ -9,12 +9,13 @@ outputManager::outputManager()
 
 void outputManager::plotParticles(const std::vector<Particle> &particles, const size_t iteration)
 {
-	writer.initializeOutput(particles.size());
+	auto w = outputWriter::VTKWriter();
+	w.initializeOutput(particles.size());
 	for (auto &p : particles)
 	{
-		writer.plotParticle(p);
+		w.plotParticle(p);
 	}
-	writer.writeFile("../output/MD_vtk", iteration);
+	w.writeFile("../output/MD_vtk", iteration);
 }
 
 bool outputManager::getOutputFiles()

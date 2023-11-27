@@ -66,6 +66,8 @@ public:
 
   void setF(std::array<double, 3> &force);
 
+  void addF(std::array<double, 3> &force);
+
   void setX(std::array<double, 3> &xPosition);
 
   void setV(std::array<double, 3> &velocity);

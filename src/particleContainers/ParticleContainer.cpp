@@ -88,6 +88,7 @@ void ParticleContainer::simulateParticles()
 		iteration_++;
 		startTime_ += deltaT_;
 	}
+	//  TODO (ADD): Log
 	auto end = std::chrono::high_resolution_clock::now();
 	int64_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 	std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";

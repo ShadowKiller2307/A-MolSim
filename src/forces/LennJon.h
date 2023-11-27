@@ -4,7 +4,7 @@
 class LennJon : public Force
 {
 private:
-	double ntfEpsilon_, sigma_;
+	double ntfEpsilon_ /*(Negative TwentyFour Epsilon)*/, sigma_;
 
 public:
 	std::function<void(Particle &a, Particle &b)> innerPairs() override;

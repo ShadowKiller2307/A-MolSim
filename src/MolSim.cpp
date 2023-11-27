@@ -88,16 +88,21 @@ int main(int argc, char *const argv[])
 	else if (ending == "json")
 	{
 		particleGenerator::instantiateJSON(&container, argv[optind], opts);
+		LennJon LJ = LennJon(5.0, 1.0);
+		container->setForce(LJ.innerPairs());
 	}
 	else if (ending == "png")
 	{
+		particleGenerator::instantiatePicture(&container, argv[optind], opts);
+		LennJon LJ = LennJon(5.0, 1.0);
+		container->setForce(LJ.innerPairs());
 	}
 	else if (ending == "txt")
 	{
 		particleGenerator::instantiateTxt(&container, argv[optind], optionals{.deltaT = 0.014, .endTime = 1000});
+		GravPot GP = GravPot();
+		container->setForce(GP.innerPairs());
 	}
-	LennJon LJ = LennJon(5.0, 1.0);
-	container->setForce(LJ.innerPairs());
 	container->simulateParticles();
 	delete container;
 	return 0;
