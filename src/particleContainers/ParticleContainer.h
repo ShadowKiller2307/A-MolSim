@@ -13,6 +13,8 @@ protected:
 	std::vector<Particle> particles_;
 	ParticleContainer(const double deltaT, const double endTime);
 	outputManager outManager_;
+	std::function<void(Particle &a, Particle &b)> force;
+	int outputEveryNIterations_;
 
 public:
 	/**
@@ -56,4 +58,6 @@ public:
 	std::vector<Particle> &getParticles();
 
 	void setParticles(std::vector<Particle> &particles);
+	void setForce(const std::function<void(Particle &a, Particle &b)> f);
+	~ParticleContainer() = default;
 };

@@ -38,6 +38,8 @@ public:
 
 	static void instantiatePicture(ParticleContainer **container, const std::string &path, optionals optionalArguments);
 
+	static void instantiateTxt(ParticleContainer **container, const std::string &path, optionals optionalArguments);
+
 	static void instantiateXML();
 
 	static ParticleContainer *createContainer(double deltaT, double endTime);

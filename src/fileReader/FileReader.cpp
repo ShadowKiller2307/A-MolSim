@@ -16,7 +16,7 @@ FileReader::FileReader() = default;
 
 FileReader::~FileReader() = default;
 
-void FileReader::readFile(std::vector<Particle> &particles, char *filename)
+void FileReader::readFile(ParticleContainer **container, char *filename)
 {
   std::array<double, 3> x;
   std::array<double, 3> v;
@@ -40,7 +40,6 @@ void FileReader::readFile(std::vector<Particle> &particles, char *filename)
 
     std::istringstream numstream(tmpString);
     numstream >> numParticles;
-    particles.resize(numParticles); // reserve enough space for all particles
     std::cout << "Reading " << numParticles << " particles." << std::endl;
     for (size_t i = 0; i < numParticles; i++)
     {
@@ -71,7 +70,7 @@ void FileReader::readFile(std::vector<Particle> &particles, char *filename)
         exit(-1);
       }
       datastream >> m;
-      particles.at(i) = Particle(x, v, m, 0);
+      (*container)->add(x, v, m, 0);
     }
   }
   else

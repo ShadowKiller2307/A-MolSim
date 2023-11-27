@@ -11,13 +11,6 @@ void ParticleContainerDirSum::add(const std::array<double, 3> &x_arg, const std:
 
 void ParticleContainerDirSum::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
 {
-	for (auto &p : particles_)
-	{
-		auto oldForce = p.getF();
-		std::array<double, 3> zero = {0.0, 0.0, 0.0};
-		p.setF(zero);
-		p.setOldF(oldForce);
-	}
 	for (size_t i = 0; i < particles_.size() - 1; ++i)
 	{
 		Particle &pi = particles_.at(i);

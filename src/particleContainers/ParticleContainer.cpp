@@ -1,10 +1,12 @@
 #include "particleContainers/ParticleContainer.h"
 #include "logOutputManager/LogManager.h"
+#include <iostream>
 
 ParticleContainer::ParticleContainer(const double deltaT, const double endTime) : deltaT_(deltaT), endTime_(endTime)
 {
 	outManager_ = outputManager();
 	startTime_ = 0.0;
+	outputEveryNIterations_ = 10;
 }
 
 void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
@@ -13,6 +15,14 @@ void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a,
 
 void ParticleContainer::calculateForces()
 {
+	for (auto &p : particles_)
+	{
+		auto oldForce = p.getF();
+		std::array<double, 3> zero = {0.0, 0.0, 0.0};
+		p.setF(zero);
+		p.setOldF(oldForce);
+	}
+	iterOverInnerPairs(force);
 }
 
 void ParticleContainer::calculateVelocity()
@@ -53,17 +63,19 @@ void ParticleContainer::add(const std::array<double, 3> &x_arg, const std::array
 
 void ParticleContainer::simulateParticles()
 {
+	auto begin = std::chrono::high_resolution_clock::now();
+
 	while (startTime_ < endTime_)
 	{
-		// if (LogManager::getInstance().getOutputFiles() && iteration % outputEveryNIterations == 0)
-		// {
-		// 	plotParticles(iteration);
-		// }
-		outManager_.plotParticles(particles_, iteration_);
+		if (/*LogManager::getInstance().getOutputFiles() &&*/ iteration_ % outputEveryNIterations_ == 0)
+		{
+			outManager_.plotParticles(particles_, iteration_);
+		}
 		if (iteration_ % 100 == 0)
 		{
-			// TODO (ADD): Log
-			// fileLogger->log(logManager.getLevel(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
+			std::cout << "Iteration " + std::to_string(iteration_) + " finished. (" + std::to_string(std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100) + "%)" << std::endl;
+			//  TODO (ADD): Log
+			//  fileLogger->log(logManager.getLevel(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
 		}
 
 		// calculate new x
@@ -76,6 +88,14 @@ void ParticleContainer::simulateParticles()
 		iteration_++;
 		startTime_ += deltaT_;
 	}
+	auto end = std::chrono::high_resolution_clock::now();
+	int64_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+	std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
+}
+
+void ParticleContainer::setForce(const std::function<void(Particle &a, Particle &b)> f)
+{
+	force = f;
 }
 
 std::vector<Particle> &ParticleContainer::getParticles()

@@ -14,7 +14,7 @@ void outputManager::plotParticles(const std::vector<Particle> &particles, const 
 	{
 		writer.plotParticle(p);
 	}
-	writer.writeFile("MD_vtk", iteration);
+	writer.writeFile("../output/MD_vtk", iteration);
 }
 
 bool outputManager::getOutputFiles()

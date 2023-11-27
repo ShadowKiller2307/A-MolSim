@@ -2,7 +2,9 @@
 	"params":{
 		"numParticles": 2,
 		"deltaT": 0.0002,
-		"endTime": 5
+		"endTime": 5,
+		"containerType": "DirSum",
+		"boundaries": "oo"
 	},
 	"particles": [{
 		"x": [

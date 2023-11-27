@@ -81,7 +81,7 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 		optArgs.generateNumber = generateNumber_++;
 	}
 	int width, height, bpp;
-	auto actualPath = std::string("_").compare(path) == 0 ? "../input/Cool MolSim.png" : path;
+	auto actualPath = std::string("_.png").compare(path) == 0 ? "../input/Cool MolSim.png" : path;
 	char *charPath = new char[actualPath.size()];
 	strcpy(charPath, actualPath.c_str());								// covert std::string to char*
 	charPath[actualPath.size() - 1] = '\0';								// explicitly set null terminator
@@ -108,6 +108,22 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 		}
 	}
 	stbi_image_free(rgb_image);
+}
+
+void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, optionals optArgs)
+{
+	if (!(*container))
+	{
+		double deltaT = optArgs.deltaT;
+		double endTime = optArgs.endTime;
+		(*container) = createContainer(deltaT, endTime);
+	}
+	FileReader fr = FileReader();
+	auto actualPath = std::string("_.txt").compare(path) == 0 ? "../input/eingabe-sonne.txt" : path;
+	char *charPath = new char[actualPath.size() + 1];
+	strcpy(charPath, actualPath.c_str()); // covert std::string to char*
+	charPath[actualPath.size()] = '\0';	  // explicitly set null terminator
+	fr.readFile(container, charPath);
 }
 
 void particleGenerator::instantiateXML()

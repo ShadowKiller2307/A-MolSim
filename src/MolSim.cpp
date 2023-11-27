@@ -1,5 +1,7 @@
 #include "particleGenerator/ParticleGenerator.h"
 #include "particleContainers/ParticleContainer.h"
+#include "forces/GravPot.h"
+#include "forces/LennJon.h"
 #include "MolSim.h"
 #include <iostream>
 #include <fstream>
@@ -92,7 +94,10 @@ int main(int argc, char *const argv[])
 	}
 	else if (ending == "txt")
 	{
+		particleGenerator::instantiateTxt(&container, argv[optind], optionals{.deltaT = 0.014, .endTime = 1000});
 	}
+	LennJon LJ = LennJon(5.0, 1.0);
+	container->setForce(LJ.innerPairs());
 	container->simulateParticles();
 	delete container;
 	return 0;
