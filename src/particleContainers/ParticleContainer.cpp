@@ -4,7 +4,7 @@
 
 ParticleContainer::ParticleContainer(const double deltaT, const double endTime) : deltaT_(deltaT), endTime_(endTime)
 {
-	outManager_ = outputManager();
+	outManager_ = new OutputManager();
 	startTime_ = 0.0;
 	outputEveryNIterations_ = 10;
 }
@@ -67,9 +67,9 @@ void ParticleContainer::simulateParticles()
 
 	while (startTime_ < endTime_)
 	{
-		if (/*LogManager::getInstance().getOutputFiles() &&*/ iteration_ % outputEveryNIterations_ == 0)
+		if (/*.getOutputFiles() &&*/ iteration_ % outputEveryNIterations_ == 0)
 		{
-			outManager_.plotParticles(particles_, iteration_);
+			outManager_->plotParticles(particles_, iteration_);
 		}
 		if (iteration_ % 100 == 0)
 		{
@@ -94,9 +94,29 @@ void ParticleContainer::simulateParticles()
 	std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
 }
 
+void ParticleContainer::writeJSON(std::string &name)
+{
+	outManager_->writeJSON(name, *this);
+}
+
 void ParticleContainer::setForce(const std::function<void(Particle &a, Particle &b)> f)
 {
 	force = f;
+}
+
+const double ParticleContainer::getDeltaT() const
+{
+	return deltaT_;
+}
+
+const double ParticleContainer::getEndTime() const
+{
+	return endTime_;
+}
+
+ParticleContainer::~ParticleContainer()
+{
+	delete outManager_;
 }
 
 std::vector<Particle> &ParticleContainer::getParticles()

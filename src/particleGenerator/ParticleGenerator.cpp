@@ -52,7 +52,7 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 
 void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, optionals optArgs)
 {
-	std::ifstream f(std::string("_.json").compare(path) == 0 ? "../input/collision.json" : path);
+	std::ifstream f(path);
 	json jsonContent = json::parse(f);
 	json params = jsonContent["params"];
 	if (!(*container))
@@ -81,11 +81,15 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 		optArgs.generateNumber = generateNumber_++;
 	}
 	int width, height, bpp;
-	auto actualPath = std::string("_.png").compare(path) == 0 ? "../input/Cool MolSim.png" : path;
-	char *charPath = new char[actualPath.size()];
-	strcpy(charPath, actualPath.c_str());								// covert std::string to char*
-	charPath[actualPath.size() - 1] = '\0';								// explicitly set null terminator
+	char *charPath = new char[path.size()];
+	strcpy(charPath, path.c_str());										// convert std::string to char*
+	charPath[path.size() - 1] = '\0';									// explicitly set null terminator
 	uint8_t *rgb_image = stbi_load(charPath, &width, &height, &bpp, 3); // load the image
+	if (!rgb_image)
+	{
+		std::cout << "Error, could not load image!" << std::endl;
+		exit(0);
+	}
 	std::vector<Particle> &particles = (*container)->getParticles();
 	for (int i = 0; i < height; ++i)
 	{

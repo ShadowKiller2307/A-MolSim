@@ -41,7 +41,7 @@ int main(int argc, char *const argv[])
 			break;
 		case 'h':
 			printHelp();
-			break;
+			exit(0);
 		case 'l':
 		{
 			int temp = std::stoi(optarg);
@@ -80,6 +80,7 @@ int main(int argc, char *const argv[])
 	auto str = std::string(argv[optind]);
 	int found = str.find_last_of(".");
 	auto ending = str.substr(found + 1);
+	std::string path;
 
 	// c++ can't do switch statements on strings😔, this does the job, let's not overcomplicate things
 	if (ending == "xml")
@@ -87,13 +88,15 @@ int main(int argc, char *const argv[])
 	}
 	else if (ending == "json")
 	{
-		particleGenerator::instantiateJSON(&container, argv[optind], opts);
+		path = std::string("_.json").compare(argv[optind]) == 0 ? "../input/collision.json" : argv[optind];
+		particleGenerator::instantiateJSON(&container, path, opts);
 		LennJon LJ = LennJon(5.0, 1.0);
 		container->setForce(LJ.innerPairs());
 	}
 	else if (ending == "png")
 	{
-		particleGenerator::instantiatePicture(&container, argv[optind], opts);
+		path = std::string("_.png").compare(argv[optind]) == 0 ? "../input/Cool MolSim.png" : argv[optind];
+		particleGenerator::instantiatePicture(&container, path, opts);
 		LennJon LJ = LennJon(5.0, 1.0);
 		container->setForce(LJ.innerPairs());
 	}
@@ -102,6 +105,13 @@ int main(int argc, char *const argv[])
 		particleGenerator::instantiateTxt(&container, argv[optind], optionals{.deltaT = 0.014, .endTime = 1000});
 		GravPot GP = GravPot();
 		container->setForce(GP.innerPairs());
+	}
+	if (writeToJSON)
+	{
+		auto name = str.substr(0, found);
+		auto newName = "generated_" + name + ".json";
+		container->writeJSON(newName);
+		return 0;
 	}
 	container->simulateParticles();
 	delete container;

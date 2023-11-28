@@ -1,5 +1,6 @@
 .idea/
 .vscode/
+.prettierignore
 cmake-build-*
 CMakeFiles/
 cmake_install.cmake

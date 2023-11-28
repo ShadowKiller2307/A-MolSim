@@ -1,9 +1,12 @@
 #pragma once
+#include "logOutputManager/OutputManager.h"
 #include "utils/ArrayUtils.h"
-#include "logOutputManager/outputManager.h"
 #include "Particle.h"
+
 #include <functional>
 #include <vector>
+
+class OutputManager;
 
 class ParticleContainer
 {
@@ -12,7 +15,7 @@ protected:
 	size_t iteration_;
 	std::vector<Particle> particles_;
 	ParticleContainer(const double deltaT, const double endTime);
-	outputManager outManager_;
+	OutputManager *outManager_;
 	std::function<void(Particle &a, Particle &b)> force;
 	int outputEveryNIterations_;
 
@@ -55,9 +58,17 @@ public:
 
 	void simulateParticles();
 
+	void writeJSON(std::string &name);
+
 	std::vector<Particle> &getParticles();
 
 	void setParticles(std::vector<Particle> &particles);
+
 	void setForce(const std::function<void(Particle &a, Particle &b)> f);
-	~ParticleContainer() = default;
+
+	const double getDeltaT() const;
+
+	const double getEndTime() const;
+
+	~ParticleContainer();
 };
