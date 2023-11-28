@@ -130,7 +130,7 @@ void particleGenerator::instantiateTxt(ParticleContainer **container, const std:
 	fr.readFile(container, charPath);
 }
 
-void particleGenerator::instantiateXML()
+void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, optionals optionalArguments)
 {
 	// TODO (ADD): XML instantiation
 }

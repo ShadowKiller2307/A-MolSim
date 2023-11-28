@@ -1,5 +1,5 @@
-#include "particleGenerator/ParticleGenerator.h"
 #include "particleContainers/ParticleContainer.h"
+#include "particleGenerator/ParticleGenerator.h"
 #include "forces/GravPot.h"
 #include "forces/LennJon.h"
 #include "MolSim.h"
@@ -7,9 +7,13 @@
 #include <fstream>
 #include <getopt.h>
 #include <chrono>
+#include "logOutputManager/LogManager.h"
 
 int main(int argc, char *const argv[])
 {
+	LogManager &logManager = LogManager::getInstance();
+	logManager.setLogLevel(spdlog::level::info); // standard default level
+
 	auto opts = optionals();
 	bool writeToJSON = false;
 	std::string outName;
@@ -45,12 +49,13 @@ int main(int argc, char *const argv[])
 		case 'l':
 		{
 			int temp = std::stoi(optarg);
-			if (temp >= 0 && temp <= 4)
+			if (temp >= 0 && temp < 5)
 			{
-				// TODO (ADD): Log
-				// logLevel = static_cast<LogLevel>(temp);
-				// spdlog::level::level_enum level = toSpdLevel(logLevel);
-				// logManager.setLogLevel(level);
+				logManager.setLogLevel(mapIntToLevel(temp));
+			}
+			else
+			{
+				LogManager::errorLog("Invalid Log Level <{}>!", temp);
 			}
 			break;
 		}
@@ -61,17 +66,14 @@ int main(int argc, char *const argv[])
 			writeToJSON = true;
 			break;
 		default:
-			// TODO (ADD): Log
-			// fileLogger->log(logManager.getLevel(), "Error parsing arguments. Maybe you gave one that isn't recognized.\n");
+			LogManager::errorLog("Error parsing arguments. Maybe you gave one that isn't recognized.\n");
 			break;
 		}
 	}
 
 	if (optind >= argc)
 	{
-		// TODO (ADD): Log
-		// fileLogger->log(logManager.getLevel(), "Input missing as an argument, aborting\n");
-
+		LogManager::errorLog("Input missing as an argument, aborting\n");
 		printHelp();
 		return EXIT_FAILURE;
 	}
@@ -85,6 +87,8 @@ int main(int argc, char *const argv[])
 	// c++ can't do switch statements on strings😔, this does the job, let's not overcomplicate things
 	if (ending == "xml")
 	{
+		path = std::string("_.xml").compare(argv[optind]) == 0 ? "../input/default.xml" : argv[optind];
+		particleGenerator::instantiateXML(&container, path, opts);
 	}
 	else if (ending == "json")
 	{
@@ -124,5 +128,21 @@ void printHelp()
 	if (file.is_open())
 	{
 		std::cout << file.rdbuf();
+	}
+}
+spdlog::level::level_enum mapIntToLevel(int programArgument)
+{
+	switch (programArgument)
+	{
+	case 0:
+		return spdlog::level::level_enum::err;
+	case 1:
+		return spdlog::level::level_enum::warn;
+	case 2:
+		return spdlog::level::level_enum::info;
+	case 3:
+		return spdlog::level::level_enum::debug;
+	default:
+		return spdlog::level::level_enum::off;
 	}
 }

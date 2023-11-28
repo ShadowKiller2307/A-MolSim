@@ -40,7 +40,7 @@ public:
 
 	static void instantiateTxt(ParticleContainer **container, const std::string &path, optionals optionalArguments);
 
-	static void instantiateXML();
+	static void instantiateXML(ParticleContainer **container, const std::string &path, optionals optionalArguments);
 
 	static ParticleContainer *createContainer(double deltaT, double endTime);
 	static ParticleContainer *createContainer(double deltaT, double endTime, std::array<double, 3>);

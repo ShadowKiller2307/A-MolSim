@@ -2,11 +2,11 @@
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 
-ParticleContainer::ParticleContainer(const double deltaT, const double endTime) : deltaT_(deltaT), endTime_(endTime)
+ParticleContainer::ParticleContainer(const double deltaT, const double endTime, int writeFrequency) : deltaT_(deltaT), endTime_(endTime)
 {
 	outManager_ = new OutputManager();
 	startTime_ = 0.0;
-	outputEveryNIterations_ = 10;
+	outputEveryNIterations_ = writeFrequency;
 }
 
 void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
@@ -73,7 +73,8 @@ void ParticleContainer::simulateParticles()
 		}
 		if (iteration_ % 100 == 0)
 		{
-			std::cout << "Iteration " + std::to_string(iteration_) + " finished. (" + std::to_string(std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100) + "%)" << std::endl;
+			// std::cout << "Iteration " + std::to_string(iteration_) + " finished. (" + std::to_string(std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100) + "%)" << std::endl;
+			LogManager::infoLog("Iteration {} finished. ({}%)", iteration_, std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100);
 			//  TODO (ADD): Log
 			//  fileLogger->log(logManager.getLevel(), "Iteration {} finished. ({}%)", iteration, std::round(iteration * 10000 / (endTime / deltaT)) / 100);
 		}
