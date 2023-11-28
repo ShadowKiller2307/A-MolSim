@@ -8,11 +8,11 @@ private:
     std::array<double,3> particleVelocity{};
     double h;
     double mass;
-    double type;
+    int type;
 
 public:
     CuboidConstructor(std::array<double,3>& llfc,std::array<unsigned int,3>& particlesPerDimension,
-                      std::array<double,3>& particleVelocity, double h, double mass, double type);
+                      std::array<double,3>& particleVelocity, double h, double mass, int type);
 
     // Getter functions
 
@@ -26,5 +26,5 @@ public:
 
     double getMass() const;
 
-    double getType() const;
+    int getType() const;
 };

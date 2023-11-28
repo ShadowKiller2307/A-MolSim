@@ -4,11 +4,12 @@
 
 #include <gtest/gtest.h>
 #include "particleContainers/ParticleContainerDirSum.h"
-#include "HelperFunctions.h"
+
 #include "Particle.h"
 #include "particleGenerator/ParticleGenerator.h"
-#include "ForceV1.h"
-#include "LennardJonesForce.h"
+#include "../src/forces/GravPot.h"
+#include "../src/forces/LennJon.h"
+#include "../src/xmlSchema/XMLReader.h"
 
 // Difference ASSERT vs EXPECT macros
 // ASSERT -> fatal failures
@@ -145,4 +146,74 @@ TEST_F(MolSimTest, testEqualLambdaLennardJonesForce)
     EXPECT_EQ(particles.at(0).getF(), container2.getParticles().at(0).getF());
     EXPECT_EQ(particles.at(1).getF(), container2.getParticles().at(1).getF());
     EXPECT_EQ(particles.at(2).getF(), container2.getParticles().at(2).getF());
+}
+
+///This test checks if the one number of cuboids in the xml file is retrieved correctly
+
+TEST_F(MolSimTest, testSimpleCuboid) {
+    std::string path = "../../Tests/xmlTestInput/simpleCuboid.xml";
+
+    XMLReader xmlReader(path);
+
+    xmlReader.extractCuboid();
+    EXPECT_EQ(1, xmlReader.getCuboidConstructors().size());
+
+
+}
+///This test checks if the parameters of the cuboid are retrieved correctly
+
+TEST_F(MolSimTest, testSimpleCuboidParameters) {
+    std::string path = "../../Tests/xmlTestInput/simpleCuboid.xml";
+
+    XMLReader xmlReader(path);
+
+    xmlReader.extractCuboid();
+    auto cuboidConstructor = xmlReader.getCuboidConstructors().at(0);
+    auto llfc = cuboidConstructor.getLlfc();
+    auto particlesPerDimension = cuboidConstructor.getParticlesPerDimension();
+    auto particleVelocity = cuboidConstructor.getParticleVelocity();
+    double h = cuboidConstructor.getH();
+    double mass = cuboidConstructor.getMass();
+    int type = cuboidConstructor.getType();
+
+    EXPECT_EQ(llfc.at(0),1.3);
+    EXPECT_EQ(llfc.at(1),2.0);
+    EXPECT_EQ(llfc.at(2),3.0);
+
+    EXPECT_EQ(particlesPerDimension.at(0),15);
+    EXPECT_EQ(particlesPerDimension.at(1),20);
+    EXPECT_EQ(particlesPerDimension.at(2),30);
+
+    EXPECT_EQ(particleVelocity.at(0),0.4);
+    EXPECT_EQ(particleVelocity.at(1),0.4);
+    EXPECT_EQ(particleVelocity.at(2),0.4);
+
+    EXPECT_EQ(h,1.89);
+    EXPECT_EQ(mass,4.0);
+    EXPECT_EQ(type,1);
+
+
+}
+///This test checks if the simulation parameters are extracted correctly
+TEST_F(MolSimTest, testSimpleSimulationParameters) {
+    std::string path = "../../Tests/xmlTestInput/simpleSimulation.xml";
+
+    XMLReader xmlReader(path);
+
+    xmlReader.extractSimulationParameters();
+
+    SimulationConstructor simulationConstructor = xmlReader.getSimulationConstructor();
+
+    EXPECT_EQ(simulationConstructor.getBaseName(), "DemoSimulation2");
+    EXPECT_EQ(simulationConstructor.getWriteFrequency(), 5);
+    EXPECT_EQ(simulationConstructor.getT_end(), 101.0);
+    EXPECT_EQ(simulationConstructor.getDelta_t(), 0.7);
+    EXPECT_EQ(simulationConstructor.getLogLevel(), 2);
+
+    EXPECT_EQ(simulationConstructor.getDomainSize().at(0),120);
+    EXPECT_EQ(simulationConstructor.getDomainSize().at(1),50);
+    EXPECT_EQ(simulationConstructor.getDomainSize().at(2),1);
+
+    EXPECT_EQ(simulationConstructor.getContainerType(),"LinCel");
+
 }

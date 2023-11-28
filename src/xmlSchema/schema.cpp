@@ -226,6 +226,112 @@ generateNumber (const generateNumber_type& x)
 }
 
 
+// Sphere
+// 
+
+const Sphere::centerCoordinates_type& Sphere::
+centerCoordinates () const
+{
+  return this->centerCoordinates_.get ();
+}
+
+Sphere::centerCoordinates_type& Sphere::
+centerCoordinates ()
+{
+  return this->centerCoordinates_.get ();
+}
+
+void Sphere::
+centerCoordinates (const centerCoordinates_type& x)
+{
+  this->centerCoordinates_.set (x);
+}
+
+void Sphere::
+centerCoordinates (::std::auto_ptr< centerCoordinates_type > x)
+{
+  this->centerCoordinates_.set (x);
+}
+
+const Sphere::initialVelocity_type& Sphere::
+initialVelocity () const
+{
+  return this->initialVelocity_.get ();
+}
+
+Sphere::initialVelocity_type& Sphere::
+initialVelocity ()
+{
+  return this->initialVelocity_.get ();
+}
+
+void Sphere::
+initialVelocity (const initialVelocity_type& x)
+{
+  this->initialVelocity_.set (x);
+}
+
+void Sphere::
+initialVelocity (::std::auto_ptr< initialVelocity_type > x)
+{
+  this->initialVelocity_.set (x);
+}
+
+const Sphere::radius_type& Sphere::
+radius () const
+{
+  return this->radius_.get ();
+}
+
+Sphere::radius_type& Sphere::
+radius ()
+{
+  return this->radius_.get ();
+}
+
+void Sphere::
+radius (const radius_type& x)
+{
+  this->radius_.set (x);
+}
+
+const Sphere::distance_type& Sphere::
+distance () const
+{
+  return this->distance_.get ();
+}
+
+Sphere::distance_type& Sphere::
+distance ()
+{
+  return this->distance_.get ();
+}
+
+void Sphere::
+distance (const distance_type& x)
+{
+  this->distance_.set (x);
+}
+
+const Sphere::mass_type& Sphere::
+mass () const
+{
+  return this->mass_.get ();
+}
+
+Sphere::mass_type& Sphere::
+mass ()
+{
+  return this->mass_.get ();
+}
+
+void Sphere::
+mass (const mass_type& x)
+{
+  this->mass_.set (x);
+}
+
+
 // simulationConfig
 // 
 
@@ -325,76 +431,52 @@ logLevel (const logLevel_type& x)
   this->logLevel_.set (x);
 }
 
-const simulationConfig::inputGenerator_type& simulationConfig::
-inputGenerator () const
+const simulationConfig::domainSize_type& simulationConfig::
+domainSize () const
 {
-  return this->inputGenerator_.get ();
+  return this->domainSize_.get ();
 }
 
-simulationConfig::inputGenerator_type& simulationConfig::
-inputGenerator ()
+simulationConfig::domainSize_type& simulationConfig::
+domainSize ()
 {
-  return this->inputGenerator_.get ();
-}
-
-void simulationConfig::
-inputGenerator (const inputGenerator_type& x)
-{
-  this->inputGenerator_.set (x);
-}
-
-const simulationConfig::inputText_type& simulationConfig::
-inputText () const
-{
-  return this->inputText_.get ();
-}
-
-simulationConfig::inputText_type& simulationConfig::
-inputText ()
-{
-  return this->inputText_.get ();
+  return this->domainSize_.get ();
 }
 
 void simulationConfig::
-inputText (const inputText_type& x)
+domainSize (const domainSize_type& x)
 {
-  this->inputText_.set (x);
-}
-
-const simulationConfig::inputPicture_type& simulationConfig::
-inputPicture () const
-{
-  return this->inputPicture_.get ();
-}
-
-simulationConfig::inputPicture_type& simulationConfig::
-inputPicture ()
-{
-  return this->inputPicture_.get ();
+  this->domainSize_.set (x);
 }
 
 void simulationConfig::
-inputPicture (const inputPicture_type& x)
+domainSize (::std::auto_ptr< domainSize_type > x)
 {
-  this->inputPicture_.set (x);
+  this->domainSize_.set (x);
 }
 
-const simulationConfig::inputXML_type& simulationConfig::
-inputXML () const
+const simulationConfig::containerType_type& simulationConfig::
+containerType () const
 {
-  return this->inputXML_.get ();
+  return this->containerType_.get ();
 }
 
-simulationConfig::inputXML_type& simulationConfig::
-inputXML ()
+simulationConfig::containerType_type& simulationConfig::
+containerType ()
 {
-  return this->inputXML_.get ();
+  return this->containerType_.get ();
 }
 
 void simulationConfig::
-inputXML (const inputXML_type& x)
+containerType (const containerType_type& x)
 {
-  this->inputXML_.set (x);
+  this->containerType_.set (x);
+}
+
+void simulationConfig::
+containerType (::std::auto_ptr< containerType_type > x)
+{
+  this->containerType_.set (x);
 }
 
 const simulationConfig::Cuboid_sequence& simulationConfig::
@@ -413,6 +495,24 @@ void simulationConfig::
 Cuboid (const Cuboid_sequence& s)
 {
   this->Cuboid_ = s;
+}
+
+const simulationConfig::Sphere_sequence& simulationConfig::
+Sphere () const
+{
+  return this->Sphere_;
+}
+
+simulationConfig::Sphere_sequence& simulationConfig::
+Sphere ()
+{
+  return this->Sphere_;
+}
+
+void simulationConfig::
+Sphere (const Sphere_sequence& s)
+{
+  this->Sphere_ = s;
 }
 
 
@@ -837,6 +937,193 @@ Cuboid::
 {
 }
 
+// Sphere
+//
+
+Sphere::
+Sphere (const centerCoordinates_type& centerCoordinates,
+        const initialVelocity_type& initialVelocity,
+        const radius_type& radius,
+        const distance_type& distance,
+        const mass_type& mass)
+: ::xml_schema::type (),
+  centerCoordinates_ (centerCoordinates, this),
+  initialVelocity_ (initialVelocity, this),
+  radius_ (radius, this),
+  distance_ (distance, this),
+  mass_ (mass, this)
+{
+}
+
+Sphere::
+Sphere (const Sphere& x,
+        ::xml_schema::flags f,
+        ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  centerCoordinates_ (x.centerCoordinates_, f, this),
+  initialVelocity_ (x.initialVelocity_, f, this),
+  radius_ (x.radius_, f, this),
+  distance_ (x.distance_, f, this),
+  mass_ (x.mass_, f, this)
+{
+}
+
+Sphere::
+Sphere (const ::xercesc::DOMElement& e,
+        ::xml_schema::flags f,
+        ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  centerCoordinates_ (this),
+  initialVelocity_ (this),
+  radius_ (this),
+  distance_ (this),
+  mass_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void Sphere::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // centerCoordinates
+    //
+    if (n.name () == "centerCoordinates" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< centerCoordinates_type > r (
+        centerCoordinates_traits::create (i, f, this));
+
+      if (!centerCoordinates_.present ())
+      {
+        this->centerCoordinates_.set (r);
+        continue;
+      }
+    }
+
+    // initialVelocity
+    //
+    if (n.name () == "initialVelocity" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< initialVelocity_type > r (
+        initialVelocity_traits::create (i, f, this));
+
+      if (!initialVelocity_.present ())
+      {
+        this->initialVelocity_.set (r);
+        continue;
+      }
+    }
+
+    // radius
+    //
+    if (n.name () == "radius" && n.namespace_ ().empty ())
+    {
+      if (!radius_.present ())
+      {
+        this->radius_.set (radius_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // distance
+    //
+    if (n.name () == "distance" && n.namespace_ ().empty ())
+    {
+      if (!distance_.present ())
+      {
+        this->distance_.set (distance_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // mass
+    //
+    if (n.name () == "mass" && n.namespace_ ().empty ())
+    {
+      if (!mass_.present ())
+      {
+        this->mass_.set (mass_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!centerCoordinates_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "centerCoordinates",
+      "");
+  }
+
+  if (!initialVelocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "initialVelocity",
+      "");
+  }
+
+  if (!radius_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "radius",
+      "");
+  }
+
+  if (!distance_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "distance",
+      "");
+  }
+
+  if (!mass_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "mass",
+      "");
+  }
+}
+
+Sphere* Sphere::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class Sphere (*this, f, c);
+}
+
+Sphere& Sphere::
+operator= (const Sphere& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->centerCoordinates_ = x.centerCoordinates_;
+    this->initialVelocity_ = x.initialVelocity_;
+    this->radius_ = x.radius_;
+    this->distance_ = x.distance_;
+    this->mass_ = x.mass_;
+  }
+
+  return *this;
+}
+
+Sphere::
+~Sphere ()
+{
+}
+
 // simulationConfig
 //
 
@@ -846,21 +1133,18 @@ simulationConfig (const baseName_type& baseName,
                   const t_end_type& t_end,
                   const delta_t_type& delta_t,
                   const logLevel_type& logLevel,
-                  const inputGenerator_type& inputGenerator,
-                  const inputText_type& inputText,
-                  const inputPicture_type& inputPicture,
-                  const inputXML_type& inputXML)
+                  const domainSize_type& domainSize,
+                  const containerType_type& containerType)
 : ::xml_schema::type (),
   baseName_ (baseName, this),
   writeFrequency_ (writeFrequency, this),
   t_end_ (t_end, this),
   delta_t_ (delta_t, this),
   logLevel_ (logLevel, this),
-  inputGenerator_ (inputGenerator, this),
-  inputText_ (inputText, this),
-  inputPicture_ (inputPicture, this),
-  inputXML_ (inputXML, this),
-  Cuboid_ (this)
+  domainSize_ (domainSize, this),
+  containerType_ (containerType, this),
+  Cuboid_ (this),
+  Sphere_ (this)
 {
 }
 
@@ -874,11 +1158,10 @@ simulationConfig (const simulationConfig& x,
   t_end_ (x.t_end_, f, this),
   delta_t_ (x.delta_t_, f, this),
   logLevel_ (x.logLevel_, f, this),
-  inputGenerator_ (x.inputGenerator_, f, this),
-  inputText_ (x.inputText_, f, this),
-  inputPicture_ (x.inputPicture_, f, this),
-  inputXML_ (x.inputXML_, f, this),
-  Cuboid_ (x.Cuboid_, f, this)
+  domainSize_ (x.domainSize_, f, this),
+  containerType_ (x.containerType_, f, this),
+  Cuboid_ (x.Cuboid_, f, this),
+  Sphere_ (x.Sphere_, f, this)
 {
 }
 
@@ -892,11 +1175,10 @@ simulationConfig (const ::xercesc::DOMElement& e,
   t_end_ (this),
   delta_t_ (this),
   logLevel_ (this),
-  inputGenerator_ (this),
-  inputText_ (this),
-  inputPicture_ (this),
-  inputXML_ (this),
-  Cuboid_ (this)
+  domainSize_ (this),
+  containerType_ (this),
+  Cuboid_ (this),
+  Sphere_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -973,46 +1255,30 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // inputGenerator
+    // domainSize
     //
-    if (n.name () == "inputGenerator" && n.namespace_ ().empty ())
+    if (n.name () == "domainSize" && n.namespace_ ().empty ())
     {
-      if (!inputGenerator_.present ())
+      ::std::auto_ptr< domainSize_type > r (
+        domainSize_traits::create (i, f, this));
+
+      if (!domainSize_.present ())
       {
-        this->inputGenerator_.set (inputGenerator_traits::create (i, f, this));
+        this->domainSize_.set (r);
         continue;
       }
     }
 
-    // inputText
+    // containerType
     //
-    if (n.name () == "inputText" && n.namespace_ ().empty ())
+    if (n.name () == "containerType" && n.namespace_ ().empty ())
     {
-      if (!inputText_.present ())
-      {
-        this->inputText_.set (inputText_traits::create (i, f, this));
-        continue;
-      }
-    }
+      ::std::auto_ptr< containerType_type > r (
+        containerType_traits::create (i, f, this));
 
-    // inputPicture
-    //
-    if (n.name () == "inputPicture" && n.namespace_ ().empty ())
-    {
-      if (!inputPicture_.present ())
+      if (!containerType_.present ())
       {
-        this->inputPicture_.set (inputPicture_traits::create (i, f, this));
-        continue;
-      }
-    }
-
-    // inputXML
-    //
-    if (n.name () == "inputXML" && n.namespace_ ().empty ())
-    {
-      if (!inputXML_.present ())
-      {
-        this->inputXML_.set (inputXML_traits::create (i, f, this));
+        this->containerType_.set (r);
         continue;
       }
     }
@@ -1025,6 +1291,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
         Cuboid_traits::create (i, f, this));
 
       this->Cuboid_.push_back (r);
+      continue;
+    }
+
+    // Sphere
+    //
+    if (n.name () == "Sphere" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< Sphere_type > r (
+        Sphere_traits::create (i, f, this));
+
+      this->Sphere_.push_back (r);
       continue;
     }
 
@@ -1066,31 +1343,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
-  if (!inputGenerator_.present ())
+  if (!domainSize_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
-      "inputGenerator",
+      "domainSize",
       "");
   }
 
-  if (!inputText_.present ())
+  if (!containerType_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
-      "inputText",
-      "");
-  }
-
-  if (!inputPicture_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "inputPicture",
-      "");
-  }
-
-  if (!inputXML_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "inputXML",
+      "containerType",
       "");
   }
 }
@@ -1113,11 +1376,10 @@ operator= (const simulationConfig& x)
     this->t_end_ = x.t_end_;
     this->delta_t_ = x.delta_t_;
     this->logLevel_ = x.logLevel_;
-    this->inputGenerator_ = x.inputGenerator_;
-    this->inputText_ = x.inputText_;
-    this->inputPicture_ = x.inputPicture_;
-    this->inputXML_ = x.inputXML_;
+    this->domainSize_ = x.domainSize_;
+    this->containerType_ = x.containerType_;
     this->Cuboid_ = x.Cuboid_;
+    this->Sphere_ = x.Sphere_;
   }
 
   return *this;

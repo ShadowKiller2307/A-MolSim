@@ -32,7 +32,16 @@
         </xs:sequence>
 
     </xs:complexType>
-    <!--TODO Simulation parameters-->
+
+    <xs:complexType name="Sphere">
+        <xs:sequence>
+            <xs:element name="centerCoordinates" type="arrayOfThreeDoubles"/>
+            <xs:element name="initialVelocity" type="arrayOfThreeDoubles"/>
+            <xs:element name ="radius" type="xs:int"/>
+            <xs:element name="distance" type="xs:double"/>
+            <xs:element name="mass" type="xs:double"/>
+        </xs:sequence>
+    </xs:complexType>
 
 
     <xs:complexType name="simulationConfig">
@@ -42,11 +51,10 @@
             <xs:element name="t_end" type="xs:double"/>
             <xs:element name="delta_t" type="xs:double"/>
             <xs:element name="logLevel" type="xs:int"/>
-            <xs:element name="inputGenerator" type="xs:boolean"/>
-            <xs:element name="inputText" type="xs:boolean"/>
-            <xs:element name="inputPicture" type="xs:boolean"/>
-            <xs:element name="inputXML" type="xs:boolean"/>
+            <xs:element name="domainSize" type="arrayOfThreeDoubles"/>
+            <xs:element name="containerType" type="xs:string"/>
             <xs:element name="Cuboid" type="Cuboid" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Sphere" type="Sphere" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
     

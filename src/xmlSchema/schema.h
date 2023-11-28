@@ -227,6 +227,7 @@ class unsignedIntList;
 class arrayOfThreeDoubles;
 class arrayOfThreeUnsignedInts;
 class Cuboid;
+class Sphere;
 class simulationConfig;
 
 #include <memory>    // ::std::auto_ptr
@@ -527,6 +528,126 @@ class Cuboid: public ::xml_schema::type
   ::xsd::cxx::tree::one< generateNumber_type > generateNumber_;
 };
 
+class Sphere: public ::xml_schema::type
+{
+  public:
+  // centerCoordinates
+  //
+  typedef ::arrayOfThreeDoubles centerCoordinates_type;
+  typedef ::xsd::cxx::tree::traits< centerCoordinates_type, char > centerCoordinates_traits;
+
+  const centerCoordinates_type&
+  centerCoordinates () const;
+
+  centerCoordinates_type&
+  centerCoordinates ();
+
+  void
+  centerCoordinates (const centerCoordinates_type& x);
+
+  void
+  centerCoordinates (::std::auto_ptr< centerCoordinates_type > p);
+
+  // initialVelocity
+  //
+  typedef ::arrayOfThreeDoubles initialVelocity_type;
+  typedef ::xsd::cxx::tree::traits< initialVelocity_type, char > initialVelocity_traits;
+
+  const initialVelocity_type&
+  initialVelocity () const;
+
+  initialVelocity_type&
+  initialVelocity ();
+
+  void
+  initialVelocity (const initialVelocity_type& x);
+
+  void
+  initialVelocity (::std::auto_ptr< initialVelocity_type > p);
+
+  // radius
+  //
+  typedef ::xml_schema::int_ radius_type;
+  typedef ::xsd::cxx::tree::traits< radius_type, char > radius_traits;
+
+  const radius_type&
+  radius () const;
+
+  radius_type&
+  radius ();
+
+  void
+  radius (const radius_type& x);
+
+  // distance
+  //
+  typedef ::xml_schema::double_ distance_type;
+  typedef ::xsd::cxx::tree::traits< distance_type, char, ::xsd::cxx::tree::schema_type::double_ > distance_traits;
+
+  const distance_type&
+  distance () const;
+
+  distance_type&
+  distance ();
+
+  void
+  distance (const distance_type& x);
+
+  // mass
+  //
+  typedef ::xml_schema::double_ mass_type;
+  typedef ::xsd::cxx::tree::traits< mass_type, char, ::xsd::cxx::tree::schema_type::double_ > mass_traits;
+
+  const mass_type&
+  mass () const;
+
+  mass_type&
+  mass ();
+
+  void
+  mass (const mass_type& x);
+
+  // Constructors.
+  //
+  Sphere (const centerCoordinates_type&,
+          const initialVelocity_type&,
+          const radius_type&,
+          const distance_type&,
+          const mass_type&);
+
+  Sphere (const ::xercesc::DOMElement& e,
+          ::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0);
+
+  Sphere (const Sphere& x,
+          ::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0);
+
+  virtual Sphere*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  Sphere&
+  operator= (const Sphere& x);
+
+  virtual 
+  ~Sphere ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< centerCoordinates_type > centerCoordinates_;
+  ::xsd::cxx::tree::one< initialVelocity_type > initialVelocity_;
+  ::xsd::cxx::tree::one< radius_type > radius_;
+  ::xsd::cxx::tree::one< distance_type > distance_;
+  ::xsd::cxx::tree::one< mass_type > mass_;
+};
+
 class simulationConfig: public ::xml_schema::type
 {
   public:
@@ -603,61 +724,39 @@ class simulationConfig: public ::xml_schema::type
   void
   logLevel (const logLevel_type& x);
 
-  // inputGenerator
+  // domainSize
   //
-  typedef ::xml_schema::boolean inputGenerator_type;
-  typedef ::xsd::cxx::tree::traits< inputGenerator_type, char > inputGenerator_traits;
+  typedef ::arrayOfThreeDoubles domainSize_type;
+  typedef ::xsd::cxx::tree::traits< domainSize_type, char > domainSize_traits;
 
-  const inputGenerator_type&
-  inputGenerator () const;
+  const domainSize_type&
+  domainSize () const;
 
-  inputGenerator_type&
-  inputGenerator ();
+  domainSize_type&
+  domainSize ();
 
   void
-  inputGenerator (const inputGenerator_type& x);
-
-  // inputText
-  //
-  typedef ::xml_schema::boolean inputText_type;
-  typedef ::xsd::cxx::tree::traits< inputText_type, char > inputText_traits;
-
-  const inputText_type&
-  inputText () const;
-
-  inputText_type&
-  inputText ();
+  domainSize (const domainSize_type& x);
 
   void
-  inputText (const inputText_type& x);
+  domainSize (::std::auto_ptr< domainSize_type > p);
 
-  // inputPicture
+  // containerType
   //
-  typedef ::xml_schema::boolean inputPicture_type;
-  typedef ::xsd::cxx::tree::traits< inputPicture_type, char > inputPicture_traits;
+  typedef ::xml_schema::string containerType_type;
+  typedef ::xsd::cxx::tree::traits< containerType_type, char > containerType_traits;
 
-  const inputPicture_type&
-  inputPicture () const;
+  const containerType_type&
+  containerType () const;
 
-  inputPicture_type&
-  inputPicture ();
+  containerType_type&
+  containerType ();
 
   void
-  inputPicture (const inputPicture_type& x);
-
-  // inputXML
-  //
-  typedef ::xml_schema::boolean inputXML_type;
-  typedef ::xsd::cxx::tree::traits< inputXML_type, char > inputXML_traits;
-
-  const inputXML_type&
-  inputXML () const;
-
-  inputXML_type&
-  inputXML ();
+  containerType (const containerType_type& x);
 
   void
-  inputXML (const inputXML_type& x);
+  containerType (::std::auto_ptr< containerType_type > p);
 
   // Cuboid
   //
@@ -676,6 +775,23 @@ class simulationConfig: public ::xml_schema::type
   void
   Cuboid (const Cuboid_sequence& s);
 
+  // Sphere
+  //
+  typedef ::Sphere Sphere_type;
+  typedef ::xsd::cxx::tree::sequence< Sphere_type > Sphere_sequence;
+  typedef Sphere_sequence::iterator Sphere_iterator;
+  typedef Sphere_sequence::const_iterator Sphere_const_iterator;
+  typedef ::xsd::cxx::tree::traits< Sphere_type, char > Sphere_traits;
+
+  const Sphere_sequence&
+  Sphere () const;
+
+  Sphere_sequence&
+  Sphere ();
+
+  void
+  Sphere (const Sphere_sequence& s);
+
   // Constructors.
   //
   simulationConfig (const baseName_type&,
@@ -683,10 +799,8 @@ class simulationConfig: public ::xml_schema::type
                     const t_end_type&,
                     const delta_t_type&,
                     const logLevel_type&,
-                    const inputGenerator_type&,
-                    const inputText_type&,
-                    const inputPicture_type&,
-                    const inputXML_type&);
+                    const domainSize_type&,
+                    const containerType_type&);
 
   simulationConfig (const ::xercesc::DOMElement& e,
                     ::xml_schema::flags f = 0,
@@ -719,11 +833,10 @@ class simulationConfig: public ::xml_schema::type
   ::xsd::cxx::tree::one< t_end_type > t_end_;
   ::xsd::cxx::tree::one< delta_t_type > delta_t_;
   ::xsd::cxx::tree::one< logLevel_type > logLevel_;
-  ::xsd::cxx::tree::one< inputGenerator_type > inputGenerator_;
-  ::xsd::cxx::tree::one< inputText_type > inputText_;
-  ::xsd::cxx::tree::one< inputPicture_type > inputPicture_;
-  ::xsd::cxx::tree::one< inputXML_type > inputXML_;
+  ::xsd::cxx::tree::one< domainSize_type > domainSize_;
+  ::xsd::cxx::tree::one< containerType_type > containerType_;
   Cuboid_sequence Cuboid_;
+  Sphere_sequence Sphere_;
 };
 
 #include <iosfwd>

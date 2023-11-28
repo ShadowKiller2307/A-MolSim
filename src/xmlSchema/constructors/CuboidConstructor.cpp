@@ -2,7 +2,7 @@
 #include "CuboidConstructor.h"
 
 CuboidConstructor::CuboidConstructor(std::array<double, 3>& llfc, std::array<unsigned int, 3>& particlesPerDimension,
-                                     std::array<double, 3>& particleVelocity, double h, double mass, double type) {
+                                     std::array<double, 3>& particleVelocity, double h, double mass, int type) {
     this->llfc = llfc;
     this->particlesPerDimension = particlesPerDimension;
     this->particleVelocity = particleVelocity;
@@ -32,6 +32,6 @@ double CuboidConstructor::getMass() const {
     return mass;
 }
 
-double CuboidConstructor::getType() const {
+int CuboidConstructor::getType() const {
     return type;
 }

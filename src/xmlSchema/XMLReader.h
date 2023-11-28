@@ -6,6 +6,7 @@
 #include "particleGenerator/ParticleGenerator.h"
 #include "xmlSchema/constructors/CuboidConstructor.h"
 #include "xmlSchema/constructors/SimulationConstructor.h"
+#include "xmlSchema/constructors/SphereConstructor.h"
 
 class XMLReader
 {
@@ -15,6 +16,9 @@ private:
 
     /// The vector containing the extracted cuboids
     std::vector<CuboidConstructor> cuboidConstructors;
+
+    /// The vector containing the extracted spheres
+    std::vector<SphereConstructor> sphereConstructors;
 
     /// The object containing all the extracted simulation parameters
     SimulationConstructor simulationConstructor;
@@ -31,6 +35,9 @@ public:
 
     /// @brief Extracts the cuboids from the XML file
     void extractCuboid();
+
+    /// @brief Extracts the spheres from the XML file
+    void extractSphere();
 
     /***
      * @brief Constructs an std::array<double,3> from the one in the XML file

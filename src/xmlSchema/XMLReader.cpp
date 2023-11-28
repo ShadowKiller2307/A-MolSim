@@ -14,19 +14,17 @@ XMLReader::XMLReader(std::string &path) {
 }
 
 
-
-
 void XMLReader::extractSimulationParameters() {
     double t = simulation->t_end();
     int level = simulation->logLevel();
     double delta = simulation->delta_t();
-    bool inputG = simulation->inputGenerator();
-    bool inputP = simulation->inputPicture();
-    bool inputX = simulation->inputXML();
+
     std::string name = simulation->baseName();
     int frequency = simulation->writeFrequency();
-    simulationConstructor.setAllSimulationParameters(t,delta,level,frequency,inputG,
-                                                     inputP,inputX,name);
+    std::array<double, 3> domainSize = createDoubleArray(simulation->domainSize());
+    std::string containerType = simulation->containerType();
+    simulationConstructor.setAllSimulationParameters(t, delta, level,
+                                                     frequency, domainSize, containerType, name);
 
 }
 
@@ -48,6 +46,21 @@ void XMLReader::extractCuboid() {
 
 }
 
+void XMLReader::extractSphere() {
+    auto spheres = simulation->Sphere();
+    for (auto &sphere: spheres) {
+        std::array<double, 3> cCoord = createDoubleArray(sphere.centerCoordinates());
+        std::array<double, 3> iVel = createDoubleArray(sphere.initialVelocity());
+        int radius = sphere.radius();
+        double distance = sphere.distance();
+        double mass = sphere.mass();
+
+        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass);
+        sphereConstructors.push_back(sphereConstructor);
+    }
+}
+
+
 std::array<double, 3> XMLReader::createDoubleArray(arrayOfThreeDoubles arrayOfThreeDoubles) {
     std::array<double, 3> createdArray =
             {arrayOfThreeDoubles.at(0), arrayOfThreeDoubles.at(1), arrayOfThreeDoubles.at(2)};
@@ -63,15 +76,14 @@ std::array<unsigned int, 3> XMLReader::createUnsignedIntArray(arrayOfThreeUnsign
 }
 
 
-
-
-
-SimulationConstructor XMLReader::getSimulationConstructor(){
+SimulationConstructor XMLReader::getSimulationConstructor() {
     return this->simulationConstructor;
 }
 
 std::vector<CuboidConstructor> XMLReader::getCuboidConstructors() {
     return this->cuboidConstructors;
 }
+
+
 
 
