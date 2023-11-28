@@ -193,6 +193,7 @@ TEST_F(MolSimTest, testSimpleCuboidParameters) {
     EXPECT_EQ(type,1);
 
 
+
 }
 ///This test checks if the simulation parameters are extracted correctly
 TEST_F(MolSimTest, testSimpleSimulationParameters) {
