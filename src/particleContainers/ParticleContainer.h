@@ -14,7 +14,7 @@ protected:
 	double deltaT_, startTime_, endTime_;
 	size_t iteration_;
 	std::vector<Particle> particles_;
-	ParticleContainer(const double deltaT, const double endTime);
+	ParticleContainer(const double deltaT, const double endTime, int writeFrequency = 10);
 	OutputManager *outManager_;
 	std::function<void(Particle &a, Particle &b)> force;
 	int outputEveryNIterations_;

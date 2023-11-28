@@ -2,11 +2,11 @@
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 
-ParticleContainer::ParticleContainer(const double deltaT, const double endTime) : deltaT_(deltaT), endTime_(endTime)
+ParticleContainer::ParticleContainer(const double deltaT, const double endTime, int writeFrequency) : deltaT_(deltaT), endTime_(endTime)
 {
 	outManager_ = new OutputManager();
 	startTime_ = 0.0;
-	outputEveryNIterations_ = 10;
+	outputEveryNIterations_ = writeFrequency;
 }
 
 void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
