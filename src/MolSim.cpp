@@ -9,14 +9,10 @@
 #include <chrono>
 #include "logOutputManager/LogManager.h"
 
-
-LogManager &logManager = LogManager::getInstance();
-
 int main(int argc, char *const argv[])
 {
-
-
-    logManager.setLogLevel(spdlog::level::info); //standard default level
+	LogManager &logManager = LogManager::getInstance();
+	logManager.setLogLevel(spdlog::level::info); // standard default level
 
 	auto opts = optionals();
 	bool writeToJSON = false;
@@ -53,10 +49,13 @@ int main(int argc, char *const argv[])
 		case 'l':
 		{
 			int temp = std::stoi(optarg);
-			if (temp >= 0)
+			if (temp >= 0 && temp < 5)
 			{
-                logManager.setLogLevel(mapIntToLevel(temp));
-
+				logManager.setLogLevel(mapIntToLevel(temp));
+			}
+			else
+			{
+				LogManager::errorLog("Invalid Log Level <{}>!", temp);
 			}
 			break;
 		}
@@ -67,17 +66,14 @@ int main(int argc, char *const argv[])
 			writeToJSON = true;
 			break;
 		default:
-
-            LogManager::errorLog("Error parsing arguments. Maybe you gave one that isn't recognized.\n");
-
+			LogManager::errorLog("Error parsing arguments. Maybe you gave one that isn't recognized.\n");
 			break;
 		}
 	}
 
 	if (optind >= argc)
 	{
-
-        LogManager::errorLog("Input missing as an argument, aborting\n");
+		LogManager::errorLog("Input missing as an argument, aborting\n");
 		printHelp();
 		return EXIT_FAILURE;
 	}
@@ -134,17 +130,19 @@ void printHelp()
 		std::cout << file.rdbuf();
 	}
 }
-spdlog::level::level_enum mapIntToLevel(int programArgument){
-    switch (programArgument) {
-        case 0:
-            return spdlog::level::level_enum::err;
-        case 1:
-            return spdlog::level::level_enum::warn;
-        case 2:
-            return spdlog::level::level_enum::info;
-        case 3:
-            return spdlog::level::level_enum::debug;
-        default:
-            return spdlog::level::level_enum::off;
-    }
+spdlog::level::level_enum mapIntToLevel(int programArgument)
+{
+	switch (programArgument)
+	{
+	case 0:
+		return spdlog::level::level_enum::err;
+	case 1:
+		return spdlog::level::level_enum::warn;
+	case 2:
+		return spdlog::level::level_enum::info;
+	case 3:
+		return spdlog::level::level_enum::debug;
+	default:
+		return spdlog::level::level_enum::off;
+	}
 }
