@@ -14,6 +14,73 @@ public:
     /// Sets the log level of the LogManager
     void setLogLevel(spdlog::level::level_enum level);
 
+
+    /***
+    * Debug logging only if log level is: debug
+    * @tparam T The type of the message
+    * @tparam Args The type of the arguments for formatting
+    * @param message The message that needs to be logged
+    * @param args The parameters used for formatting
+    */
+    template<typename T, typename... Args>
+    static void debugLog(T &message, Args &&...args) {
+        if (LogManager::getInstance().getLevel() == spdlog::level::debug) {
+            LogManager::getInstance().getLogger()->log(spdlog::level::debug, message, std::forward<Args>(args)...);
+        }
+    }
+
+    /***
+    * Info logging only if log level is: info,debug
+    * @tparam T The type of the message
+    * @tparam Args The type of the arguments for formatting
+    * @param message The message that needs to be logged
+    * @param args The parameters used for formatting
+    */
+    template<typename T, typename... Args>
+    static void infoLog(T &message, Args &&...args) {
+        spdlog::level::level_enum level = LogManager::getInstance().getLevel();
+        if (level == spdlog::level::info || level == spdlog::level::debug) {
+            LogManager::getInstance().getLogger()->log(spdlog::level::info, message, std::forward<Args>(args)...);
+        }
+    }
+
+    /***
+    * Warning logging only if log level is: warn,info,debug
+    * @tparam T The type of the message
+    * @tparam Args The type of the arguments for formatting
+    * @param message The message that needs to be logged
+    * @param args The parameters used for formatting
+    */
+    template<typename T, typename... Args>
+    static void warnLog(T &message, Args &&...args) {
+        spdlog::level::level_enum level = LogManager::getInstance().getLevel();
+        if (level == spdlog::level::info || level == spdlog::level::debug || level == spdlog::level::warn) {
+            LogManager::getInstance().getLogger()->log(spdlog::level::warn, message, std::forward<Args>(args)...);
+        }
+    }
+
+    /***
+     * Error logging only if log level is: err,warn,info,debug
+     * @tparam T The type of the message
+     * @tparam Args The type of the arguments for formatting
+     * @param message The message that needs to be logged
+     * @param args The parameters used for formatting
+     */
+    template<typename T, typename... Args>
+    static void errorLog(T &message, Args &&...args) {
+        spdlog::level::level_enum level = LogManager::getInstance().getLevel();
+        if (level == spdlog::level::info || level == spdlog::level::debug || level == spdlog::level::warn
+            || level == spdlog::level::err) {
+            LogManager::getInstance().getLogger()->log(spdlog::level::err, message, std::forward<Args>(args)...);
+        }
+    }
+
+
+
+
+
+
+
     /// Returns the log level of the LogManager
     spdlog::level::level_enum getLevel();
 

@@ -13,11 +13,11 @@ options:
 	
 	[-l| --logLevel] value
 		Set logLevel to the provided value. Available levels and their functions are:
-		0:	debug,           // debug, print all, slowest
-    	1:	standard,        // default, no debug
-    	2:	noCOut,          // disable std::cout and logging but still write Files, minor performance improvement
-    	3:	noFiles,         // don't write output to files but still std::cout and logging, big performance improvement but no data :(
-    	4:	onlyCalculations // combination of noCOut and noFiles, no output whatsoever, fastest
+		0: Error        //Used for error logs
+		1: Warn         //Used for warning logs, includes error logs
+		2: Info         //Used for info logs (default setting), includes warn and error logs
+		3: Debug        //Used for debug logs, includes info,warn and error logs
+		x: Off          //Any other number turns the logging off
 	
 	[-x]
 		Output the data in .xyz format instead of vtk

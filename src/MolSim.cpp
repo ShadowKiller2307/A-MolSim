@@ -7,9 +7,17 @@
 #include <fstream>
 #include <getopt.h>
 #include <chrono>
+#include "logOutputManager/LogManager.h"
+
+
+LogManager &logManager = LogManager::getInstance();
 
 int main(int argc, char *const argv[])
 {
+
+
+    logManager.setLogLevel(spdlog::level::info); //standard default level
+
 	auto opts = optionals();
 	bool writeToJSON = false;
 	std::string outName;
@@ -45,12 +53,10 @@ int main(int argc, char *const argv[])
 		case 'l':
 		{
 			int temp = std::stoi(optarg);
-			if (temp >= 0 && temp <= 4)
+			if (temp >= 0)
 			{
-				// TODO (ADD): Log
-				// logLevel = static_cast<LogLevel>(temp);
-				// spdlog::level::level_enum level = toSpdLevel(logLevel);
-				// logManager.setLogLevel(level);
+                logManager.setLogLevel(mapIntToLevel(temp));
+
 			}
 			break;
 		}
@@ -61,17 +67,17 @@ int main(int argc, char *const argv[])
 			writeToJSON = true;
 			break;
 		default:
-			// TODO (ADD): Log
-			// fileLogger->log(logManager.getLevel(), "Error parsing arguments. Maybe you gave one that isn't recognized.\n");
+
+            LogManager::errorLog("Error parsing arguments. Maybe you gave one that isn't recognized.\n");
+
 			break;
 		}
 	}
 
 	if (optind >= argc)
 	{
-		// TODO (ADD): Log
-		// fileLogger->log(logManager.getLevel(), "Input missing as an argument, aborting\n");
 
+        LogManager::errorLog("Input missing as an argument, aborting\n");
 		printHelp();
 		return EXIT_FAILURE;
 	}
@@ -127,4 +133,18 @@ void printHelp()
 	{
 		std::cout << file.rdbuf();
 	}
+}
+spdlog::level::level_enum mapIntToLevel(int programArgument){
+    switch (programArgument) {
+        case 0:
+            return spdlog::level::level_enum::err;
+        case 1:
+            return spdlog::level::level_enum::warn;
+        case 2:
+            return spdlog::level::level_enum::info;
+        case 3:
+            return spdlog::level::level_enum::debug;
+        default:
+            return spdlog::level::level_enum::off;
+    }
 }
