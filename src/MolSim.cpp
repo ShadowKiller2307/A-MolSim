@@ -85,7 +85,7 @@ int main(int argc, char *const argv[])
 	// c++ can't do switch statements on strings😔, this does the job, let's not overcomplicate things
 	if (ending == "xml")
 	{
-		path = std::string("_.json").compare(argv[optind]) == 0 ? "../input/default.xml" : argv[optind];
+		path = std::string("_.xml").compare(argv[optind]) == 0 ? "../input/default.xml" : argv[optind];
 		particleGenerator::instantiateXML(&container, path, opts);
 	}
 	else if (ending == "json")
