@@ -11,7 +11,8 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebIn
 #    set(CMAKE_BUILD_TYPE "Release" CACHE STRING
 #            "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 #endif(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+# set(CMAKE_BUILD_TYPE Debug)
 
 file(MAKE_DIRECTORY "output")
 file(MAKE_DIRECTORY "logs")

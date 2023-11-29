@@ -35,13 +35,13 @@ public:
 								  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h, double m, int type);
 
 	static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
-								  const uint32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
+								  const int32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
 
-	static void instantiateJSON(ParticleContainer **container, const std::string &path, SimParams params);
+	static void instantiateJSON(ParticleContainer **container, const std::string &path, SimParams clArgs);
 
-	static void instantiatePicture(ParticleContainer **container, const std::string &path, SimParams params);
+	static void instantiatePicture(ParticleContainer **container, const std::string &path, SimParams clArgs);
 
-	static void instantiateTxt(ParticleContainer **container, const std::string &path, SimParams params);
+	static void instantiateTxt(ParticleContainer **container, const std::string &path, SimParams clArgs);
 
-	static void instantiateXML(ParticleContainer **container, const std::string &path, SimParams params);
+	static void instantiateXML(ParticleContainer **container, const std::string &path, SimParams clArgs);
 };

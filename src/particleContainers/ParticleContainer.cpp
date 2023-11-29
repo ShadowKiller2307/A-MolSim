@@ -1,6 +1,7 @@
 #include "particleContainers/ParticleContainer.h"
 #include "logOutputManager/LogManager.h"
 #include <iostream>
+#include <iomanip>
 
 ParticleContainer::ParticleContainer(const double deltaT, const double endTime, int writeFrequency) : deltaT_(deltaT), endTime_(endTime)
 {
@@ -74,6 +75,24 @@ void ParticleContainer::simulateParticles()
 		if (iteration_ % 100 == 0)
 		{
 			LogManager::infoLog("Iteration {} finished. ({}%)", iteration_, std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100);
+			if (iteration_)
+			{
+				auto end = std::chrono::high_resolution_clock::now();
+				int64_t diff = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+				auto remainig = (static_cast<double>(diff) / iteration_) * (endTime_ - startTime_) / deltaT_;
+				std::string min, sec;
+				if (remainig > 60)
+				{
+					min = std::to_string(static_cast<int>(remainig / 60)) + "m, ";
+					remainig = std::fmod(remainig, 60);
+				}
+				else
+				{
+					min = "0m, ";
+				}
+				sec = std::to_string(static_cast<int>(remainig)) + "s   \r";
+				std::cout << "ETA: " << min << sec << std::flush;
+			}
 		}
 
 		// calculate new x

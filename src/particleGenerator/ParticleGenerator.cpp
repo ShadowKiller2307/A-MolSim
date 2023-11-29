@@ -40,15 +40,47 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 	}
 }
 
-void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center, const uint32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type = -1)
+void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center, const int32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type = -1)
 {
 	if (type < 0)
 	{
 		type = generateNumber_++;
 	}
-	//(*container)->add();
-
-	// TODO (ADD): Sphere instantiation
+	if (is2D)
+	{
+		for (int32_t i = -sphereRadius + 1; i < sphereRadius; ++i)
+		{
+			for (int32_t j = -sphereRadius + 1; j < sphereRadius; ++j)
+			{
+				if (std::sqrt(i * i + j * j) <= sphereRadius)
+				{
+					std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanVelocity_, 2); // TODO (ASK): Is the mean here the same as the average?
+					std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], 0};
+					std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
+					(*container)->add(x_arg, v_arg, m, type);
+				}
+			}
+		}
+	}
+	else
+	{
+		for (int32_t i = -sphereRadius + 1; i < sphereRadius; ++i)
+		{
+			for (int32_t j = -sphereRadius + 1; j < sphereRadius; ++j)
+			{
+				for (size_t k = -sphereRadius + 1; i < sphereRadius; ++k)
+				{
+					if (std::sqrt(i * i + j * j + k * k) <= sphereRadius)
+					{
+						std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanVelocity_, 3); // TODO (ASK): Is the mean here the same as the average?
+						std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], k * h + center[2]};
+						std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
+						(*container)->add(x_arg, v_arg, m, type);
+					}
+				}
+			}
+		}
+	}
 }
 
 void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, SimParams params)
@@ -142,11 +174,11 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 	stbi_image_free(rgb_image);
 }
 
-void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, SimParams params)
+void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, SimParams clArgs)
 {
 	if (!(*container))
 	{
-		(*container) = createContainer(params.deltaT, params.endTime);
+		(*container) = createContainer(clArgs.deltaT, clArgs.endTime);
 	}
 	FileReader fr = FileReader();
 	auto actualPath = std::string("_.txt").compare(path) == 0 ? "../input/eingabe-sonne.txt" : path;
@@ -156,7 +188,7 @@ void particleGenerator::instantiateTxt(ParticleContainer **container, const std:
 	fr.readFile(container, charPath);
 }
 
-void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, SimParams params)
+void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, SimParams clArgs)
 {
 	// TODO (ADD): XML instantiation
 }
