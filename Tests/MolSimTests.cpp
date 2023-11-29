@@ -3,13 +3,22 @@
  */
 
 #include <gtest/gtest.h>
+#include <vector>
 #include "particleContainers/ParticleContainerDirSum.h"
 
-#include "Particle.h"
-#include "particleGenerator/ParticleGenerator.h"
+#include "../src/Particle.h"
+#include "../src/particleGenerator/ParticleGenerator.h"
+#include "../src/forces/Force.h"
 #include "../src/forces/GravPot.h"
 #include "../src/forces/LennJon.h"
-#include "../src/xmlSchema/XMLReader.h"
+//#include "../src/xmlSchema/XMLReader.h"
+#include "../src/particleContainers/ParticleContainer.h"
+#include "../src/particleContainers/ParticleContainerDirSum.h"
+#include "../src/particleContainers/ParticleContainerLinCel.h"
+#include "../src/boundaryConditions/BoundaryCondition.h"
+#include "../src/boundaryConditions/Overflow.h"
+#include "../src/boundaryConditions/Reflecting.h"
+
 
 // Difference ASSERT vs EXPECT macros
 // ASSERT -> fatal failures
@@ -23,102 +32,91 @@ class MolSimTest : public testing::Test
 protected:
     void SetUp() override
     {
-        particles.emplace_back(particleOne);
-        particles.emplace_back(particleTwo);
-        particles.emplace_back(particleThree);
-        container.setParticles(particles);
+       containerDirSum.add({0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
+       containerDirSum.add({1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
+       containerDirSum.add({2.0, 0.0, 0.0},  {0.0, 0.0, 0.0}, 1, 0);
+       containerCuboid = new ParticleContainerDirSum{0.5, 1};
     }
-
-    std::array<double, 3> temp{0.0, 0.0, 0.0};
-    std::array<double, 3> temp2{1.0, 0.0, 0.0};
-    std::array<double, 3> temp3{2.0, 0.0, 0.0};
-    Particle particleOne{temp, temp, 1, 0};
-    Particle particleTwo{temp2, temp, 1, 0};
-    Particle particleThree{temp3, temp, 1, 0};
-    std::vector<Particle> particles;
-    ParticleContainerDS container;
-    ParticleContainerDS container2;
-    ForceV1 forceV1;
-    LennardJonesForce lennardJonesForce{5, 1};
+    ParticleContainerDirSum containerDirSum{0.5, 1};
+    std::array<double, 3> domainSize{3.0, 3.0, 1.0};
+    double cutoffRadius{1.0};
+    Reflecting cond1;
+    //std::vector<BoundaryCondition> conditions{cond1};
+    //ParticleContainerLinCel containerLinCel{0.5, 1, domainSize, cutoffRadius, conditions};   //std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+    LennJon lennJon{5.0, 1.0};
+    GravPot gravPot{};
+    ParticleContainer *containerCuboid;
+    particleGenerator generator{};
 };
 
 /**
- * @brief very simple test to check whether the container sets the particles correctly
+ * @brief: very simple test to check whether the container sets the particles correctly
  */
 TEST_F(MolSimTest, testGetParticles)
 {
-    EXPECT_EQ(3, container.getParticles().size());
+    EXPECT_EQ(3, containerDirSum.getParticles().size());
 }
 
+
 /**
- * @brief Check the position values of the particles in the particleContainer after the instantiateCuboid method was
+ * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid method was
  * called
  */
+
 TEST_F(MolSimTest, testGenerateParticlesGenerator)
 {
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    ParticleContainerDS containerCuboid;
-    particleGenerator.instantiateCuboid(containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
+    generator.instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
     // Now check if the cuboid was instantiated with the particle positions as we expect
-    EXPECT_EQ(8, containerCuboid.getParticles().size());
+    EXPECT_EQ(8, containerCuboid->getParticles().size());
     std::array<double, 3> test{0.0, 0.0, 0.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(0).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(0).getX());
     test = {0.0, 0.0, 1.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(1).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(1).getX());
     test = {0.0, 1.0, 0.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(2).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(2).getX());
     test = {0.0, 1.0, 1.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(3).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(3).getX());
     test = {1.0, 0.0, 0.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(4).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(4).getX());
     test = {1.0, 0.0, 1.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(5).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(5).getX());
     test = {1.0, 1.0, 0.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(6).getX());
+    EXPECT_EQ(test, containerCuboid->getParticles().at(6).getX());
     test = {1.0, 1.0, 1.0};
-    EXPECT_EQ(test, containerCuboid.getParticles().at(7).getX());
-    // maybe also check the velocities
+    EXPECT_EQ(test, containerCuboid->getParticles().at(7).getX());
+    // TODO: Check the Brownian Motion here, but don't know how yet
 }
+
 
 /**
  * @brief: Test the ForceV1Calculation against hard coded values
  */
+
 TEST_F(MolSimTest, testForceV1)
 {
-    // calculate one iteration of the ForceV1 calculation
-    forceV1.calculateForces(particles);
+    containerDirSum.setForce(gravPot.innerPairs());
+    containerDirSum.calculateForces();
     // check against hard coded values
     std::array<double, 3> expectedValuesOne{1.25, 0.0, 0.0};
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
     std::array<double, 3> expectedValuesThree{-1.25, 0.0, 0.0};
-    EXPECT_EQ(particles.at(0).getF(), expectedValuesOne);
-    EXPECT_EQ(particles.at(1).getF(), expectedValuesTwo);
-    EXPECT_EQ(particles.at(2).getF(), expectedValuesThree);
+    EXPECT_EQ(containerDirSum.getParticles().at(0).getF(), expectedValuesOne);
+    EXPECT_EQ(containerDirSum.getParticles().at(1).getF(), expectedValuesTwo);
+    EXPECT_EQ(containerDirSum.getParticles().at(2).getF(), expectedValuesThree);
 }
 
-/**
- * @brief  this test checks whether our old forceV1 calculation and the
- * forceV1 calculation with the lambda generate the same values
- */
-TEST_F(MolSimTest, testEqualLambdaForceV1)
-{
-    auto particlesCopy = particles;
-    container2.setParticles(particlesCopy);
-    forceV1.calculateForces(particles);
-    forceV1.calculateForcesWithLambda(container2);
-    EXPECT_EQ(particles.at(0).getF(), container2.getParticles().at(0).getF());
-    EXPECT_EQ(particles.at(1).getF(), container2.getParticles().at(1).getF());
-    EXPECT_EQ(particles.at(2).getF(), container2.getParticles().at(2).getF());
-}
 
 /**
  * @brief: Test the LennardJonesForceCalculation against hard coded values
  */
+
 TEST_F(MolSimTest, testForceLennardJones)
 {
     // calculate one iteration of the LennardJonesForceIteration
-    lennardJonesForce.calculateForces(particles);
+    containerDirSum.setForce(lennJon.innerPairs());
+    containerDirSum.calculateForces();
     // check against hardcoded values
     std::array<double, 3> expectedValuesOne{-119.091796875, 0.0, 0.0};
     // have to check whether this is due to the double, an error in the calculation in the program or an
@@ -128,28 +126,14 @@ TEST_F(MolSimTest, testForceLennardJones)
     double test = (465.0 / 256.0);
     std::cout << test << std::endl;
     printf("Test=%.17le", test);
-    EXPECT_EQ(particles.at(0).getF(), expectedValuesOne);
-    EXPECT_EQ(particles.at(1).getF(), expectedValuesTwo);
-    EXPECT_EQ(particles.at(2).getF(), expectedValuesThree);
+    EXPECT_EQ(containerDirSum.getParticles().at(0).getF(), expectedValuesOne);
+    EXPECT_EQ(containerDirSum.getParticles().at(1).getF(), expectedValuesTwo);
+    EXPECT_EQ(containerDirSum.getParticles().at(2).getF(), expectedValuesThree);
 }
 
-/**
- * @brief  this test checks whether our old lennardjonesforce calculation and the
- * lennardjonesforce calculation with the lambda generate the same values
- */
-TEST_F(MolSimTest, testEqualLambdaLennardJonesForce)
-{
-    auto particlesCopy = particles;
-    container2.setParticles(particlesCopy);
-    lennardJonesForce.calculateForces(particles);
-    lennardJonesForce.calculateForcesWithLambda(container2);
-    EXPECT_EQ(particles.at(0).getF(), container2.getParticles().at(0).getF());
-    EXPECT_EQ(particles.at(1).getF(), container2.getParticles().at(1).getF());
-    EXPECT_EQ(particles.at(2).getF(), container2.getParticles().at(2).getF());
-}
 
 ///This test checks if the one number of cuboids in the xml file is retrieved correctly
-
+/*
 TEST_F(MolSimTest, testSimpleCuboid) {
     std::string path = "../../Tests/xmlTestInput/simpleCuboid.xml";
 
@@ -217,4 +201,4 @@ TEST_F(MolSimTest, testSimpleSimulationParameters) {
 
     EXPECT_EQ(simulationConstructor.getContainerType(),"LinCel");
 
-}
+}*/

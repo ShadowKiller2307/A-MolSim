@@ -6,9 +6,10 @@ using cell = std::vector<Particle>;
 class ParticleContainerLinCel : ParticleContainer
 {
 private:
+    using cell = std::vector<Particle>;
 	std::vector<cell> cells;
     std::vector<BoundaryCondition> conditions_;
-    using cell = std::vector<Particle>;
+
     double amountOfCells = (domainSize_[0]/cutoffRadius_) * (domainSize_[1]/cutoffRadius_) * (domainSize_[2]/cutoffRadius_) //inner+boundary cells
                            + 2 * cellsX + 2 * (cellsY-2); // adding the halo cells
     /**

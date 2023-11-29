@@ -129,3 +129,5 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     double index = xIndex + cellsX * yIndex;
     cells.at(index).emplace_back(x_arg, v_arg, mass, type);
 }
+
+ParticleContainerLinCel::~ParticleContainerLinCel() = default;
