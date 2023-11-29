@@ -41,8 +41,8 @@ protected:
     std::array<double, 3> domainSize{3.0, 3.0, 1.0};
     double cutoffRadius{1.0};
     Reflecting cond1;
-    //std::vector<BoundaryCondition> conditions{cond1};
-    //ParticleContainerLinCel containerLinCel{0.5, 1, domainSize, cutoffRadius, conditions};   //std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+    std::vector<BoundaryCondition> conditions{cond1};
+    ParticleContainerLinCel containerLinCel{0.5, 1, domainSize, cutoffRadius, conditions};   //std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
     LennJon lennJon{5.0, 1.0};
     GravPot gravPot{};
     ParticleContainer *containerCuboid;

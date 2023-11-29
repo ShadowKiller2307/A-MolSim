@@ -8,7 +8,7 @@ ParticleContainerLinCel::ParticleContainerLinCel
     conditions_ = conditions;
     // initialize the cells vector according to the domainSize and cutoff radius
     if (fmod(domainSize[0], cutoffRadius) == 0 && fmod(domainSize[1], cutoffRadius) == 0) {
-        cells.reserve(amountOfCells);
+        //cells.reserve(amountOfCells);
         for(int i = 0; i < amountOfCells; ++i) { // intialize the cells
             cells.emplace_back(); //this should add a new cell
         }
