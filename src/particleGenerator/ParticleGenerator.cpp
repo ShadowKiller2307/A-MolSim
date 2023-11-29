@@ -1,28 +1,28 @@
-#include "particleGenerator/ParticleGenerator.h"
 #include "particleContainers/ParticleContainerDirSum.h"
+#include "particleGenerator/ParticleGenerator.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
-#include "utils/ArrayUtils.h"
+#include "logOutputManager/LogManager.h"
 #include "fileReader/FileReader.h"
+#include "ParticleGenerator.h"
+#include "utils/ArrayUtils.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Particle.h"
 #include <nlohmann/json.hpp>
+#include <algorithm>
+#include <iostream>
 #include <fstream>
 #include <vector>
-#include "ParticleGenerator.h"
-#include <iostream>
 
 using json = nlohmann::json;
 
 int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, initialize the member here
 
-void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
-										  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity,
-										  optionals optArgs)
+void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc, const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h, double m, int type = -1)
 {
-	if (optArgs.generateNumber < 0)
+	if (type < 0)
 	{
-		optArgs.generateNumber = generateNumber_++;
+		type = generateNumber_++;
 	}
 	for (size_t i = 0; i < particlesPerDimension[0]; ++i)
 	{
@@ -31,34 +31,35 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 			for (size_t k = 0; k < particlesPerDimension[2]; ++k)
 			{
 				// TODO (ASK): should the mbVelocity be calculated for every particle instead?
-				std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(optArgs.meanVelocity, 2); // TODO (ASK): Is the mean here the same as the average?
-				std::array<double, 3> x_arg{i * optArgs.h + llfc[0], j * optArgs.h + llfc[1], k * optArgs.h + llfc[2]};
-				std::array<double, 3> v_arg{particleVelocity + mbVelocity};			   // Calculate via the Brownian motion
-				(*container)->add(x_arg, v_arg, optArgs.mass, optArgs.generateNumber); // using the add function in order to be able to add elements to all container implementations
+				std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(meanVelocity_, 2); // TODO (ASK): Is the mean here the same as the average?
+				std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
+				std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
+				(*container)->add(x_arg, v_arg, m, type);					// using the add function in order to be able to add elements to all container implementations
 			}
 		}
 	}
 }
 
-void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center, const uint32_t &sphereRadius,
-										  std::array<double, 3> &particleVelocity, optionals optArgs)
+void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center, const uint32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type = -1)
 {
-	if (optArgs.generateNumber < 0)
+	if (type < 0)
 	{
-		optArgs.generateNumber = generateNumber_++;
+		type = generateNumber_++;
 	}
+	//(*container)->add();
+
 	// TODO (ADD): Sphere instantiation
 }
 
-void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, optionals optArgs)
+void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, SimParams params)
 {
 	std::ifstream f(path);
 	json jsonContent = json::parse(f);
-	json params = jsonContent["params"];
+	json JSONparams = jsonContent["params"];
 	if (!(*container))
 	{
-		double deltaT = optArgs.deltaT > 0 ? optArgs.deltaT : static_cast<double>(params["deltaT"]);
-		double endTime = optArgs.endTime > 0 ? optArgs.endTime : static_cast<double>(params["endTime"]);
+		double deltaT = params.deltaT > 0 ? params.deltaT : static_cast<double>(JSONparams["deltaT"]);
+		double endTime = params.endTime > 0 ? params.endTime : static_cast<double>(JSONparams["endTime"]);
 		(*container) = createContainer(deltaT, endTime);
 	}
 	// jsonContent["lol"] // returns null
@@ -66,19 +67,36 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	for (size_t i = 0; i < jsonContent["params"]["numParticles"]; i++)
 	{
 		auto j = jsonContent["particles"][i];
-		std::array<double, 3UL> llfc = j["x"];
+
+		std::array<double, 3UL> pos = j["x"];
 		std::array<double, 3UL> particleVelocity = j["v"];
-		std::array<unsigned int, 3UL> particlePerDimension = j["N"];
-		instantiateCuboid(container, llfc, particlePerDimension, particleVelocity, optArgs);
+		double h = j.contains("h") ? static_cast<double>(j["h"]) : h_;
+		double m = j.contains("m") ? static_cast<double>(j["m"]) : m_;
+		double type = j.contains("type") ? static_cast<double>(j["type"]) : generateNumber_++;
+		if (j["shape"] == "cuboid")
+		{
+			std::array<unsigned int, 3UL> particlePerDimension = j["N"];
+			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, type);
+		}
+		else if (j["shape"] == "sphere")
+		{
+			uint32_t radius = j["R"];
+			instantiateSphere(container, pos, radius, particleVelocity, h, m, type);
+		}
+		else
+		{
+			LogManager::errorLog("Type {} is not a valid type!", j["type"]);
+			continue;
+		}
 	}
 }
 
-void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, optionals optArgs)
+void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, SimParams params)
 {
 	// gross C code, brace yourself
-	if (optArgs.generateNumber < 0)
+	if (!(*container))
 	{
-		optArgs.generateNumber = generateNumber_++;
+		(*container) = createContainer(params.deltaT, params.endTime);
 	}
 	int width, height, bpp;
 	char *charPath = new char[path.size()];
@@ -87,40 +105,48 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 	uint8_t *rgb_image = stbi_load(charPath, &width, &height, &bpp, 3); // load the image
 	if (!rgb_image)
 	{
-		std::cout << "Error, could not load image!" << std::endl;
-		exit(0);
+		LogManager::errorLog("Error, could not load image!");
+		exit(1);
 	}
-	std::vector<Particle> &particles = (*container)->getParticles();
+	std::vector<std::array<uint8_t, 3>> lookup;
 	for (int i = 0; i < height; ++i)
 	{
 		for (int j = 0; j < width; j++)
 		{
 			int index = i * width * 3 + j * 3;
-			uint8_t r = rgb_image[index + 0];
-			uint8_t g = rgb_image[index + 1];
-			uint8_t b = rgb_image[index + 2];
-			if (r != 255 || g != 255 || b != 255)
+			uint8_t r = rgb_image[index + 0]; // x-movement
+			uint8_t g = rgb_image[index + 1]; // y-movement
+			uint8_t b = rgb_image[index + 2]; // mass
+			if (!(r == 255 && g == 255 && b == 255))
 			{
-				std::array<double, 3> x_arg{j * optArgs.h, -i * optArgs.h, 0};
-				std::array<double, 3> v_arg{0.0};
-				if (r == 255)
+				int8_t sr = r <= INT8_MAX ? static_cast<int8_t>(r) : static_cast<int>(r - INT8_MIN) + INT8_MIN;
+				int8_t sg = g <= INT8_MAX ? static_cast<int8_t>(g) : static_cast<int>(g - INT8_MIN) + INT8_MIN;
+				std::array<double, 3> x_arg{j * h_, -i * h_, 0};
+				std::array<double, 3> v_arg = {sr / 127.0 * 40.0, sg / 127.0 * 40.0, 0.0};
+				std::array<uint8_t, 3> val = {r, g, b};
+				auto index = std::find(lookup.begin(), lookup.end(), val);
+				int type;
+				if (index == lookup.end())
 				{
-					v_arg = {0.0, r / 255.0 * -30.0, 0.0};
+					lookup.push_back(val);
+					type = lookup.size() - 1;
 				}
-				particles.emplace_back(x_arg, v_arg, optArgs.mass, optArgs.generateNumber);
+				else
+				{
+					type = std::distance(lookup.begin(), index);
+				}
+				(*container)->add(x_arg, v_arg, b, type);
 			}
 		}
 	}
 	stbi_image_free(rgb_image);
 }
 
-void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, optionals optArgs)
+void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, SimParams params)
 {
 	if (!(*container))
 	{
-		double deltaT = optArgs.deltaT;
-		double endTime = optArgs.endTime;
-		(*container) = createContainer(deltaT, endTime);
+		(*container) = createContainer(params.deltaT, params.endTime);
 	}
 	FileReader fr = FileReader();
 	auto actualPath = std::string("_.txt").compare(path) == 0 ? "../input/eingabe-sonne.txt" : path;
@@ -130,7 +156,7 @@ void particleGenerator::instantiateTxt(ParticleContainer **container, const std:
 	fr.readFile(container, charPath);
 }
 
-void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, optionals optionalArguments)
+void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, SimParams params)
 {
 	// TODO (ADD): XML instantiation
 }

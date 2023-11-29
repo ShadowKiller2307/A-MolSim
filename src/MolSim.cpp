@@ -14,7 +14,7 @@ int main(int argc, char *const argv[])
 	LogManager &logManager = LogManager::getInstance();
 	logManager.setLogLevel(spdlog::level::info); // standard default level
 
-	auto opts = optionals();
+	auto params = SimParams();
 	bool writeToJSON = false;
 	std::string outName;
 	ParticleContainer *container = nullptr;
@@ -38,10 +38,10 @@ int main(int argc, char *const argv[])
 		switch (c)
 		{
 		case 'd':
-			opts.deltaT = std::stod(optarg);
+			params.deltaT = std::stod(optarg);
 			break;
 		case 'e':
-			opts.endTime = std::stod(optarg);
+			params.endTime = std::stod(optarg);
 			break;
 		case 'h':
 			printHelp();
@@ -84,29 +84,29 @@ int main(int argc, char *const argv[])
 	auto ending = str.substr(found + 1);
 	std::string path;
 
-	// c++ can't do switch statements on strings😔, this does the job, let's not overcomplicate things
+	// C++ can't do switch statements on strings😔, this does the job, let's not overcomplicate things
 	if (ending == "xml")
 	{
 		path = std::string("_.xml").compare(argv[optind]) == 0 ? "../input/default.xml" : argv[optind];
-		particleGenerator::instantiateXML(&container, path, opts);
+		particleGenerator::instantiateXML(&container, path, params);
 	}
 	else if (ending == "json")
 	{
 		path = std::string("_.json").compare(argv[optind]) == 0 ? "../input/collision.json" : argv[optind];
-		particleGenerator::instantiateJSON(&container, path, opts);
+		particleGenerator::instantiateJSON(&container, path, params);
 		LennJon LJ = LennJon(5.0, 1.0);
 		container->setForce(LJ.innerPairs());
 	}
 	else if (ending == "png")
 	{
 		path = std::string("_.png").compare(argv[optind]) == 0 ? "../input/Cool MolSim.png" : argv[optind];
-		particleGenerator::instantiatePicture(&container, path, opts);
+		particleGenerator::instantiatePicture(&container, path, SimParams{.deltaT = 0.0002, .endTime = 5});
 		LennJon LJ = LennJon(5.0, 1.0);
 		container->setForce(LJ.innerPairs());
 	}
 	else if (ending == "txt")
 	{
-		particleGenerator::instantiateTxt(&container, argv[optind], optionals{.deltaT = 0.014, .endTime = 1000});
+		particleGenerator::instantiateTxt(&container, argv[optind], SimParams{.deltaT = 0.014, .endTime = 1000});
 		GravPot GP = GravPot();
 		container->setForce(GP.innerPairs());
 	}

@@ -7,6 +7,7 @@
 		"boundaries": "oo"
 	},
 	"particles": [{
+		"shape": "cuboid",
 		"x": [
 			0.0,
 			0.0,
@@ -24,6 +25,7 @@
 		]
 	},
 	{
+		"shape": "cuboid",
 		"x": [
 			15.0,
 			15.0,
