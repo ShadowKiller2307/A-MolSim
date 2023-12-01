@@ -1,0 +1,23 @@
+<Configuration>
+
+    <baseName>DemoSimulation</baseName>
+    <writeFrequency>5</writeFrequency>
+    <t_end>101.0</t_end>
+    <delta_t>0.7</delta_t>
+    <logLevel>2</logLevel>
+    <inputGenerator>true</inputGenerator>
+    <inputText>false</inputText>
+    <inputPicture>false</inputPicture>
+    <inputXML>true</inputXML>
+
+    <Cuboid>
+        <llfc>1.3 2.0 3.0</llfc>
+        <particlePerDimension>15 20 30</particlePerDimension>
+        <particleVelocity>0.4 0.4 0.4</particleVelocity>
+        <h>1.89</h>
+        <mass>4.0</mass>
+        <generateNumber>1</generateNumber>
+    </Cuboid>
+
+
+</Configuration>
