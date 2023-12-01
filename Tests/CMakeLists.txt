@@ -10,7 +10,8 @@ file(GLOB_RECURSE MY_TEST_SRC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 string(REPLACE "../src/MolSim.cpp" "" MY_TEST_SRC "${MY_TEST_SRC}")
 string(REPLACE "../src/MolSim.h" "" MY_TEST_SRC "${MY_TEST_SRC}")
 
-add_executable(MolSimTests ${MY_TEST_SRC})
+add_executable(MolSimTests ${MY_TEST_SRC}
+        ../src/xmlSchema/schema.cpp)
 
 target_include_directories(MolSimTests PUBLIC ../libs/libxsd PRIVATE ../src)
 

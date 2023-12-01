@@ -34,6 +34,10 @@
 #ifndef SCHEMA_HXX
 #define SCHEMA_HXX
 
+#ifndef XSD_CXX11
+#define XSD_CXX11
+#endif
+
 #ifndef XSD_USE_CHAR
 #define XSD_USE_CHAR
 #endif
@@ -209,7 +213,7 @@ namespace xml_schema
   {
     // Automatic pointer for DOMDocument.
     //
-    using ::xsd::cxx::xml::dom::auto_ptr;
+    using ::xsd::cxx::xml::dom::unique_ptr;
 
 #ifndef XSD_CXX_TREE_TREE_NODE_KEY__XML_SCHEMA
 #define XSD_CXX_TREE_TREE_NODE_KEY__XML_SCHEMA
@@ -230,9 +234,10 @@ class Cuboid;
 class Sphere;
 class simulationConfig;
 
-#include <memory>    // ::std::auto_ptr
+#include <memory>    // ::std::unique_ptr
 #include <limits>    // std::numeric_limits
 #include <algorithm> // std::binary_search
+#include <utility>   // std::move
 
 #include <xsd/cxx/xml/char-utf8.hxx>
 
@@ -407,7 +412,7 @@ class Cuboid: public ::xml_schema::type
   llfc (const llfc_type& x);
 
   void
-  llfc (::std::auto_ptr< llfc_type > p);
+  llfc (::std::unique_ptr< llfc_type > p);
 
   // particlePerDimension
   //
@@ -424,7 +429,7 @@ class Cuboid: public ::xml_schema::type
   particlePerDimension (const particlePerDimension_type& x);
 
   void
-  particlePerDimension (::std::auto_ptr< particlePerDimension_type > p);
+  particlePerDimension (::std::unique_ptr< particlePerDimension_type > p);
 
   // particleVelocity
   //
@@ -441,7 +446,7 @@ class Cuboid: public ::xml_schema::type
   particleVelocity (const particleVelocity_type& x);
 
   void
-  particleVelocity (::std::auto_ptr< particleVelocity_type > p);
+  particleVelocity (::std::unique_ptr< particleVelocity_type > p);
 
   // h
   //
@@ -546,7 +551,7 @@ class Sphere: public ::xml_schema::type
   centerCoordinates (const centerCoordinates_type& x);
 
   void
-  centerCoordinates (::std::auto_ptr< centerCoordinates_type > p);
+  centerCoordinates (::std::unique_ptr< centerCoordinates_type > p);
 
   // initialVelocity
   //
@@ -563,7 +568,7 @@ class Sphere: public ::xml_schema::type
   initialVelocity (const initialVelocity_type& x);
 
   void
-  initialVelocity (::std::auto_ptr< initialVelocity_type > p);
+  initialVelocity (::std::unique_ptr< initialVelocity_type > p);
 
   // radius
   //
@@ -666,7 +671,7 @@ class simulationConfig: public ::xml_schema::type
   baseName (const baseName_type& x);
 
   void
-  baseName (::std::auto_ptr< baseName_type > p);
+  baseName (::std::unique_ptr< baseName_type > p);
 
   // writeFrequency
   //
@@ -739,7 +744,7 @@ class simulationConfig: public ::xml_schema::type
   domainSize (const domainSize_type& x);
 
   void
-  domainSize (::std::auto_ptr< domainSize_type > p);
+  domainSize (::std::unique_ptr< domainSize_type > p);
 
   // containerType
   //
@@ -756,7 +761,7 @@ class simulationConfig: public ::xml_schema::type
   containerType (const containerType_type& x);
 
   void
-  containerType (::std::auto_ptr< containerType_type > p);
+  containerType (::std::unique_ptr< containerType_type > p);
 
   // Cuboid
   //
@@ -848,18 +853,18 @@ class simulationConfig: public ::xml_schema::type
 // Parse a URI or a local file.
 //
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (const ::std::string& uri,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (const ::std::string& uri,
                ::xml_schema::error_handler& eh,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (const ::std::string& uri,
                ::xercesc::DOMErrorHandler& eh,
                ::xml_schema::flags f = 0,
@@ -868,37 +873,37 @@ Configuration (const ::std::string& uri,
 // Parse std::istream.
 //
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::std::istream& is,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::std::istream& is,
                ::xml_schema::error_handler& eh,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::std::istream& is,
                ::xercesc::DOMErrorHandler& eh,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::std::istream& is,
                const ::std::string& id,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::std::istream& is,
                const ::std::string& id,
                ::xml_schema::error_handler& eh,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::std::istream& is,
                const ::std::string& id,
                ::xercesc::DOMErrorHandler& eh,
@@ -908,18 +913,18 @@ Configuration (::std::istream& is,
 // Parse xercesc::InputSource.
 //
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::xercesc::InputSource& is,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::xercesc::InputSource& is,
                ::xml_schema::error_handler& eh,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (::xercesc::InputSource& is,
                ::xercesc::DOMErrorHandler& eh,
                ::xml_schema::flags f = 0,
@@ -928,13 +933,13 @@ Configuration (::xercesc::InputSource& is,
 // Parse xercesc::DOMDocument.
 //
 
-::std::auto_ptr< ::simulationConfig >
+::std::unique_ptr< ::simulationConfig >
 Configuration (const ::xercesc::DOMDocument& d,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 
-::std::auto_ptr< ::simulationConfig >
-Configuration (::xml_schema::dom::auto_ptr< ::xercesc::DOMDocument > d,
+::std::unique_ptr< ::simulationConfig >
+Configuration (::xml_schema::dom::unique_ptr< ::xercesc::DOMDocument > d,
                ::xml_schema::flags f = 0,
                const ::xml_schema::properties& p = ::xml_schema::properties ());
 

@@ -11,7 +11,7 @@
 #include "../src/forces/Force.h"
 #include "../src/forces/GravPot.h"
 #include "../src/forces/LennJon.h"
-//#include "../src/xmlSchema/XMLReader.h"
+#include "../src/xmlSchema/XMLReader.h"
 #include "../src/particleContainers/ParticleContainer.h"
 #include "../src/particleContainers/ParticleContainerDirSum.h"
 #include "../src/particleContainers/ParticleContainerLinCel.h"
@@ -133,7 +133,7 @@ TEST_F(MolSimTest, testForceLennardJones)
 
 
 ///This test checks if the one number of cuboids in the xml file is retrieved correctly
-/*
+
 TEST_F(MolSimTest, testSimpleCuboid) {
     std::string path = "../../Tests/xmlTestInput/simpleCuboid.xml";
 
@@ -201,4 +201,4 @@ TEST_F(MolSimTest, testSimpleSimulationParameters) {
 
     EXPECT_EQ(simulationConstructor.getContainerType(),"LinCel");
 
-}*/
+}
