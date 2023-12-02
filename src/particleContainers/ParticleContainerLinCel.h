@@ -3,7 +3,7 @@
 #include "boundaryConditions/BoundaryCondition.h"
 using cell = std::vector<Particle>;
 
-class ParticleContainerLinCel : ParticleContainer
+class ParticleContainerLinCel : public ParticleContainer
 {
 private:
     using cell = std::vector<Particle>;
@@ -65,4 +65,8 @@ public:
     void iterHalo();
 
     void calculatePosition() override;
+
+    unsigned int getAmountOfCells();
+
+    std::vector<std::vector<Particle>> getCells();
 };

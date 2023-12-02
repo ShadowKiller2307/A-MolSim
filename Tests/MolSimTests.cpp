@@ -42,7 +42,7 @@ protected:
     double cutoffRadius{1.0};
     Reflecting cond1;
     std::vector<BoundaryCondition> conditions{cond1};
-    ParticleContainerLinCel containerLinCel{0.5, 1, domainSize, cutoffRadius, conditions};   //std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+    ParticleContainerLinCel containerLinCel{0.5, 1, domainSize, cutoffRadius, conditions}; //std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
     LennJon lennJon{5.0, 1.0};
     GravPot gravPot{};
     ParticleContainer *containerCuboid;
@@ -59,17 +59,19 @@ TEST_F(MolSimTest, testGetParticles)
 
 
 /**
- * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid method was
- * called
+ * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid and the
+ * instantiateSphere method were called
  */
 
-TEST_F(MolSimTest, testGenerateParticlesGenerator)
+TEST_F(MolSimTest, testGenerateParticlesDirSumContainer)
 {
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
     generator.instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
+    //ParticleContainer **container, const std::array<double, 3> &center, const int32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type = -1)
+    generator.instantiateSphere(&containerCuboid, {5.0, 5.0, 0.0}, 2, startV, 1.0, 1, true, 1);
     // Now check if the cuboid was instantiated with the particle positions as we expect
-    EXPECT_EQ(8, containerCuboid->getParticles().size());
+    EXPECT_EQ(17, containerCuboid->getParticles().size());
     std::array<double, 3> test{0.0, 0.0, 0.0};
     EXPECT_EQ(test, containerCuboid->getParticles().at(0).getX());
     test = {0.0, 0.0, 1.0};
@@ -86,12 +88,86 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator)
     EXPECT_EQ(test, containerCuboid->getParticles().at(6).getX());
     test = {1.0, 1.0, 1.0};
     EXPECT_EQ(test, containerCuboid->getParticles().at(7).getX());
+    //  Now check if the sphere was instantiated with the particle positions as we expect
+    test = {4.0, 4.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(8).getX());
+    test = {4.0, 5.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(9).getX());
+    test = {4.0, 6.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(10).getX());
+    test = {5.0, 4.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(11).getX());
+    test = {5.0, 5.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(12).getX());
+    test = {5.0, 6.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(13).getX());
+    test = {6.0, 4.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(14).getX());
+    test = {6.0, 5.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(15).getX());
+    test = {6.0, 6.0, 0.0};
+    EXPECT_EQ(test, containerCuboid->getParticles().at(16).getX());
+    //Check for two random particles(one of the sphere and one of the cuboid) if the mass was set correctly
+    EXPECT_EQ(1.0, containerCuboid->getParticles().at(4).getM());
+    EXPECT_EQ(1.0, containerCuboid->getParticles().at(16).getM());
     // TODO: Check the Brownian Motion here, but don't know how yet
 }
 
+/**
+ * @brief: Generate a cuboid and a sphere for the linked cells
+ */
+TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
+{
+    ParticleContainer *cuboidLinkedCel = &containerLinCel;
+    std::array<double, 3> startV{0.0, 0.0, 0.0};
+    generator.instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 0}, startV, 1.0, 1, 0);
+  /*  for(int i = 0; i < containerLinCel.getAmountOfCells(); ++i) {
+        std::cout <<  containerLinCel.getCells().at(i).size() << std::endl;
+    }*/
+
+    EXPECT_EQ(containerLinCel.getAmountOfCells(), 25);
+    std::array<double, 3> test{0.5, 0.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(6).at(0).getX());
+    test = {0.5, 1.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(11).at(0).getX());
+    test = {1.5, 0.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(7).at(0).getX());
+    test = {1.5, 1.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(12).at(0).getX());
+}
 
 /**
- * @brief: Test the ForceV1Calculation against hard coded values
+ * @brief: check force calculation for Lennard Jones for the Linked cells, and check
+ * check whether Particles from cells, that arent neighbours of each other don't influence each others forces
+ */
+TEST_F(MolSimTest, testForcesLinkedCells) {
+
+}
+
+/**
+ * @brief: check if a single Particle in a Boundary Cell, that moves towards the border of the domain,
+ * stays within the domain when the Boundary is set to Reflecting
+ */
+TEST_F(MolSimTest, testReflectingBoundary) {
+    containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
+    for (int i = 0; i < 100; ++i) {
+        //check whether the particle stays within the domain for hundred iterations
+    }
+}
+
+/**
+ *  @brief: check if a single Particle in a Boundary Cell, that moves towards the border of the domain,
+ *  gets deleted when leaving the cell if the Boundary is set to Overflow
+ */
+TEST_F(MolSimTest, testOverflowBoundary) {
+    containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
+    for (int i = 0; i < 100; ++i) {
+        //check whether the particle leaves the domain and gets deleted
+    }
+}
+
+/**
+ * @brief: Test the ForceV1Calculation against hard coded values in the DirSum container class
  */
 
 TEST_F(MolSimTest, testForceV1)
@@ -109,7 +185,7 @@ TEST_F(MolSimTest, testForceV1)
 
 
 /**
- * @brief: Test the LennardJonesForceCalculation against hard coded values
+ * @brief: Test the LennardJonesForceCalculation against hard coded values in the DirSum container class
  */
 
 TEST_F(MolSimTest, testForceLennardJones)

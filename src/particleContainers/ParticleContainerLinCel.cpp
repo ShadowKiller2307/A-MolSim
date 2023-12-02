@@ -254,4 +254,12 @@ void ParticleContainerLinCel::calculatePosition() {
     }
 }
 
+unsigned int ParticleContainerLinCel::getAmountOfCells() {
+    return amountOfCells;
+}
+
+std::vector<std::vector<Particle>> ParticleContainerLinCel::getCells() {
+    return cells;
+}
+
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;
