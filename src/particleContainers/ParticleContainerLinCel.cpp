@@ -205,15 +205,53 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     // compute the cell to which the particle will be added
     if (x_arg[0] <= domainSize_[0] || x_arg[1] <= domainSize_[1]) {
         double xIndex =
-                trunc(x_arg[0] / cutoffRadius_) + 1 + cellsX; //The "+1 + cellsX" is added because of the halo cells
-        double yIndex = trunc(x_arg[1] / cutoffRadius_) + 1 + cellsX;
-        double index = static_cast<unsigned int> (xIndex + cellsX * yIndex);
+                trunc(x_arg[0] / cutoffRadius_);
+        double yIndex = trunc(x_arg[1] / cutoffRadius_);
+        double index = static_cast<unsigned int> (xIndex + cellsX * yIndex) + 1 + cellsX; //The "+1 + cellsX" is added because of the halo cells
         cells.at(index).emplace_back(x_arg, v_arg, mass, type);
     }
 }
 
+//TODO: check calculatePosition for errors
 void ParticleContainerLinCel::calculatePosition() {
+    int i = 0;
+    for(int j = 0; j < cells.size(); ++j) {
+        //for (auto &currentCell: cells) {
+        auto &currentCell = cells.at(j);
+        for(int x = 0; x < currentCell.size(); ++x) {
+            //for (auto &p : currentCell) {
+            auto &p = currentCell.at(x);
+            std::array<double, 3> force = p.getF();
+            double factor = std::pow(deltaT_, 2) / (2 * p.getM());
+            force = factor * force;
+            std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force;
+            //check whether the particle left the current cell
+            double xIndex;
+            double yIndex;
+            if (newPosition[0] < 0.0) {
+                xIndex = 0;
+            } else {
+                xIndex = trunc(newPosition[0] / cutoffRadius_);
+            }
+            if (newPosition[1] < 0.0) {
+                yIndex = 0;
+            } else {
+                yIndex = trunc(newPosition[1]/cutoffRadius_);
+            }
+            double index = xIndex
+                           + cellsX * yIndex + cellsX + 1;
+            if (index >= amountOfCells || index < 0) {
+                currentCell.erase(currentCell.begin() + x);
+            }
 
+            if (j != index) { // Particle has to be deleted in the old cell and added to the new cell
+                currentCell.erase(currentCell.begin() + x);
+                p.setX(newPosition);
+                cells.at(index).emplace_back(p);
+            }
+            i++;
+        }
+    }
 }
 
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;
