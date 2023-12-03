@@ -1,3 +1,4 @@
+#include <iostream>
 #include "particleContainers/ParticleContainerLinCel.h"
 #include "boundaryConditions/BoundaryCondition.h"
 
@@ -44,13 +45,13 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
      * iterate over the cells
      * if a new cell is iterated over, only calculate the forces in the cell itself
      * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
-     * over the current the cell (a check for the cutoffRadius has to be included)
-     * Calc     > Calc
-     *   ^     /
-     *   |   /
-     * Cell -- > Calc
+     * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
+     * Calc       Calc   Calc
+     *      \    |     /
+     *       \   |   /
+     *        \ Cell -- > Calc
      */
-     //TODO: integrate the case if the domainSize isnt a multiple of the cutoff radius
+    std::cout << "Right force calculation!" << std::endl;
     for (int x = 0; x < amountOfCells; ++x) {
         if (x < cellsX || x >= (amountOfCells - cellsX) || x % cellsX == 0 || x % cellsX == (cellsX - 1)) {
             continue; // skip the halo cells
@@ -64,7 +65,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
          * store the right and upper cells in a reference, if no right or upper cell exists
          * store the current cell in the variable(so that the variables always have a value)
          */
-        // TODO: maybe replace with pointers
         cell &currentRight = rightCell ? cells.at(x+1) : cells.at(x);
         cell &currentUpper = upperCell ? cells.at(x + cellsX) : cells.at(x);
         cell &currentUpperRight = rightUpperCell ? cells.at(x + cellsX + 1) : cells.at(x);
@@ -120,7 +120,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
  * @brief: the cells at the corner will be iterated over twice
  * @param boundaryLambda
  */
-void ParticleContainerLinCel::iterBoundary(std::array<const std::function<void(Particle &, Particle &)>, 4> &boundaryLambda) {
+void ParticleContainerLinCel::iterBoundary() {
     unsigned int i = cellsX + 1;
     // from left to right
     for (i; i < cellsX-2; ++i) {  //lower row
@@ -172,6 +172,20 @@ void ParticleContainerLinCel::iterBoundary(std::array<const std::function<void(P
         i -= cellsX;
     }
 }
+/*
+
+void ParticleContainerLinCel::calculateForces()
+{
+    for (auto &p : particles_)
+    {
+        auto oldForce = p.getF();
+        std::array<double, 3> zero = {0.0, 0.0, 0.0};
+        p.setF(zero);
+        p.setOldF(oldForce);
+    }
+    iterOverInnerPairs(force);
+}
+*/
 
 void ParticleContainerLinCel::iterHalo() {
     int i = 0;
@@ -254,12 +268,32 @@ void ParticleContainerLinCel::calculatePosition() {
     }
 }
 
-unsigned int ParticleContainerLinCel::getAmountOfCells() {
+unsigned int ParticleContainerLinCel::getAmountOfCells() const {
     return amountOfCells;
 }
 
 std::vector<std::vector<Particle>> ParticleContainerLinCel::getCells() {
     return cells;
+}
+
+unsigned int ParticleContainerLinCel::getAmountOfParticles() {
+    unsigned int returnValue = 0;
+    for (auto cell : cells) {
+        returnValue += cell.size();
+    }
+    return returnValue;
+}
+
+void ParticleContainerLinCel::calculateForces() {
+    for (auto &cell : cells) {
+        for (auto &p : cell) {
+            auto oldForce = p.getF();
+            std::array<double, 3> zero = {0.0, 0.0, 0.0};
+            p.setF(zero);
+            p.setOldF(oldForce);
+        }
+    }
+    iterOverInnerPairs(force);
 }
 
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;

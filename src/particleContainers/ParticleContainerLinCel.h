@@ -57,7 +57,7 @@ public:
     /**
      * @brief iterate over the particles which are currectly located in the halo zone
      */
-    void iterBoundary(std::array <const std::function<void(Particle &, Particle &)>, 4> &boundaryLambda);
+    void iterBoundary();
 
     /**
      * @brief iterate over the particles which are currectly located in the halo zone
@@ -66,7 +66,11 @@ public:
 
     void calculatePosition() override;
 
-    unsigned int getAmountOfCells();
+    void calculateForces() override;
+
+    unsigned int getAmountOfParticles();
+
+    unsigned int getAmountOfCells() const;
 
     std::vector<std::vector<Particle>> getCells();
 };
