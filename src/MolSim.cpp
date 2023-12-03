@@ -88,21 +88,25 @@ int main(int argc, char *const argv[])
 	if (ending == "xml")
 	{
 		path = std::string("_.xml").compare(argv[optind]) == 0 ? "../input/default.xml" : argv[optind];
-		particleGenerator::instantiateXML(&container, path, LennJon(5.0, 1.0), params);
+		auto force = LennJon(5.0, 1.0);
+		particleGenerator::instantiateXML(&container, path, force, params);
 	}
 	else if (ending == "json")
 	{
 		path = std::string("_.json").compare(argv[optind]) == 0 ? "../input/collision.json" : argv[optind];
-		particleGenerator::instantiateJSON(&container, path, LennJon(5.0, 1.0), params);
+		auto force = LennJon(5.0, 1.0);
+		particleGenerator::instantiateJSON(&container, path, force, params);
 	}
 	else if (ending == "png")
 	{
 		path = std::string("_.png").compare(argv[optind]) == 0 ? "../input/Cool MolSim.png" : argv[optind];
-		particleGenerator::instantiatePicture(&container, path, LennJon(5.0, 1.0), SimParams{.deltaT = 0.0002, .endTime = 5});
+		auto force = LennJon(5.0, 1.0);
+		particleGenerator::instantiatePicture(&container, path, force, SimParams{.deltaT = 0.0002, .endTime = 5});
 	}
 	else if (ending == "txt")
 	{
-		particleGenerator::instantiateTxt(&container, argv[optind], GravPot(), SimParams{.deltaT = 0.014, .endTime = 1000, .containerType = "DirSum"});
+		auto force = GravPot();
+		particleGenerator::instantiateTxt(&container, argv[optind], force, SimParams{.deltaT = 0.014, .endTime = 1000, .containerType = "DirSum"});
 	}
 	if (writeToJSON)
 	{

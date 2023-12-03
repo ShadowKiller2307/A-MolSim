@@ -32,16 +32,14 @@ private:
      * 3D cell: cutoffRadius * cutoffRadius * cutoffRadius
      */
     double cutoffRadius_;
-    /*
-     * amount of Cells in each dimension can only be an unsigned integer
-     */
+    // amount of Cells in each dimension can only be an unsigned integer
     unsigned int cellsX = 0;
     unsigned int cellsY = 0;
     // only needed for the 3D case
     unsigned int cellsZ = 0;
 
 public:
-    ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force force, double cutoffRadius);
+    ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius);
     ~ParticleContainerLinCel();
 
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;

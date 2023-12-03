@@ -23,14 +23,8 @@ void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a,
 
 void ParticleContainer::calculateForces()
 {
-	for (auto &p : particles_)
-	{
-		auto oldForce = p.getF();
-		std::array<double, 3> zero = {0.0, 0.0, 0.0};
-		p.setF(zero);
-		p.setOldF(oldForce);
-	}
-	iterOverInnerPairs(force_);
+	// TODO REMOVE
+	LogManager::errorLog("dont want to be here");
 }
 
 void ParticleContainer::calculateVelocity()

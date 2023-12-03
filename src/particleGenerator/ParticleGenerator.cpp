@@ -4,8 +4,10 @@
 #include "utils/MaxwellBoltzmannDistribution.h"
 #include "logOutputManager/LogManager.h"
 #include "fileReader/FileReader.h"
+#include "xmlSchema/XMLReader.h"
 #include "ParticleGenerator.h"
 #include "utils/ArrayUtils.h"
+#include "forces/LennJon.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Particle.h"
@@ -84,13 +86,14 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 	}
 }
 
-void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, Force force, SimParams params)
+void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, Force &force, SimParams params)
 {
 	std::ifstream f(path);
 	json jsonContent = json::parse(f);
 	json JSONparams = jsonContent["params"];
 	if (!(*container))
 	{
+		auto test = force.innerPairs();
 		double deltaT = params.deltaT > 0 ? params.deltaT : static_cast<double>(JSONparams["deltaT"]);
 		double endTime = params.endTime > 0 ? params.endTime : static_cast<double>(JSONparams["endTime"]);
 		std::string containerType = params.containerType != "" ? params.containerType : static_cast<std::string>(JSONparams["containerType"]);
@@ -126,10 +129,6 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 			{
 				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds, force, cutoffRadius);
 			}
-			else if (containerType == "VerLis")
-			{
-				// TODO (Implement): Verlet List
-			}
 			else
 			{
 				LogManager::errorLog("Contianer type \"{}\" is unknown!", containerType);
@@ -155,7 +154,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		else if (j["shape"] == "sphere")
 		{
 			uint32_t radius = j["R"];
-			instantiateSphere(container, pos, radius, particleVelocity, h, m, type);
+			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type);
 		}
 		else
 		{
@@ -165,7 +164,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	}
 }
 
-void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, Force force, SimParams params)
+void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, Force &force, SimParams params)
 {
 	// gross C code, brace yourself
 	if (!(*container))
@@ -216,7 +215,7 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 	stbi_image_free(rgb_image);
 }
 
-void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, Force force, SimParams params)
+void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, Force &force, SimParams params)
 {
 	if (!(*container))
 	{
@@ -230,7 +229,15 @@ void particleGenerator::instantiateTxt(ParticleContainer **container, const std:
 	fr.readFile(container, charPath);
 }
 
-void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, Force force, SimParams clArgs)
+void particleGenerator::instantiateXML(ParticleContainer **container, std::string &path, Force &force, SimParams clArgs)
 {
 	// TODO (ADD): XML instantiation
+	XMLReader xmlReader(path);
+	xmlReader.extractSimulationParameters();
+	xmlReader.extractCuboid();
+	xmlReader.extractSphere();
+
+	SimulationConstructor simConst = xmlReader.getSimulationConstructor();
+	auto cuboidConst = xmlReader.getCuboidConstructors();
+	// auto sphereConstructor = xmlReader.getSphereConstructors();
 }

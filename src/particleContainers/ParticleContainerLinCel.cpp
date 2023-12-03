@@ -5,7 +5,7 @@
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 
-ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
+ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
 {
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
@@ -245,20 +245,6 @@ void ParticleContainerLinCel::iterBoundary()
         }
     }
 }
-/*
-
-void ParticleContainerLinCel::calculateForces()
-{
-    for (auto &p : particles_)
-    {
-        auto oldForce = p.getF();
-        std::array<double, 3> zero = {0.0, 0.0, 0.0};
-        p.setF(zero);
-        p.setOldF(oldForce);
-    }
-    iterOverInnerPairs(force);
-}
-*/
 
 void ParticleContainerLinCel::iterHalo()
 {
@@ -298,8 +284,7 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     // compute the cell to which the particle will be added
     if (x_arg[0] <= domainSize_[0] || x_arg[1] <= domainSize_[1])
     {
-        double xIndex =
-            trunc(x_arg[0] / cutoffRadius_);
+        double xIndex = trunc(x_arg[0] / cutoffRadius_);
         double yIndex = trunc(x_arg[1] / cutoffRadius_);
         double index = static_cast<unsigned int>(xIndex + cellsX * yIndex) + 1 + cellsX; // The "+1 + cellsX" is added because of the halo cells
         cells.at(index).emplace_back(x_arg, v_arg, mass, type);
