@@ -1,6 +1,6 @@
 #pragma once
-#include "Particle.h"
 #include "utils/ArrayUtils.h"
+#include "Particle.h"
 #include <functional>
 
 class Force

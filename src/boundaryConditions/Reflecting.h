@@ -1,7 +1,10 @@
 #pragma once
 #include "boundaryConditions/BoundaryCondition.h"
 
-class Reflecting : public BoundaryCondition{
-    std::function<void(Particle &a)> applyBoundary(std::function<void(Particle &, Particle &)> &forceLambda, double position, int direction) override;
+class Reflecting : public BoundaryCondition
+{
+public:
+	Reflecting(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda);
+	~Reflecting() = default;
+	void applyBoundCondition(Particle &a) override;
 };
-

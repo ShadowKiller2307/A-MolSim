@@ -2,14 +2,18 @@
 #include "Particle.h"
 #pragma once
 
-class BoundaryCondition {
+class BoundaryCondition
+{
+protected:
+    /// @brief the direction the normal of the boundary is facing, 0 = x, 1 = y, 2 = z
+    int direction_;
+    /// @brief position of the boundary along its axis
+    double position_;
+    /// @brief how the boundary should affect particles close to it
+    std::function<void(Particle &, Particle &)> forceLambda_;
 
-    /**
-     * @brief it takes the boundary and the force lambda and returns a lambda
-     * that takes on Particle and returns the according force
-     */
 public:
-    virtual std::function<void(Particle &a)> applyBoundary(std::function<void(Particle &, Particle &)> &forceLambda, double position, int direction);
-
+    BoundaryCondition(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda);
+    ~BoundaryCondition() = default;
+    virtual void applyBoundCondition(Particle &a);
 };
-

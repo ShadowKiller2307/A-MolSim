@@ -1,4 +1,5 @@
 #include "particleContainers/ParticleContainerDirSum.h"
+#include "particleContainers/ParticleContainerLinCel.h"
 #include "particleGenerator/ParticleGenerator.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
 #include "logOutputManager/LogManager.h"
@@ -83,7 +84,7 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 	}
 }
 
-void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, SimParams params)
+void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, Force force, SimParams params)
 {
 	std::ifstream f(path);
 	json jsonContent = json::parse(f);
@@ -92,9 +93,50 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	{
 		double deltaT = params.deltaT > 0 ? params.deltaT : static_cast<double>(JSONparams["deltaT"]);
 		double endTime = params.endTime > 0 ? params.endTime : static_cast<double>(JSONparams["endTime"]);
-		(*container) = createContainer(deltaT, endTime);
+		std::string containerType = params.containerType != "" ? params.containerType : static_cast<std::string>(JSONparams["containerType"]);
+		int writeFrequency;
+		if (params.writeFrequency > 0)
+		{
+			writeFrequency = params.writeFrequency;
+		}
+		else if (jsonContent.contains("writeFrequency"))
+		{
+			writeFrequency = static_cast<double>(JSONparams["writeFrequency"]);
+		}
+		else
+		{
+			writeFrequency = 10;
+		}
+
+		if (containerType == "DirSum")
+		{
+			(*container) = new ParticleContainerDirSum(deltaT, endTime, writeFrequency, force.innerPairs());
+		}
+		else
+		{
+			std::string bounds = params.boundaries != "" ? params.boundaries : static_cast<std::string>(JSONparams["boundaries"]);
+			std::array<double, 3> domainSize;
+			for (int i = 0; i < 3; i++)
+			{
+				domainSize[i] = params.domainSize[i] > 0 ? params.domainSize[i] : static_cast<std::array<double, 3>>(JSONparams["domainSize"])[i];
+			}
+			double cutoffRadius = params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
+
+			if (containerType == "LinCel")
+			{
+				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds, force, cutoffRadius);
+			}
+			else if (containerType == "VerLis")
+			{
+				// TODO (Implement): Verlet List
+			}
+			else
+			{
+				LogManager::errorLog("Contianer type \"{}\" is unknown!", containerType);
+				exit(1);
+			}
+		}
 	}
-	// jsonContent["lol"] // returns null
 
 	for (size_t i = 0; i < jsonContent["params"]["numParticles"]; i++)
 	{
@@ -123,12 +165,12 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	}
 }
 
-void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, SimParams params)
+void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, Force force, SimParams params)
 {
 	// gross C code, brace yourself
 	if (!(*container))
 	{
-		(*container) = createContainer(params.deltaT, params.endTime);
+		(*container) = new ParticleContainerDirSum(params.deltaT, params.endTime, params.writeFrequency, force.innerPairs());
 	}
 	int width, height, bpp;
 	char *charPath = new char[path.size()];
@@ -153,7 +195,7 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 			{
 				int8_t sr = r <= INT8_MAX ? static_cast<int8_t>(r) : static_cast<int>(r - INT8_MIN) + INT8_MIN;
 				int8_t sg = g <= INT8_MAX ? static_cast<int8_t>(g) : static_cast<int>(g - INT8_MIN) + INT8_MIN;
-				std::array<double, 3> x_arg{j * h_, -i * h_, 0};
+				std::array<double, 3> x_arg{static_cast<double>(j) * h_, static_cast<double>(-i) * h_, 0};
 				std::array<double, 3> v_arg = {sr / 127.0 * 40.0, sg / 127.0 * 40.0, 0.0};
 				std::array<uint8_t, 3> val = {r, g, b};
 				auto index = std::find(lookup.begin(), lookup.end(), val);
@@ -174,11 +216,11 @@ void particleGenerator::instantiatePicture(ParticleContainer **container, const 
 	stbi_image_free(rgb_image);
 }
 
-void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, SimParams clArgs)
+void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, Force force, SimParams params)
 {
 	if (!(*container))
 	{
-		(*container) = createContainer(clArgs.deltaT, clArgs.endTime);
+		(*container) = new ParticleContainerDirSum(params.deltaT, params.endTime, params.writeFrequency, force.innerPairs());
 	}
 	FileReader fr = FileReader();
 	auto actualPath = std::string("_.txt").compare(path) == 0 ? "../input/eingabe-sonne.txt" : path;
@@ -188,12 +230,7 @@ void particleGenerator::instantiateTxt(ParticleContainer **container, const std:
 	fr.readFile(container, charPath);
 }
 
-void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, SimParams clArgs)
+void particleGenerator::instantiateXML(ParticleContainer **container, const std::string &path, Force force, SimParams clArgs)
 {
 	// TODO (ADD): XML instantiation
-}
-
-ParticleContainer *particleGenerator::createContainer(double deltaT, double endTime)
-{
-	return new ParticleContainerDirSum{deltaT, endTime};
 }

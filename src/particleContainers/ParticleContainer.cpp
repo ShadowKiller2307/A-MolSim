@@ -1,13 +1,20 @@
 #include "particleContainers/ParticleContainer.h"
+#include "boundaryConditions/Reflecting.h"
 #include "logOutputManager/LogManager.h"
+#include "boundaryConditions/Outflow.h"
 #include <iostream>
 #include <iomanip>
 
-ParticleContainer::ParticleContainer(const double deltaT, const double endTime, int writeFrequency) : deltaT_(deltaT), endTime_(endTime)
+ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFrequency, std::function<void(Particle &a, Particle &b)> f) : deltaT_(deltaT), endTime_(endTime)
 {
 	outManager_ = new OutputManager();
 	startTime_ = 0.0;
+	if (writeFrequency <= 0)
+	{
+		outManager_->outputFiles = false;
+	}
 	outputEveryNIterations_ = writeFrequency;
+	force_ = f;
 }
 
 void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
@@ -23,7 +30,7 @@ void ParticleContainer::calculateForces()
 		p.setF(zero);
 		p.setOldF(oldForce);
 	}
-	iterOverInnerPairs(force);
+	iterOverInnerPairs(force_);
 }
 
 void ParticleContainer::calculateVelocity()
@@ -68,7 +75,7 @@ void ParticleContainer::simulateParticles()
 
 	while (startTime_ < endTime_)
 	{
-		if (/*.getOutputFiles() &&*/ iteration_ % outputEveryNIterations_ == 0)
+		if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
 		{
 			outManager_->plotParticles(particles_, iteration_);
 		}
@@ -78,7 +85,7 @@ void ParticleContainer::simulateParticles()
 			if (iteration_)
 			{
 				auto end = std::chrono::high_resolution_clock::now();
-				int64_t diff = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+				size_t diff = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
 				auto remainig = (static_cast<double>(diff) / iteration_) * (endTime_ - startTime_) / deltaT_;
 				std::string min, sec;
 				if (remainig > 60)
@@ -107,18 +114,13 @@ void ParticleContainer::simulateParticles()
 	}
 	//  TODO (ADD): Log
 	auto end = std::chrono::high_resolution_clock::now();
-	int64_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+	size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 	std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
 }
 
 void ParticleContainer::writeJSON(std::string &name)
 {
 	outManager_->writeJSON(name, *this);
-}
-
-void ParticleContainer::setForce(const std::function<void(Particle &a, Particle &b)> f)
-{
-	force = f;
 }
 
 const double ParticleContainer::getDeltaT() const

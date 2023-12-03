@@ -1,7 +1,8 @@
 #include "particleContainers/ParticleContainerDirSum.h"
+#include "ParticleContainerDirSum.h"
 #include <iostream>
 
-ParticleContainerDirSum::ParticleContainerDirSum(double deltaT, double endTime) : ParticleContainer(deltaT, endTime)
+ParticleContainerDirSum::ParticleContainerDirSum(double deltaT, double endTime, int writeFrequency, std::function<void(Particle &a, Particle &b)> f) : ParticleContainer(deltaT, endTime, writeFrequency, f)
 {
 }
 

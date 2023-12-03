@@ -12,6 +12,7 @@ using json = nlohmann::json;
 OutputManager::OutputManager()
 {
 	writer = outputWriter::VTKWriter();
+	outputFiles = true;
 }
 
 void OutputManager::plotParticles(const std::vector<Particle> &particles, const size_t iteration)

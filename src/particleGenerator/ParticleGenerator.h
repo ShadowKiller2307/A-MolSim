@@ -1,8 +1,7 @@
 #pragma once
-#include <array>
-#include <vector>
+#include "forces/Force.h"
 #include <stdint.h>
-#include "Particle.h"
+#include <vector>
 
 class ParticleContainer;
 
@@ -15,8 +14,13 @@ class ParticleContainer;
 struct SimParams
 {
 public:
-	double deltaT = 0.0002;
-	double endTime = 5;
+	double deltaT = -1;
+	double endTime = -1;
+	std::string containerType = "";
+	std::string boundaries = "";
+	std::array<double, 3> domainSize = {-1, -1, -1};
+	int writeFrequency = -1;
+	double cutoffRadius = -1;
 };
 
 class particleGenerator
@@ -27,9 +31,6 @@ private:
 	static constexpr const int h_ = 1.122462048;
 	static constexpr const int m_ = 1.0;
 
-	static ParticleContainer *createContainer(double deltaT, double endTime);
-	static ParticleContainer *createContainer(double deltaT, double endTime, std::array<double, 3>);
-
 public:
 	static void instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 								  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h, double m, int type);
@@ -37,11 +38,11 @@ public:
 	static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 								  const int32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
 
-	static void instantiateJSON(ParticleContainer **container, const std::string &path, SimParams clArgs);
+	static void instantiateJSON(ParticleContainer **container, const std::string &path, Force force, SimParams clArgs);
 
-	static void instantiatePicture(ParticleContainer **container, const std::string &path, SimParams clArgs);
+	static void instantiatePicture(ParticleContainer **container, const std::string &path, Force force, SimParams clArgs);
 
-	static void instantiateTxt(ParticleContainer **container, const std::string &path, SimParams clArgs);
+	static void instantiateTxt(ParticleContainer **container, const std::string &path, Force force, SimParams clArgs);
 
-	static void instantiateXML(ParticleContainer **container, const std::string &path, SimParams clArgs);
+	static void instantiateXML(ParticleContainer **container, const std::string &path, Force force, SimParams clArgs);
 };

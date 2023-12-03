@@ -1,7 +1,7 @@
 #include "BoundaryCondition.h"
 
-std::function<void(Particle &a)>
-BoundaryCondition::applyBoundary(std::function<void(Particle &, Particle &)> &forceLambda, double position,
-                                 int direction) {
-    return std::function<void(Particle &)>();
+BoundaryCondition::BoundaryCondition(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda) : position_(position), direction_(direction), forceLambda_(forceLambda)
+{
 }
+
+void BoundaryCondition::applyBoundCondition(Particle &a){};

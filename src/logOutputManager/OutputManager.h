@@ -13,8 +13,8 @@ private:
 	outputWriter::VTKWriter writer;
 
 public:
-	static bool outputFiles;
-	static bool outputBaseName;
+	bool outputFiles;
+	bool outputBaseName;
 	void plotParticles(const std::vector<Particle> &particles, const size_t iteration);
 	void writeJSON(std::string &name, ParticleContainer &container);
 	OutputManager();
