@@ -4,6 +4,11 @@ Reflecting::Reflecting(double position, int direction, std::function<void(Partic
 {
 }
 
+bool Reflecting::affectsForce()
+{
+	return true;
+}
+
 void Reflecting::applyBoundCondition(Particle &a)
 {
 	Particle ghostParticle = Particle();

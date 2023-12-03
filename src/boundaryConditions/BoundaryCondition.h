@@ -15,5 +15,6 @@ protected:
 public:
     BoundaryCondition(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda);
     ~BoundaryCondition() = default;
+    virtual bool affectsForce();
     virtual void applyBoundCondition(Particle &a);
 };

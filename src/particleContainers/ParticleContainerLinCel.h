@@ -1,13 +1,13 @@
 #pragma once
 #include "particleContainers/ParticleContainer.h"
 #include "boundaryConditions/BoundaryCondition.h"
-using cell = std::vector<Particle>;
+#include "forces/Force.h"
 
 class ParticleContainerLinCel : public ParticleContainer
 {
 private:
     using cell = std::vector<Particle>;
-	std::vector<cell> cells;
+    std::vector<cell> cells;
     std::vector<BoundaryCondition> conditions_;
     bool upperModulo = false;
     bool rightModulo = false;
@@ -18,14 +18,14 @@ private:
     = floor(domainSize_[0]/cutoffRadius_) * floor(domainSize_[1]/cutoffRadius_) // (domainSize_[2]/cutoffRadius_) //inner+boundary cells
                            + 2 * cellsX + 2 * (cellsY-2); // adding the halo cells*/
     /**
-    * @brief the cells can be divided into inner, boundary and halo cells
-    *
-    * the first element of the cells is the cell at the front lower left corner of the domain
-    * cells go from:
-    * ->left to right
-    * ->front to back
-    * ->from down to up
-    */
+     * @brief the cells can be divided into inner, boundary and halo cells
+     *
+     * the first element of the cells is the cell at the front lower left corner of the domain
+     * cells go from:
+     * ->left to right
+     * ->front to back
+     * ->from down to up
+     */
     std::array<double, 3> domainSize_;
     /**
      * 2D cell: cutoffRadius * cutoffRadius * 1
@@ -41,11 +41,8 @@ private:
     unsigned int cellsZ = 0;
 
 public:
-	ParticleContainerLinCel(double deltaT, double endTime, std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions);
-
-
-	~ParticleContainerLinCel();
-
+    ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force force, double cutoffRadius);
+    ~ParticleContainerLinCel();
 
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
     /**
@@ -55,7 +52,7 @@ public:
     void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
 
     /**
-     * @brief iterate over the particles which are currectly located in the halo zone
+     * @brief iterate over the particles which are currectly located in the boundary zone
      */
     void iterBoundary();
 

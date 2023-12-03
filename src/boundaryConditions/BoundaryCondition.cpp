@@ -4,4 +4,9 @@ BoundaryCondition::BoundaryCondition(double position, int direction, std::functi
 {
 }
 
+bool BoundaryCondition::affectsForce()
+{
+	return false;
+}
+
 void BoundaryCondition::applyBoundCondition(Particle &a){};

@@ -64,8 +64,6 @@ public:
 
 	void setParticles(std::vector<Particle> &particles);
 
-	void setForce(const std::function<void(Particle &a, Particle &b)> f);
-
 	const double getDeltaT() const;
 
 	const double getEndTime() const;
