@@ -37,19 +37,16 @@ protected:
         linCel2.add({0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         linCel2.add({1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         linCel2.add({2.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
-        containerCuboid = new ParticleContainerDirSum{0.5, 1};
+        containerCuboid = new ParticleContainerDirSum{0.5, 1, 1, lennJon.innerPairs()};
     }
-    ParticleContainerDirSum containerDirSum{0.5, 1};
     std::array<double, 3> domainSize{3.0, 3.0, 1.0};
     double cutoffRadius{1.0};
-    Reflecting *cond1;
-    Reflecting *cond2;
-    Reflecting *cond3;
-    Reflecting *cond4;
-    std::vector<BoundaryCondition> conditions{*cond1, *cond2, *cond3, *cond4};
-    ParticleContainerLinCel containerLinCel{0.5, 1, domainSize, cutoffRadius, conditions}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
-    ParticleContainerLinCel linCel2{0.5, 1, {3.0, 3.0, 1.0}, 1.5, conditions};
     LennJon lennJon{5.0, 1.0};
+    GravPot gravPot1{};
+    ParticleContainerDirSum containerDirSum{0.5, 1, 1, lennJon.innerPairs()};
+    ParticleContainerDirSum containerDirSum2{0.5, 1, 1, gravPot1.innerPairs()};
+    ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrrr", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+    ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", lennJon, 1.5};
     GravPot gravPot{};
     ParticleContainer *containerCuboid;
     particleGenerator generator{};
@@ -72,9 +69,10 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator)
 {
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    generator.instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
+    particleGenerator::instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
+    particleGenerator::instantiateSphere(&containerCuboid, {5.0, 5.0, 0.0}, 2, startV, 1.0, 1, true, 1);
     // Now check if the cuboid was instantiated with the particle positions as we expect
-    EXPECT_EQ(8, containerCuboid->getParticles().size());
+    EXPECT_EQ(17, containerCuboid->getParticles().size());
     std::array<double, 3> test{0.0, 0.0, 0.0};
     EXPECT_EQ(test, containerCuboid->getParticles().at(0).getX());
     test = {0.0, 0.0, 1.0};
@@ -122,13 +120,13 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
 {
     ParticleContainer *cuboidLinkedCel = &containerLinCel;
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    generator.instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 0}, startV, 1.0, 1, 0);
+    particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 0}, startV, 1.0, 1, 0);
     for (int i = 0; i < containerLinCel.getAmountOfCells(); ++i)
     {
         std::cout << containerLinCel.getCells().at(i).size() << std::endl;
     }
 
-    /*EXPECT_EQ(containerLinCel.getAmountOfCells(), 25);
+    EXPECT_EQ(containerLinCel.getAmountOfCells(), 25);
     std::array<double, 3> test{0.5, 0.5, 0.0};
     EXPECT_EQ(test, containerLinCel.getCells().at(6).at(0).getX());
     test = {0.5, 1.5, 0.0};
@@ -136,7 +134,7 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
     test = {1.5, 0.5, 0.0};
     EXPECT_EQ(test, containerLinCel.getCells().at(7).at(0).getX());
     test = {1.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(12).at(0).getX());*/
+    EXPECT_EQ(test, containerLinCel.getCells().at(12).at(0).getX());
 }
 
 /**
@@ -144,7 +142,6 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
  */
 TEST_F(MolSimTest, testForcesLinkedCells)
 {
-    linCel2.setForce(lennJon.innerPairs());
     std::cout << "Calculate the forces" << std::endl;
     linCel2.calculateForces();
     EXPECT_EQ(linCel2.getAmountOfCells(), 16);
@@ -222,15 +219,14 @@ TEST_F(MolSimTest, testOverflowBoundary)
 
 TEST_F(MolSimTest, testForceV1)
 {
-    containerDirSum.setForce(gravPot.innerPairs());
-    containerDirSum.calculateForces();
+    containerDirSum2.calculateForces();
     // check against hard coded values
     std::array<double, 3> expectedValuesOne{1.25, 0.0, 0.0};
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
     std::array<double, 3> expectedValuesThree{-1.25, 0.0, 0.0};
-    EXPECT_EQ(containerDirSum.getParticles().at(0).getF(), expectedValuesOne);
-    EXPECT_EQ(containerDirSum.getParticles().at(1).getF(), expectedValuesTwo);
-    EXPECT_EQ(containerDirSum.getParticles().at(2).getF(), expectedValuesThree);
+    EXPECT_EQ(containerDirSum2.getParticles().at(0).getF(), expectedValuesOne);
+    EXPECT_EQ(containerDirSum2.getParticles().at(1).getF(), expectedValuesTwo);
+    EXPECT_EQ(containerDirSum2.getParticles().at(2).getF(), expectedValuesThree);
 }
 
 /**
@@ -240,7 +236,6 @@ TEST_F(MolSimTest, testForceV1)
 TEST_F(MolSimTest, testForceLennardJones)
 {
     // calculate one iteration of the LennardJonesForceIteration
-    containerDirSum.setForce(lennJon.innerPairs());
     containerDirSum.calculateForces();
     // check against hardcoded values
     std::array<double, 3> expectedValuesOne{-119.091796875, 0.0, 0.0};
