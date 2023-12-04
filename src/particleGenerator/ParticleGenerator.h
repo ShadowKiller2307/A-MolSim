@@ -32,10 +32,33 @@ private:
 	static constexpr const int m_ = 1.0;
 
 public:
+    /**
+     * @brief instantiates a cuboid in the given ParticleContainer
+     * @param container container in which the cuboid will be instantiated
+     * @param llfc lower left front corner
+     * @param particlesPerDimension amount of particles per dimension
+     * @param particleVelocity initial velocity
+     * @param h meshwidth
+     * @param m mass of each particle
+     * @param type
+     * @return void
+     */
 	static void instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 								  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h, double m, int type);
 
-	static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
+    /**
+     * @brief instantiates a sphere in the given ParticleContainer
+     * @param container container in which the cuboid will be instantiated
+     * @param center center of the sphere
+     * @param sphereRadius radius of the sphere
+     * @param particleVelocity initial velocity
+     * @param h meshwidth
+     * @param m mass of each particle
+     * @param is2D is it a 2D or 3D
+     * @param type
+     * @return void
+     */
+    static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 								  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
 
 	static void instantiateJSON(ParticleContainer **container, const std::string &path, Force &force, SimParams clArgs);

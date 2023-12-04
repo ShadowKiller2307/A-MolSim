@@ -34,8 +34,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
             exit(1);
         }
     }
-
-    /**
+    /*
      * calculate the amount of cells the domain will be consisting of
      * ceil is used for the case the domainSize isn't a multiple of the cutoffRadius
      */
@@ -74,17 +73,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
-    /**
-     * iterate over the cells
-     * if a new cell is iterated over, only calculate the forces in the cell itself
-     * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
-     * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
-     * Calc       Calc   Calc
-     *      \    |     /
-     *       \   |   /
-     *        \ Cell -- > Calc
-     */
-    std::cout << "Right force calculation!" << std::endl;
     for (int x = 0; x < amountOfCells; ++x)
     {
         if (x < cellsX || x >= (amountOfCells - cellsX) || x % cellsX == 0 || x % cellsX == (cellsX - 1))
@@ -161,10 +149,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
         }
     }
 }
-/**
- * @brief: the cells at the corner will be iterated over twice
- * @param boundaryLambda
- */
+
 void ParticleContainerLinCel::iterBoundary()
 {
     unsigned int i = cellsX + 1;
