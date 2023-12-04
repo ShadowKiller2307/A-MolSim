@@ -9,8 +9,8 @@
 ## Code
 
 - Available on [GitHub](https://github.com/ShadowKiller2307/A-MolSim)
-- Branch: master
-- CommitID: <!--- TODO -->
+- Branch: Refactor
+- Commit:
 
 ## Tools and requirements
 

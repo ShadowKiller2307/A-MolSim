@@ -19,15 +19,6 @@ options:
 		3: Debug        //Used for debug logs, includes info,warn and error logs
 		x: Off          //Any other number turns the logging off
 	
-	[-x]
-		Output the data in .xyz format instead of vtk
-	
-	[-g | --inputGenerator]
-		Switch to using the particle generator. inputFileName is either a path to a .json file as an initialization for the simulation or "_" to use the default "collision.json" provided in the input directory. 
-
-	[-t | --inputText]
-		Switch to using the older txt file method. inputFileName is either a path to a .txt file as an initialization for the simulation or "_" to use the default "eingabe-sonne.txt" provided in the input directory.
-	
 	[-o | --outName] value
 		Set the prefix to use for the name of all output files. The default is "MD_vtk"
 
