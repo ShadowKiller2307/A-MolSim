@@ -23,8 +23,14 @@ void XMLReader::extractSimulationParameters() {
     int frequency = simulation->writeFrequency();
     std::array<double, 3> domainSize = createDoubleArray(simulation->domainSize());
     std::string containerType = simulation->containerType();
+    std::string boundaries = simulation->boundaries();
+    double cutOffRadius = simulation->cutOffRadius();
+
+
+
     simulationConstructor.setAllSimulationParameters(t, delta, level,
-                                                     frequency, domainSize, containerType, name);
+                                                     frequency, domainSize,
+                                                     containerType, name,boundaries,cutOffRadius);
 
 }
 

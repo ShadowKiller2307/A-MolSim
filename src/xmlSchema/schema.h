@@ -763,6 +763,37 @@ class simulationConfig: public ::xml_schema::type
   void
   containerType (::std::unique_ptr< containerType_type > p);
 
+  // boundaries
+  //
+  typedef ::xml_schema::string boundaries_type;
+  typedef ::xsd::cxx::tree::traits< boundaries_type, char > boundaries_traits;
+
+  const boundaries_type&
+  boundaries () const;
+
+  boundaries_type&
+  boundaries ();
+
+  void
+  boundaries (const boundaries_type& x);
+
+  void
+  boundaries (::std::unique_ptr< boundaries_type > p);
+
+  // cutOffRadius
+  //
+  typedef ::xml_schema::double_ cutOffRadius_type;
+  typedef ::xsd::cxx::tree::traits< cutOffRadius_type, char, ::xsd::cxx::tree::schema_type::double_ > cutOffRadius_traits;
+
+  const cutOffRadius_type&
+  cutOffRadius () const;
+
+  cutOffRadius_type&
+  cutOffRadius ();
+
+  void
+  cutOffRadius (const cutOffRadius_type& x);
+
   // Cuboid
   //
   typedef ::Cuboid Cuboid_type;
@@ -805,7 +836,9 @@ class simulationConfig: public ::xml_schema::type
                     const delta_t_type&,
                     const logLevel_type&,
                     const domainSize_type&,
-                    const containerType_type&);
+                    const containerType_type&,
+                    const boundaries_type&,
+                    const cutOffRadius_type&);
 
   simulationConfig (const ::xercesc::DOMElement& e,
                     ::xml_schema::flags f = 0,
@@ -840,6 +873,8 @@ class simulationConfig: public ::xml_schema::type
   ::xsd::cxx::tree::one< logLevel_type > logLevel_;
   ::xsd::cxx::tree::one< domainSize_type > domainSize_;
   ::xsd::cxx::tree::one< containerType_type > containerType_;
+  ::xsd::cxx::tree::one< boundaries_type > boundaries_;
+  ::xsd::cxx::tree::one< cutOffRadius_type > cutOffRadius_;
   Cuboid_sequence Cuboid_;
   Sphere_sequence Sphere_;
 };

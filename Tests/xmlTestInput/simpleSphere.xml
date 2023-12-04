@@ -7,6 +7,8 @@
     <logLevel>2</logLevel>
     <domainSize>180 90 1</domainSize>
     <containerType>LinCel</containerType>
+    <boundaries>Outflow</boundaries>
+    <cutOffRadius>3</cutOffRadius>
 
     <Sphere>
         <centerCoordinates>60 25 0</centerCoordinates>

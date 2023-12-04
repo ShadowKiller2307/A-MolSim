@@ -304,6 +304,8 @@ TEST_F(MolSimTest, testSimpleSimulationParameters)
     EXPECT_EQ(simulationConstructor.getDomainSize().at(2), 1);
 
     EXPECT_EQ(simulationConstructor.getContainerType(), "LinCel");
+    EXPECT_EQ(simulationConstructor.getBoundaries(),"Outflow");
+    EXPECT_EQ(simulationConstructor.getCutOffRadius(),3);
 }
 ///This test checks if the parameters of two spheres are retrieved correctly
 TEST_F(MolSimTest, testSimpleSphereParameters){

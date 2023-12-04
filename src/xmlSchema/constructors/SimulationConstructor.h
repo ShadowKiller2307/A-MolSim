@@ -12,6 +12,8 @@ private:
     std::array<double,3> domainSize;
     std::string containerType;
     std::string baseName;
+    std::string boundaries;
+    double cutOffRadius;
 
 
 public:
@@ -19,7 +21,7 @@ public:
 
     void setAllSimulationParameters(double t_end, double delta_t, int logLevel, int writeFrequency,
                                     std::array<double,3>& domainSize,std::string& containerType,
-                                    std::string& baseName);
+                                    std::string& baseName,std::string& bound,double cutOffR);
 
 
     double getT_end() const;
@@ -29,6 +31,8 @@ public:
     std::string getBaseName();
     std::string getContainerType() const;
     std::array<double,3> getDomainSize() const;
+    std::string getBoundaries() const;
+    double getCutOffRadius() const;
 
 };
 

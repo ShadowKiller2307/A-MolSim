@@ -7,6 +7,8 @@
     <logLevel>2</logLevel>
     <domainSize>180 90 1</domainSize>
     <containerType>LinCel</containerType>
+    <boundaries>Outflow</boundaries>
+    <cutOffRadius>3</cutOffRadius>
 
     <Cuboid>
         <llfc>1.3 2.0 3.0</llfc>

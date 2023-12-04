@@ -262,10 +262,30 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 	auto sphereConst = xmlReader.getSphereConstructors();
 
 	std::string containerType = simConst.getContainerType();
+
+    double delta_t = clArgs.deltaT>0?clArgs.deltaT:simConst.getDelta_t();
+    double t_end = clArgs.endTime>0?clArgs.endTime:simConst.getT_end();
+    std::string containerT = !clArgs.containerType.empty()?clArgs.containerType:simConst.getContainerType();
+    std::string boundaries = !clArgs.boundaries.empty()?clArgs.boundaries:simConst.getBoundaries();
+    int writeFrequency = clArgs.writeFrequency>0?clArgs.writeFrequency:simConst.getWriteFrequency();
+    double cutOffRadius = clArgs.cutoffRadius>0?clArgs.cutoffRadius:simConst.getCutOffRadius();
+
+    std::array<double, 3> domainSize{};
+    for (int i = 0; i < 3; i++)
+    {
+        domainSize[i] = clArgs.domainSize.at(i)>0?clArgs.domainSize.at(i):simConst.getDomainSize().at(i);
+    }
+
+
+
+
+
+
+
 	if (containerType == "LinCel")
 	{
-		(*container) = new ParticleContainerLinCel(simConst.getDelta_t(), simConst.getT_end(), simConst.getWriteFrequency(),
-												   simConst.getDomainSize(), clArgs.boundaries, force, clArgs.cutoffRadius);
+		(*container) = new ParticleContainerLinCel(delta_t,t_end,writeFrequency,domainSize,boundaries,
+                                                   force,cutOffRadius);
 
 		for (auto &cuboid : cuboidConst)
 		{

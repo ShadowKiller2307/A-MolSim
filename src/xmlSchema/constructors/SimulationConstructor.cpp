@@ -6,7 +6,7 @@
 
 void SimulationConstructor::setAllSimulationParameters(double t, double delta, int level, int frequency,
                                                        std::array<double,3>& dSize,std::string& cType,
-                                                       std::string& name) {
+                                                       std::string& name,std::string& bound,double cutOffR) {
     this->t_end = t;
     this->delta_t = delta;
     this->logLevel = level;
@@ -14,6 +14,8 @@ void SimulationConstructor::setAllSimulationParameters(double t, double delta, i
     this->domainSize = dSize;
     this->containerType = cType;
     this->baseName = name;
+    this->boundaries = bound;
+    this->cutOffRadius = cutOffR;
 }
 
 
@@ -48,6 +50,14 @@ std::string SimulationConstructor::getBaseName(){
 
 std::array<double, 3> SimulationConstructor::getDomainSize() const {
     return domainSize;
+}
+
+std::string SimulationConstructor::getBoundaries() const {
+    return boundaries;
+}
+
+double SimulationConstructor::getCutOffRadius() const {
+    return cutOffRadius;
 }
 
 
