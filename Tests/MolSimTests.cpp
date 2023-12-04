@@ -237,7 +237,7 @@ TEST_F(MolSimTest, testForceLennardJones)
     EXPECT_EQ(containerDirSum.getParticles().at(1).getF(), expectedValuesTwo);
     EXPECT_EQ(containerDirSum.getParticles().at(2).getF(), expectedValuesThree);
 }
-/*
+
 /// This test checks if the one number of cuboids in the xml file is retrieved correctly
 
 TEST_F(MolSimTest, testSimpleCuboid)
@@ -304,4 +304,46 @@ TEST_F(MolSimTest, testSimpleSimulationParameters)
     EXPECT_EQ(simulationConstructor.getDomainSize().at(2), 1);
 
     EXPECT_EQ(simulationConstructor.getContainerType(), "LinCel");
-}*/
+}
+///This test checks if the parameters of two spheres are retrieved correctly
+TEST_F(MolSimTest, testSimpleSphereParameters){
+    std::string path = "../../Tests/xmlTestInput/simpleSphere.xml";
+
+    XMLReader xmlReader(path);
+
+    xmlReader.extractSphere();
+
+    EXPECT_EQ(xmlReader.getSphereConstructors().size(),2);
+
+    SphereConstructor sphereConstructor = xmlReader.getSphereConstructors().at(0);
+    SphereConstructor sphereConstructor1 = xmlReader.getSphereConstructors().at(1);
+
+    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(0),60);
+    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(1),25);
+    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(2),0);
+
+    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(0),0);
+    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(1),-10);
+    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(2),0);
+
+    EXPECT_EQ(sphereConstructor.getRadius(),15);
+    EXPECT_EQ(sphereConstructor.getDistance(),1.1225);
+    EXPECT_EQ(sphereConstructor.getMass(),1.0);
+
+    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(0),90);
+    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(1),20);
+    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(2),0);
+
+    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(0),0);
+    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(1),20);
+    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(2),0);
+
+    EXPECT_EQ(sphereConstructor1.getRadius(),19);
+    EXPECT_EQ(sphereConstructor1.getDistance(),1.1226);
+    EXPECT_EQ(sphereConstructor1.getMass(),1.0);
+
+
+
+
+
+}

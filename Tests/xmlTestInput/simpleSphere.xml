@@ -1,0 +1,28 @@
+<Configuration>
+
+    <baseName>DemoSimulation</baseName>
+    <writeFrequency>5</writeFrequency>
+    <t_end>101.0</t_end>
+    <delta_t>0.7</delta_t>
+    <logLevel>2</logLevel>
+    <domainSize>180 90 1</domainSize>
+    <containerType>LinCel</containerType>
+
+    <Sphere>
+        <centerCoordinates>60 25 0</centerCoordinates>
+        <initialVelocity>0 -10 0</initialVelocity>
+        <radius>15</radius>
+        <distance>1.1225</distance>
+        <mass>1.0</mass>
+    </Sphere>
+
+    <Sphere>
+        <centerCoordinates>90 20 0</centerCoordinates>
+        <initialVelocity>0 20 0</initialVelocity>
+        <radius>19</radius>
+        <distance>1.1226</distance>
+        <mass>1.0</mass>
+    </Sphere>
+
+
+</Configuration>

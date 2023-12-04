@@ -57,4 +57,6 @@ public:
     SimulationConstructor getSimulationConstructor();
     /// Getter for the vector of cuboidConstructors
     std::vector<CuboidConstructor> getCuboidConstructors();
+    ///Getter for the vector of sphereConstructors
+    std::vector<SphereConstructor> getSphereConstructors();
 };

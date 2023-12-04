@@ -5,10 +5,8 @@
     <t_end>101.0</t_end>
     <delta_t>0.7</delta_t>
     <logLevel>2</logLevel>
-    <inputGenerator>true</inputGenerator>
-    <inputText>false</inputText>
-    <inputPicture>false</inputPicture>
-    <inputXML>true</inputXML>
+    <domainSize>180 90 1</domainSize>
+    <containerType>LinCel</containerType>
 
     <Cuboid>
         <llfc>1.3 2.0 3.0</llfc>

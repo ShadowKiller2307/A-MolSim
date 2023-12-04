@@ -84,6 +84,10 @@ std::vector<CuboidConstructor> XMLReader::getCuboidConstructors() {
     return this->cuboidConstructors;
 }
 
+std::vector<SphereConstructor> XMLReader::getSphereConstructors() {
+    return this->sphereConstructors;
+}
+
 
 
 
