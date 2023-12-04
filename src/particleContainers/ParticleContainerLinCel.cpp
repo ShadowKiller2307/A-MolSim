@@ -255,6 +255,7 @@ void ParticleContainerLinCel::iterHalo()
         cell &currentCell = cells.at(i);
         currentCell.clear(); // delete all particles from the current halo cell
     }
+    --i;
     // from down to up
     for (int j = 0; j < cellsY - 1; ++j)
     {
