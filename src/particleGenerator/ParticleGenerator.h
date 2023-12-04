@@ -36,7 +36,7 @@ public:
 								  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h, double m, int type);
 
 	static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
-								  const int32_t &sphereRadius, std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
+								  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
 
 	static void instantiateJSON(ParticleContainer **container, const std::string &path, Force &force, SimParams clArgs);
 
