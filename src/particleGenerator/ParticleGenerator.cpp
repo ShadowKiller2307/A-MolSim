@@ -261,7 +261,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 	auto cuboidConst = xmlReader.getCuboidConstructors();
 	auto sphereConst = xmlReader.getSphereConstructors();
 
-	std::string containerType = simConst.getContainerType();
+    LogManager::warnLog("Now reading simulation parameters. Commandline arguments have a higher priority if they exist.\n");
 
     double delta_t = clArgs.deltaT>0?clArgs.deltaT:simConst.getDelta_t();
     double t_end = clArgs.endTime>0?clArgs.endTime:simConst.getT_end();
@@ -278,25 +278,30 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 
 
 
-
-
-
-
-	if (containerType == "LinCel")
+	if (containerT == "LinCel")
 	{
 		(*container) = new ParticleContainerLinCel(delta_t,t_end,writeFrequency,domainSize,boundaries,
                                                    force,cutOffRadius);
 
 		for (auto &cuboid : cuboidConst)
 		{
+
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
 							  cuboid.getH(), cuboid.getMass(), cuboid.getType());
+            LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
 		{
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
 							  sphere.getDistance(), sphere.getMass(), true);
+            LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}
+    else if(containerT == "DirSum"){
+        (*container) = new ParticleContainerDirSum(delta_t,t_end,writeFrequency,force.innerPairs());
+    }
+    else{
+        LogManager::errorLog("Type {} is not a valid type!",containerT);
+    }
 }
