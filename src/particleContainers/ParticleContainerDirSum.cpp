@@ -23,3 +23,14 @@ void ParticleContainerDirSum::iterOverInnerPairs(const std::function<void(Partic
 		}
 	}
 }
+
+void ParticleContainerDirSum::calculateForces() {
+    for (auto &p : particles_)
+    {
+        auto oldForce = p.getF();
+        std::array<double, 3> zero = {0.0, 0.0, 0.0};
+        p.setF(zero);
+        p.setOldF(oldForce);
+    }
+    iterOverInnerPairs(force_);
+}

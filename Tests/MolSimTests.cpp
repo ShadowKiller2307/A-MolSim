@@ -34,6 +34,9 @@ protected:
         containerDirSum.add({0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         containerDirSum.add({1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         containerDirSum.add({2.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
+        containerDirSum2.add({0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
+        containerDirSum2.add({1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
+        containerDirSum2.add({2.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         linCel2.add({0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         linCel2.add({1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
         linCel2.add({2.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
@@ -120,12 +123,7 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
 {
     ParticleContainer *cuboidLinkedCel = &containerLinCel;
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 0}, startV, 1.0, 1, 0);
-    for (int i = 0; i < containerLinCel.getAmountOfCells(); ++i)
-    {
-        std::cout << containerLinCel.getCells().at(i).size() << std::endl;
-    }
-
+    particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 1}, startV, 1.0, 1, 0);
     EXPECT_EQ(containerLinCel.getAmountOfCells(), 25);
     std::array<double, 3> test{0.5, 0.5, 0.0};
     EXPECT_EQ(test, containerLinCel.getCells().at(6).at(0).getX());
@@ -146,27 +144,15 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     linCel2.calculateForces();
     EXPECT_EQ(linCel2.getAmountOfCells(), 16);
     EXPECT_EQ(linCel2.getAmountOfParticles(), 3);
-    for (int i = 0; i < linCel2.getAmountOfCells(); ++i)
-    {
-        if (linCel2.getCells().at(i).size() > 0)
-        {
-            std::cout << i << linCel2.getCells().at(i).at(0) << std::endl;
-            if (linCel2.getCells().at(i).size() > 1)
-            {
-                std::cout << i << linCel2.getCells().at(i).at(1) << std::endl;
-            }
-        }
-    }
     // check against hardcoded values
-    std::array<double, 3> expectedValuesOne{-119.091796875, 0.0, 0.0};
+    //different values than the direct sum container as the distance between the particle on the left and the particle on the right
+    //are bigger than the cutoff radius
+    std::array<double, 3> expectedValuesOne{-120, 0.0, 0.0};
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
-    std::array<double, 3> expectedValuesThree{119.091796875, 0.0, 0.0};
-    double test = (465.0 / 256.0);
-    std::cout << test << std::endl;
-    // printf("Test=%.17le", test);
-    EXPECT_EQ(containerDirSum.getParticles().at(0).getF(), expectedValuesOne);
-    EXPECT_EQ(containerDirSum.getParticles().at(1).getF(), expectedValuesTwo);
-    EXPECT_EQ(containerDirSum.getParticles().at(2).getF(), expectedValuesThree);
+    std::array<double, 3> expectedValuesThree{120, 0.0, 0.0};
+    EXPECT_EQ(linCel2.getCells().at(5).at(0).getF(), expectedValuesOne);
+    EXPECT_EQ(linCel2.getCells().at(5).at(1).getF(), expectedValuesTwo);
+    EXPECT_EQ(linCel2.getCells().at(6).at(0).getF(), expectedValuesThree);
 }
 
 /**
