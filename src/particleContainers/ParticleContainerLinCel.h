@@ -33,6 +33,7 @@ private:
     // only needed for the 3D case
     unsigned int cellsZ = 0;
 
+
 public:
 
     /**
@@ -121,4 +122,25 @@ public:
      * @return void
      */
     std::vector<std::vector<Particle>> getCells();
+
+     /**
+      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
+      * @param x xIndex of the cell
+      * @param y yIndex of the cell
+      * @param z zIndex of the cell
+      * @return 1D index for our cells vector
+      */
+     int translate3DIndTo1D(int x, int y, int z);
+
+    /**
+    * @brief translate 3d coordinates to an index of our cells vector
+    * @param position the position as 3D coordinate
+    * @return the index in our vector
+    */
+    unsigned int translate3DPosTo1D(std::array<double, 3> position);
+
+    /**
+     *
+     */
+     std::array<int, 3> translate1DIndTo3DInd(int index);
 };

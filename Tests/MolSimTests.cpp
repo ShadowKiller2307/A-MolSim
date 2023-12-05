@@ -58,15 +58,18 @@ protected:
 /**
  * @brief: very simple test to check whether the container sets the particles correctly
  */
+
 TEST_F(MolSimTest, testGetParticles)
 {
     EXPECT_EQ(3, containerDirSum.getParticles().size());
 }
 
+
 /**
  * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid method was
  * called
  */
+
 
 TEST_F(MolSimTest, testGenerateParticlesGenerator)
 {
@@ -116,9 +119,16 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator)
     EXPECT_EQ(1.0, containerCuboid->getParticles().at(16).getM());
 }
 
+TEST_F(MolSimTest, testIndexTranslation) {
+    std::array<double, 3> pos = {0.5, 0.5, 0};
+    EXPECT_EQ(6, containerLinCel.translate3DPosTo1D(pos));
+}
+
+
 /**
  * @brief: Generate a cuboid and a sphere for the linked cells
  */
+
 TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
 {
     ParticleContainer *cuboidLinkedCel = &containerLinCel;
@@ -135,9 +145,11 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
     EXPECT_EQ(test, containerLinCel.getCells().at(12).at(0).getX());
 }
 
+
 /**
  * @brief: check force calculation for Lennard Jones for the Linked cells
  */
+
 TEST_F(MolSimTest, testForcesLinkedCells)
 {
     std::cout << "Calculate the forces" << std::endl;
@@ -155,10 +167,12 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     EXPECT_EQ(linCel2.getCells().at(6).at(0).getF(), expectedValuesThree);
 }
 
+
 /**
  * @brief: check if a single Particle in a Boundary Cell, that moves towards the border of the domain,
  * stays within the domain when the Boundary is set to Reflecting
  */
+
 TEST_F(MolSimTest, testReflectingBoundary)
 {
     // left domain border should have the BoundaryCondition Reflecting
@@ -177,10 +191,12 @@ TEST_F(MolSimTest, testReflectingBoundary)
     }
 }
 
+
 /**
  *  @brief: check if a single Particle in a Boundary Cell, that moves towards the border of the domain,
  *  gets deleted when leaving the cell if the Boundary is set to Overflow
  */
+
 TEST_F(MolSimTest, testOverflowBoundary)
 {
     // left domain border should have the BoundaryCondition Overflow
@@ -200,9 +216,11 @@ TEST_F(MolSimTest, testOverflowBoundary)
     EXPECT_EQ(containerLinCel2.getAmountOfParticles(), 0);
 }
 
+
 /**
  * @brief: Test the ForceV1Calculation against hard coded values
  */
+
 
 TEST_F(MolSimTest, testForceV1)
 {
@@ -216,9 +234,11 @@ TEST_F(MolSimTest, testForceV1)
     EXPECT_EQ(containerDirSum2.getParticles().at(2).getF(), expectedValuesThree);
 }
 
+
 /**
  * @brief: Test the LennardJonesForceCalculation against hard coded values
  */
+
 
 TEST_F(MolSimTest, testForceLennardJones)
 {
@@ -349,3 +369,4 @@ TEST_F(MolSimTest, testSimpleSphereParameters){
 
 
 }
+

@@ -277,6 +277,7 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     // compute the cell to which the particle will be added
     if (x_arg[0] <= domainSize_[0] || x_arg[1] <= domainSize_[1])
     {
+       // cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
         double xIndex = trunc(x_arg[0] / cutoffRadius_);
         double yIndex = trunc(x_arg[1] / cutoffRadius_);
         double index = static_cast<unsigned int>(xIndex + cellsX * yIndex) + 1 + cellsX; // The "+1 + cellsX" is added because of the halo cells
@@ -368,5 +369,41 @@ void ParticleContainerLinCel::calculateForces()
     iterOverInnerPairs(force_);
     iterBoundary();
 }
+
+int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z) {
+    int index = (x+1) + cellsX * (y+1) + cellsX * cellsY * (z+1);
+    /*
+     * LGS: but sadly not enough equations
+     * index-1 = x + cellsX*(y+1) + cellsX*cellsY*(z+1)
+     * index-1 = x + cellsX(y+1+cellsY+z+1)
+     * index-1 = x + cellsX*y + cellsX + cellsX*cellsY + cellsX*z + cellsX
+     * index-1 - cellsX - cellsX*cellsY - cellsX = x+ cellsX*y + cellsX*z
+     *
+     */
+    return index;
+}
+
+unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) {
+    unsigned int xIndex = static_cast<unsigned int> (floor(position[0]/cutoffRadius_)) + 1;
+    unsigned int yIndex = static_cast<unsigned int> (floor(position[1]/cutoffRadius_)) + 1;
+    unsigned int zIndex = static_cast<unsigned int> (floor(position[2]/cutoffRadius_)) + 1;
+    unsigned int index = xIndex + cellsX * yIndex + cellsX * cellsY * zIndex;
+    return index;
+}
+
+std::array<int, 3> ParticleContainerLinCel::translate1DIndTo3DInd(int index) {
+    int plane = cellsX * cellsY;
+    //calculate the z coordinate
+    int z = index/plane;
+    index = index % z;
+    //calculate the y coordinate
+    int y = index/cellsX;
+    index % y;
+    int x = index;
+    return std::array<int,3> {x, y, z};
+
+
+}
+
 
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;
