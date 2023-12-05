@@ -1,9 +1,16 @@
 #include "particleContainers/ParticleContainerLinCel.h"
-#include "boundaryConditions/BoundaryCondition.h"
 #include "boundaryConditions/Reflecting.h"
 #include "boundaryConditions/Outflow.h"
 #include "logOutputManager/LogManager.h"
 #include <iostream>
+
+
+/**
+ * "rrrrrr"
+ * "oooooo"
+ * "pppppp"
+ */
+
 
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
 {
@@ -281,10 +288,9 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
 void ParticleContainerLinCel::calculatePosition()
 {
     int i = 0;
-    for (int j = 0; j < cells.size(); ++j)
+    for (int j = 0; j < cells.size(); ++j) //loop um durch alle cells durchzugehen
     {
-        // for (auto &currentCell: cells) {
-        auto &currentCell = cells.at(j);
+        auto &currentCell = cells.at(j); // aktuelle cell
         for (int x = 0; x < currentCell.size(); ++x)
         {
             // for (auto &p : currentCell) {
@@ -292,7 +298,7 @@ void ParticleContainerLinCel::calculatePosition()
             std::array<double, 3> force = p.getF();
             double factor = std::pow(deltaT_, 2) / (2 * p.getM());
             force = factor * force;
-            std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force;
+            std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force; //berechne die position
             // check whether the particle left the current cell
             double xIndex;
             double yIndex;
@@ -306,23 +312,21 @@ void ParticleContainerLinCel::calculatePosition()
             }
             if (newPosition[1] < 0.0)
             {
-                yIndex = 0;
+                yIndexNewCell = 0;
             }
             else
             {
-                yIndex = trunc(newPosition[1] / cutoffRadius_);
+                yIndexNewCell = trunc(newPosition[1] / cutoffRadius_) + 1; //loscht die Nachkommastellen
             }
-            double index = xIndex + cellsX * yIndex + cellsX + 1;
-            if (index >= amountOfCells || index < 0)
+            double indexNewCell = xIndexNewCell + cellsX * yIndexNewCell;
+            if (indexNewCell >= amountOfCells || indexNewCell < 0)
             {
                 currentCell.erase(currentCell.begin() + x);
-            }
-
-            if (j != index)
+            } else if(j != indexNewCell)
             { // Particle has to be deleted in the old cell and added to the new cell
                 currentCell.erase(currentCell.begin() + x);
                 p.setX(newPosition);
-                cells.at(index).emplace_back(p);
+                cells.at(indexNewCell).emplace_back(p);
             }
             i++;
         }
