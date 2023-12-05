@@ -294,21 +294,21 @@ void ParticleContainerLinCel::calculatePosition()
         for (int x = 0; x < currentCell.size(); ++x)
         {
             // for (auto &p : currentCell) {
-            auto &p = currentCell.at(x);
+            auto &p = currentCell.at(x); //aktuelles particle in der aktuellen cell
             std::array<double, 3> force = p.getF();
             double factor = std::pow(deltaT_, 2) / (2 * p.getM());
             force = factor * force;
             std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force; //berechne die position
             // check whether the particle left the current cell
-            double xIndex;
-            double yIndex;
+            double xIndexNewCell; // soll den x-index der cell beschreiben in der das partikel mit der neuen position sein wird
+            double yIndexNewCell;
             if (newPosition[0] < 0.0)
             {
-                xIndex = 0;
+                xIndexNewCell = 0;
             }
             else
             {
-                xIndex = trunc(newPosition[0] / cutoffRadius_);
+                xIndexNewCell = trunc(newPosition[0] / cutoffRadius_) + 1; //loscht die Nachkommastellen
             }
             if (newPosition[1] < 0.0)
             {
