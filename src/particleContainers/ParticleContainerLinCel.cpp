@@ -247,40 +247,23 @@ void ParticleContainerLinCel::iterBoundary()
 
 void ParticleContainerLinCel::iterHalo()
 {
-    int i = 0;
-    // from left to right
-    for (i; i < cellsX; ++i)
-    {
-        cell &currentCell = cells.at(i);
-        currentCell.clear(); // delete all particles from the current halo cell
-    }
-    --i;
-    // from down to up
-    for (int j = 0; j < cellsY - 1; ++j)
-    {
-        i += cellsX;
-        cell &currentCell = cells.at(i);
-        currentCell.clear();
-    }
-    // from right to left
-    for (int j = 0; j < cellsX - 1; ++j)
-    {
-        --i;
-        cell &currentCell = cells.at(i);
-        currentCell.clear();
-    }
-    // from up to down
-    for (int j = 0; j < cellsY - 2; ++j)
-    {
-        i = i - cellsX;
-        cell &currentCell = cells.at(i);
-        currentCell.clear();
+    for (int x = 0; x < cellsX; ++x) {
+        for (int y = 0; y < cellsY; ++y) {
+            for (int z = 0; z < cellsZ; ++z) {
+                if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY -1) || (z == 0)
+                || (z == cellsZ -1)) {
+                    cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                    currentCell.clear();
+                }
+            }
+        }
     }
 }
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass,
                                   int type)
 {
+
     // compute the cell to which the particle will be added
     if (x_arg[0] <= domainSize_[0] || x_arg[1] <= domainSize_[1])
     {
@@ -392,7 +375,7 @@ int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z)
     return index;
 }
 
-unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position)
+unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) const
 {
     unsigned int xIndex = static_cast<unsigned int>(floor(position[0] / cutoffRadius_)) + 1;
     unsigned int yIndex = static_cast<unsigned int>(floor(position[1] / cutoffRadius_)) + 1;
@@ -401,7 +384,7 @@ unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> p
     return index;
 }
 
-std::array<int, 3> ParticleContainerLinCel::translate1DIndTo3DInd(int index)
+std::array<int, 3> ParticleContainerLinCel::translate1DIndTo3DInd(int index) const
 {
     int plane = cellsX * cellsY;
     // calculate the z coordinate

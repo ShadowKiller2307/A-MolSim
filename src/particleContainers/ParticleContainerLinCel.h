@@ -12,7 +12,7 @@ private:
     bool upperModulo = false;
     bool rightModulo = false;
     bool depthModulo = false;
-    double amountOfCells = 0;
+    unsigned int amountOfCells = 0;
     /**
      * @brief the cells can be divided into inner, boundary and halo cells
      *
@@ -139,12 +139,12 @@ public:
      * @param position the position as 3D coordinate
      * @return the index in our vector
      */
-    unsigned int translate3DPosTo1D(std::array<double, 3> position);
+    unsigned int translate3DPosTo1D(std::array<double, 3> position) const;
 
     /**
      *
      */
-    std::array<int, 3> translate1DIndTo3DInd(int index);
+    std::array<int, 3> translate1DIndTo3DInd(int index) const;
 
     double calculateKinEnergy();
 
