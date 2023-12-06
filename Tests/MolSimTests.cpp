@@ -69,8 +69,6 @@ TEST_F(MolSimTest, testGetParticles)
  * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid method was
  * called
  */
-
-
 TEST_F(MolSimTest, testGenerateParticlesGenerator)
 {
     // Instantiate a generator and container for the instantiateCuboid function
@@ -119,11 +117,28 @@ TEST_F(MolSimTest, testGenerateParticlesGenerator)
     EXPECT_EQ(1.0, containerCuboid->getParticles().at(16).getM());
 }
 
-TEST_F(MolSimTest, testIndexTranslation) {
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+ * std::array<double, 3> domainSize{3.0, 3.0, 1.0};
+ * double cutoffRadius{1.0};
+ * ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrrr", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+ */
+
+TEST_F(MolSimTest, testPositionIndexTranslation) {
     std::array<double, 3> pos = {0.5, 0.5, 0};
-    EXPECT_EQ(6, containerLinCel.translate3DPosTo1D(pos));
+    EXPECT_EQ(31, containerLinCel.translate3DPosTo1D(pos));
 }
 
+TEST_F(MolSimTest, test3DIndexTo1DIndexTranslation) {
+    int index = containerLinCel.translate3DIndTo1D(0, 0, 0);
+    EXPECT_EQ(31, index);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @brief: Generate a cuboid and a sphere for the linked cells
@@ -134,15 +149,15 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
     ParticleContainer *cuboidLinkedCel = &containerLinCel;
     std::array<double, 3> startV{0.0, 0.0, 0.0};
     particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 1}, startV, 1.0, 1, 0);
-    EXPECT_EQ(containerLinCel.getAmountOfCells(), 25);
+    EXPECT_EQ(containerLinCel.getAmountOfCells(), 75);
     std::array<double, 3> test{0.5, 0.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(6).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0).getX());
     test = {0.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(11).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0).getX());
     test = {1.5, 0.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(7).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0).getX());
     test = {1.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(12).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0).getX());
 }
 
 
@@ -363,10 +378,6 @@ TEST_F(MolSimTest, testSimpleSphereParameters){
     EXPECT_EQ(sphereConstructor1.getRadius(),19);
     EXPECT_EQ(sphereConstructor1.getDistance(),1.1226);
     EXPECT_EQ(sphereConstructor1.getMass(),1.0);
-
-
-
-
 
 }
 

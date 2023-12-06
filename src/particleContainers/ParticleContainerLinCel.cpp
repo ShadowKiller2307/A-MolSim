@@ -53,19 +53,28 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     {
         domainSize_[1] = -domainSize_[1];
     }
-    if (fmod(domainSize_[0], cutoffRadius) != 0.0)
+
+    if (domainSize_[2] < 0.0) {
+        domainSize_[2] = -domainSize_[2];
+    }
+
+    if (fmod(domainSize_[0], cutoffRadius_) != 0.0)
     { // last column of cells are smaller in width
         rightModulo = true;
     }
-    if (fmod(domainSize[1], cutoffRadius) != 0.0)
+    if (fmod(domainSize_[1], cutoffRadius_) != 0.0)
     { // last row of cells are smaller in height
         upperModulo = true;
+    }
+    if (fmod(domainSize_[2], cutoffRadius_) != 0.0) {
+        depthModulo = true;
     }
 
     cellsX = static_cast<unsigned int>(ceil(domainSize_[0] / cutoffRadius_) + 2);
     cellsY = static_cast<unsigned int>(ceil(domainSize_[1] / cutoffRadius_) + 2);
+    cellsZ = static_cast<unsigned int>(ceil(domainSize_[2]/cutoffRadius_) + 2);
     // amountOfCells = cellsX * cellsY + 2 * (cellsX + 2) + 2 * cellsY;
-    amountOfCells = cellsX * cellsY;
+    amountOfCells = cellsX * cellsY * cellsZ;
     /**
      *  If the domain size isn't a multiple of the cutoff radius
         the last row and/or column of cells will only be a fraction of a cell
@@ -80,82 +89,66 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
-    for (int x = 0; x < amountOfCells; ++x)
-    {
-        if (x < cellsX || x >= (amountOfCells - cellsX) || x % cellsX == 0 || x % cellsX == (cellsX - 1))
-        {
-            continue; // skip the halo cells
-        }
-        cell &current = cells.at(x);
-        bool rightCell = (x % cellsX) < (cellsX - 2);
-        bool upperCell = x < (amountOfCells - 2 * cellsX);
-        bool rightUpperCell = rightCell and upperCell;
-        bool leftUpperCell = ((x % cellsX) >= 2) and upperCell;
-        /*
-         * store the right and upper cells in a reference, if no right or upper cell exists
-         * store the current cell in the variable(so that the variables always have a value)
-         */
-        cell &currentRight = rightCell ? cells.at(x + 1) : cells.at(x);
-        cell &currentUpper = upperCell ? cells.at(x + cellsX) : cells.at(x);
-        cell &currentUpperRight = rightUpperCell ? cells.at(x + cellsX + 1) : cells.at(x);
-        cell &currentUpperLeft = leftUpperCell ? cells.at(x + cellsX - 1) : cells.at(x);
-        for (int i = 0; i < current.size(); ++i)
-        {
-            Particle &pi = current.at(i);
-            // forces within the current cell
-            for (int j = i + 1; j < current.size(); ++j)
-            {
-                Particle &pj = current.at(j);
-                // every particle in the same cell is within the cutoff radius
-                f(pi, pj);
-            }
-            if (rightCell)
-            {
-                for (auto &pj : currentRight)
-                {
-                    // check whether pj is within the cutoff radius of pi
-                    if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
-                    {
-                        f(pi, pj);
+    
+    for (int x = 1; x < cellsX-1; ++x) {
+        for (int y = 1; y < cellsY-1; ++y) {
+            for (int z = 1; z < cellsZ-1; ++z) {
+                cell &current = cells.at(translate3DIndTo1D(x, y, z));
+                for (auto &pi : current) {
+                    // right cell
+                    if (x != cellsX - 2) {
+                        for (auto &pj: cells.at(translate3DIndTo1D(x+1, y, z))) {
+                            // check whether pj is within the cutoff radius of pi
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                                f(pi, pj);
+                            }
+                        }
                     }
-                }
-            }
-            if (upperCell)
-            {
-                for (auto &pj : currentUpper)
-                {
-                    // check whether pj is within the cutoff radius of pi
-                    if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
-                    {
-                        f(pi, pj);
+                    // upper cell
+                    if (y != cellsY - 2) {
+                        for (auto &pj: cells.at(translate3DIndTo1D(x, y+1, z))) {
+                            // check whether pj is within the cutoff radius of pi
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                                f(pi, pj);
+                            }
+                        }
                     }
-                }
-            }
-            if (rightUpperCell)
-            {
-                for (auto &pj : currentUpperRight)
-                {
-                    // check whether pj is within the cutoff radius of pi
-                    if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
-                    {
-                        f(pi, pj);
+                    //right upper cell
+                    if ((x != cellsX - 2) && (y != cellsY - 2)) {
+                        for (auto &pj: cells.at(translate3DIndTo1D(x+1, y+1, z))) {
+                            // check whether pj is within the cutoff radius of pi
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                                f(pi, pj);
+                            }
+                        }
                     }
-                }
-            }
-            if (leftUpperCell)
-            {
-                for (auto &pj : currentUpperLeft)
-                {
-                    // check whether pj is within the cutoff radius of pi
-                    if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
-                    {
-                        f(pi, pj);
+                    // left upper cell
+                    if ((x > 1) && (y != cellsY - 2)) {
+                        for (auto &pj: cells.at(translate3DIndTo1D(x-1, y+1, z))) {
+                            // check whether pj is within the cutoff radius of pi
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                                f(pi, pj);
+                            }
+                        }
                     }
+                    //TODO: expand implementation for 3D cases
+
+                    // z + 1
+
+                    // right cell
+
+                    // upper cell
+
+                    // right upper cell
+
+                    // left upper cell
+
                 }
             }
         }
     }
 }
+
 
 void ParticleContainerLinCel::iterBoundary()
 {
@@ -370,19 +363,19 @@ void ParticleContainerLinCel::calculateForces()
     iterBoundary();
 }
 
+// halo cells included
+// so that 0, 0, 0 is the first halo cell(lower left front corner)
 int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z) {
-    int index = (x+1) + cellsX * (y+1) + cellsX * cellsY * (z+1);
-    /*
-     * LGS: but sadly not enough equations
-     * index-1 = x + cellsX*(y+1) + cellsX*cellsY*(z+1)
-     * index-1 = x + cellsX(y+1+cellsY+z+1)
-     * index-1 = x + cellsX*y + cellsX + cellsX*cellsY + cellsX*z + cellsX
-     * index-1 - cellsX - cellsX*cellsY - cellsX = x+ cellsX*y + cellsX*z
-     *
-     */
+    //check for out of bounds
+    if (x < 0 || y < 0 || z < 0 || x >= cellsX || y >= cellsY || z >= cellsZ) {
+        LogManager::errorLog("These coordinates ({}, {}, {}) are out of bounds!",x,y,z);
+        return -1;
+    }
+    int index = x + cellsX * y + cellsX * cellsY * z;
     return index;
 }
 
+// position {0.0, 0.0, 0.0] is within the lower left front boundary cell(inner cell)
 unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) {
     unsigned int xIndex = static_cast<unsigned int> (floor(position[0]/cutoffRadius_)) + 1;
     unsigned int yIndex = static_cast<unsigned int> (floor(position[1]/cutoffRadius_)) + 1;
@@ -401,8 +394,6 @@ std::array<int, 3> ParticleContainerLinCel::translate1DIndTo3DInd(int index) {
     index % y;
     int x = index;
     return std::array<int,3> {x, y, z};
-
-
 }
 
 

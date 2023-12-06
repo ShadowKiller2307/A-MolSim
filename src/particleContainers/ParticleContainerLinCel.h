@@ -11,6 +11,7 @@ private:
     std::vector<BoundaryCondition> conditions_;
     bool upperModulo = false;
     bool rightModulo = false;
+    bool depthModulo = false;
     double amountOfCells = 0;
     /**
      * @brief the cells can be divided into inner, boundary and halo cells
