@@ -380,7 +380,7 @@ void ParticleContainerLinCel::calculateForces()
 
 int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z)
 {
-    int index = (x + 1) + cellsX * (y + 1) + cellsX * cellsY * (z + 1);
+    int index = x + cellsX * y + cellsX * cellsY * z;
     /*
      * LGS: but sadly not enough equations
      * index-1 = x + cellsX*(y+1) + cellsX*cellsY*(z+1)
@@ -419,7 +419,7 @@ double ParticleContainerLinCel::calculateKinEnergy()
     double energy = 0.0;
     auto energyLambda = [&energy](Particle &p)
     {
-        energy += p.getM() * std::inner_product(p.getV().begin(), p.getV().end(), p.getV(), 0.0) / 2;
+        energy += p.getM() * std::inner_product(p.getV().begin(), p.getV().end(), p.getV().begin(), 0.0) / 2;
     };
     iterOverAllParticles(energyLambda);
     return energy;
