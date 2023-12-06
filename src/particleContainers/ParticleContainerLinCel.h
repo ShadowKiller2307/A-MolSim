@@ -20,7 +20,7 @@ private:
      * cells go from:
      * 1. left to right
      * 2. from down to up
-     * 3. from front to back
+     * 3. from back to front
      */
     std::array<double, 3> domainSize_;
     /**
