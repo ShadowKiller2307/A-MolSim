@@ -23,8 +23,6 @@ void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a,
 
 void ParticleContainer::calculateForces()
 {
-	// TODO REMOVE
-	LogManager::errorLog("dont want to be here");
 }
 
 void ParticleContainer::calculateVelocity()
