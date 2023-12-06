@@ -12,7 +12,8 @@ private:
     bool upperModulo = false;
     bool rightModulo = false;
     bool depthModulo = false;
-    unsigned int amountOfCells = 0;
+    uint32_t amountOfCells = 0;
+    std::vector<std::vector<std::vector<int>>> lookup;
     /**
      * @brief the cells can be divided into inner, boundary and halo cells
      *
@@ -29,10 +30,11 @@ private:
      */
     double cutoffRadius_;
     // amount of Cells in each dimension can only be an unsigned integer
-    unsigned int cellsX = 0;
-    unsigned int cellsY = 0;
+    uint32_t cellsX = 0;
+    uint32_t cellsY = 0;
     // only needed for the 3D case
-    unsigned int cellsZ = 0;
+    uint32_t cellsZ = 0;
+    void buildLookUp();
 
 public:
     /**

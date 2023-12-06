@@ -3,6 +3,7 @@
 #include "boundaryConditions/Outflow.h"
 #include "logOutputManager/LogManager.h"
 #include <iostream>
+#include <array>
 
 /**
  * "rrrrrr"
@@ -81,7 +82,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         for example domainSize{10, 9} with cutoff radius 3
         the last column of the cells will be only a (1 * cutoffRadius) cell instead of a (cutoffradius * cutoffRadius) Cell
      */
-    for (int i = 0; i < amountOfCells; ++i)
+    for (uint32_t i = 0; i < amountOfCells; ++i)
     { // initialize the cells
         cells.emplace_back();
     }
@@ -90,11 +91,11 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
 
-    for (int x = 1; x < cellsX - 1; ++x)
+    for (uint32_t x = 1; x < cellsX - 1; ++x)
     {
-        for (int y = 1; y < cellsY - 1; ++y)
+        for (uint32_t y = 1; y < cellsY - 1; ++y)
         {
-            for (int z = 1; z < cellsZ - 1; ++z)
+            for (uint32_t z = 1; z < cellsZ - 1; ++z)
             {
                 cell &current = cells.at(translate3DIndTo1D(x, y, z));
                 for (auto &pi : current)
@@ -194,64 +195,86 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  */
 void ParticleContainerLinCel::iterBoundary()
 {
-    for (int z = 1; z < cellsZ - 1; ++z) {
-        if (z == 1) {
-            if (conditions_[5].affectsForce()) {
-                for (int x = 1; x < cellsX - 1; ++x) {
-                    for (int y = 1; y < cellsY - 1; ++y) {
+    for (uint32_t z = 1; z < cellsZ - 1; ++z)
+    {
+        if (z == 1)
+        {
+            if (conditions_[5].affectsForce())
+            {
+                for (uint32_t x = 1; x < cellsX - 1; ++x)
+                {
+                    for (uint32_t y = 1; y < cellsY - 1; ++y)
+                    {
                         cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                        for (auto &pi: currentCell) {
-                            conditions_[5].applyBoundCondition(pi);
+                        for (auto &pi : currentCell)
+                        {
+                            conditions_[5].applyBoundCondition(*pi);
                         }
                     }
                 }
             }
         }
-        if (z == cellsZ - 2) {
-            for (int x = 1; x < cellsX - 1; ++x) {
-                for (int y = 1; y < cellsY - 1; ++y) {
+        if (z == cellsZ - 2)
+        {
+            for (uint32_t x = 1; x < cellsX - 1; ++x)
+            {
+                for (uint32_t y = 1; y < cellsY - 1; ++y)
+                {
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                    for (auto &pi: currentCell) {
-                        conditions_[4].applyBoundCondition(pi);
+                    for (auto &pi : currentCell)
+                    {
+                        conditions_[4].applyBoundCondition(*pi);
                     }
                 }
             }
         }
-        //iterate over the outer ring of inner cells for each inner z index
-        // from down left corner to down right corner
-        if (conditions_[2].affectsForce()) {
-            for (int x = 1; x < cellsX - 1; ++x) {
+        // iterate over the outer ring of inner cells for each inner z index
+        //  from down left corner to down right corner
+        if (conditions_[2].affectsForce())
+        {
+            for (uint32_t x = 1; x < cellsX - 1; ++x)
+            {
                 cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
-                for (auto &pi: currentCell) {
-                    conditions_[2].applyBoundCondition(pi);
+                for (auto &pi : currentCell)
+                {
+                    conditions_[2].applyBoundCondition(*pi);
                 }
             }
         }
         // from down right corner to top right corner
-        if (conditions_[1].affectsForce()) {
-            for (int y = 1; y < cellsY - 1; ++y) {
+        if (conditions_[1].affectsForce())
+        {
+            for (uint32_t y = 1; y < cellsY - 1; ++y)
+            {
                 cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
-                for (auto &pi: currentCell) {
-                    conditions_[1].applyBoundCondition(pi);
+                for (auto &pi : currentCell)
+                {
+                    conditions_[1].applyBoundCondition(*pi);
                 }
             }
         }
-        if (conditions_[3].affectsForce()) {
+        if (conditions_[3].affectsForce())
+        {
             // from top right corner to top left corner
 
-            for (int x = cellsX - 2; x > 0; --x) {
+            for (uint32_t x = cellsX - 2; x > 0; --x)
+            {
                 cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
-                for (auto &pi: currentCell) {
-                    conditions_[3].applyBoundCondition(pi);
+                for (auto &pi : currentCell)
+                {
+                    conditions_[3].applyBoundCondition(*pi);
                 }
             }
         }
         // from top left corner to down left corner
-        if (conditions_[0].affectsForce()) {
-            for (int y = cellsY - 2; y > 0; --y) {
+        if (conditions_[0].affectsForce())
+        {
+            for (uint32_t y = cellsY - 2; y > 0; --y)
+            {
                 cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
-                for (auto &pi: currentCell) {
-                    conditions_[0].applyBoundCondition(pi);
+                for (auto &pi : currentCell)
+                {
+                    conditions_[0].applyBoundCondition(*pi);
                 }
             }
         }
@@ -260,11 +283,11 @@ void ParticleContainerLinCel::iterBoundary()
 
 void ParticleContainerLinCel::iterHalo()
 {
-    for (int x = 0; x < cellsX; ++x)
+    for (uint32_t x = 0; x < cellsX; ++x)
     {
-        for (int y = 0; y < cellsY; ++y)
+        for (uint32_t y = 0; y < cellsY; ++y)
         {
-            for (int z = 0; z < cellsZ; ++z)
+            for (uint32_t z = 0; z < cellsZ; ++z)
             {
                 if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
                 {
@@ -350,18 +373,24 @@ void ParticleContainerLinCel::calculateForces()
     iterBoundary();
 }
 
+void ParticleContainerLinCel::buildLookUp()
+{
+    lookup = std::vector<std::vector<std::vector<int>>>(cellsX, std::vector<std::vector<int>>(cellsY, std::vector<int>(cellsZ)));
+    for (size_t x = 0; x < cellsX; x++)
+    {
+        for (size_t y = 0; y < cellsY; y++)
+        {
+            for (size_t z = 0; z < cellsZ; z++)
+            {
+                lookup[x][y][z] = x + cellsX * y + cellsX * cellsY * z;
+            }
+        }
+    }
+}
+
 int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z)
 {
-    int index = x + cellsX * y + cellsX * cellsY * z;
-    /*
-     * LGS: but sadly not enough equations
-     * index-1 = x + cellsX*(y+1) + cellsX*cellsY*(z+1)
-     * index-1 = x + cellsX(y+1+cellsY+z+1)
-     * index-1 = x + cellsX*y + cellsX + cellsX*cellsY + cellsX*z + cellsX
-     * index-1 - cellsX - cellsX*cellsY - cellsX = x+ cellsX*y + cellsX*z
-     *
-     */
-    return index;
+    return lookup.at(x).at(y).at(z);
 }
 
 unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) const
