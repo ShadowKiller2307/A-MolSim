@@ -80,7 +80,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         the last column of the cells will be only a (1 * cutoffRadius) cell instead of a (cutoffradius * cutoffRadius) Cell
      */
     for (int i = 0; i < amountOfCells; ++i)
-    { // intialize the cells
+    { // initialize the cells
         cells.emplace_back();
     }
 }
