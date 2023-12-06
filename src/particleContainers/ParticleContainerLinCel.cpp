@@ -4,13 +4,11 @@
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 
-
 /**
  * "rrrrrr"
  * "oooooo"
  * "pppppp"
  */
-
 
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
 {
@@ -149,6 +147,22 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
     }
 }
 
+void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Particle &)> &f)
+{
+    for (size_t x = 1; x < cellsX - 1; x++)
+    {
+        for (size_t y = 1; y < cellsY - 1; y++)
+        {
+            for (size_t z = 1; z < cellsZ - 1; z++)
+            {
+                for (auto &p : cells[translate3DIndTo1D(x, y, z)])
+                {
+                    f(p);
+                }
+            }
+        }
+    }
+}
 
 void ParticleContainerLinCel::iterBoundary()
 {
@@ -270,7 +284,7 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     // compute the cell to which the particle will be added
     if (x_arg[0] <= domainSize_[0] || x_arg[1] <= domainSize_[1])
     {
-       // cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
+        // cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
         double xIndex = trunc(x_arg[0] / cutoffRadius_);
         double yIndex = trunc(x_arg[1] / cutoffRadius_);
         double index = static_cast<unsigned int>(xIndex + cellsX * yIndex) + 1 + cellsX; // The "+1 + cellsX" is added because of the halo cells
@@ -282,17 +296,17 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
 void ParticleContainerLinCel::calculatePosition()
 {
     int i = 0;
-    for (int j = 0; j < cells.size(); ++j) //loop um durch alle cells durchzugehen
+    for (int j = 0; j < cells.size(); ++j) // loop um durch alle cells durchzugehen
     {
         auto &currentCell = cells.at(j); // aktuelle cell
         for (int x = 0; x < currentCell.size(); ++x)
         {
             // for (auto &p : currentCell) {
-            auto &p = currentCell.at(x); //aktuelles particle in der aktuellen cell
+            auto &p = currentCell.at(x); // aktuelles particle in der aktuellen cell
             std::array<double, 3> force = p.getF();
             double factor = std::pow(deltaT_, 2) / (2 * p.getM());
             force = factor * force;
-            std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force; //berechne die position
+            std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force; // berechne die position
             // check whether the particle left the current cell
             double xIndexNewCell; // soll den x-index der cell beschreiben in der das partikel mit der neuen position sein wird
             double yIndexNewCell;
@@ -302,7 +316,7 @@ void ParticleContainerLinCel::calculatePosition()
             }
             else
             {
-                xIndexNewCell = trunc(newPosition[0] / cutoffRadius_) + 1; //loscht die Nachkommastellen
+                xIndexNewCell = trunc(newPosition[0] / cutoffRadius_) + 1; // loscht die Nachkommastellen
             }
             if (newPosition[1] < 0.0)
             {
@@ -310,13 +324,14 @@ void ParticleContainerLinCel::calculatePosition()
             }
             else
             {
-                yIndexNewCell = trunc(newPosition[1] / cutoffRadius_) + 1; //loscht die Nachkommastellen
+                yIndexNewCell = trunc(newPosition[1] / cutoffRadius_) + 1; // loscht die Nachkommastellen
             }
             double indexNewCell = xIndexNewCell + cellsX * yIndexNewCell;
             if (indexNewCell >= amountOfCells || indexNewCell < 0)
             {
                 currentCell.erase(currentCell.begin() + x);
-            } else if(j != indexNewCell)
+            }
+            else if (j != indexNewCell)
             { // Particle has to be deleted in the old cell and added to the new cell
                 currentCell.erase(currentCell.begin() + x);
                 p.setX(newPosition);
@@ -363,37 +378,57 @@ void ParticleContainerLinCel::calculateForces()
     iterBoundary();
 }
 
-// halo cells included
-// so that 0, 0, 0 is the first halo cell(lower left front corner)
-int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z) {
-    //check for out of bounds
-    if (x < 0 || y < 0 || z < 0 || x >= cellsX || y >= cellsY || z >= cellsZ) {
-        LogManager::errorLog("These coordinates ({}, {}, {}) are out of bounds!",x,y,z);
-        return -1;
-    }
-    int index = x + cellsX * y + cellsX * cellsY * z;
+int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z)
+{
+    int index = (x + 1) + cellsX * (y + 1) + cellsX * cellsY * (z + 1);
+    /*
+     * LGS: but sadly not enough equations
+     * index-1 = x + cellsX*(y+1) + cellsX*cellsY*(z+1)
+     * index-1 = x + cellsX(y+1+cellsY+z+1)
+     * index-1 = x + cellsX*y + cellsX + cellsX*cellsY + cellsX*z + cellsX
+     * index-1 - cellsX - cellsX*cellsY - cellsX = x+ cellsX*y + cellsX*z
+     *
+     */
     return index;
 }
 
-// position {0.0, 0.0, 0.0] is within the lower left front boundary cell(inner cell)
-unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) {
-    unsigned int xIndex = static_cast<unsigned int> (floor(position[0]/cutoffRadius_)) + 1;
-    unsigned int yIndex = static_cast<unsigned int> (floor(position[1]/cutoffRadius_)) + 1;
-    unsigned int zIndex = static_cast<unsigned int> (floor(position[2]/cutoffRadius_)) + 1;
+unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position)
+{
+    unsigned int xIndex = static_cast<unsigned int>(floor(position[0] / cutoffRadius_)) + 1;
+    unsigned int yIndex = static_cast<unsigned int>(floor(position[1] / cutoffRadius_)) + 1;
+    unsigned int zIndex = static_cast<unsigned int>(floor(position[2] / cutoffRadius_)) + 1;
     unsigned int index = xIndex + cellsX * yIndex + cellsX * cellsY * zIndex;
     return index;
 }
 
-std::array<int, 3> ParticleContainerLinCel::translate1DIndTo3DInd(int index) {
+std::array<int, 3> ParticleContainerLinCel::translate1DIndTo3DInd(int index)
+{
     int plane = cellsX * cellsY;
-    //calculate the z coordinate
-    int z = index/plane;
+    // calculate the z coordinate
+    int z = index / plane;
     index = index % z;
-    //calculate the y coordinate
-    int y = index/cellsX;
+    // calculate the y coordinate
+    int y = index / cellsX;
     index % y;
     int x = index;
-    return std::array<int,3> {x, y, z};
+    return std::array<int, 3>{x, y, z};
+}
+
+double ParticleContainerLinCel::calculateKinEnergy()
+{
+    double energy = 0.0;
+    auto energyLambda = [&energy](Particle &p)
+    {
+        energy += p.getM() * std::inner_product(p.getV().begin(), p.getV().end(), p.getV(), 0.0) / 2;
+    };
+    iterOverAllParticles(energyLambda);
+    return energy;
+}
+
+double ParticleContainerLinCel::calculateTemperature()
+{
+    auto numberofDimensions = 3;
+    return calculateKinEnergy() / getAmountOfParticles() * 2.0 / numberofDimensions;
 }
 
 

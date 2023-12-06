@@ -56,11 +56,11 @@ public:
 	 */
 	virtual void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type);
 
-    /**
-     * @brief runs the simulation
-     * @param None
-     * @return void
-     */
+	/**
+	 * @brief runs the simulation
+	 * @param None
+	 * @return void
+	 */
 	void simulateParticles();
 
 	void writeJSON(std::string &name);

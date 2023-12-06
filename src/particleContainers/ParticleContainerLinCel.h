@@ -34,9 +34,7 @@ private:
     // only needed for the 3D case
     unsigned int cellsZ = 0;
 
-
 public:
-
     /**
      * @brief constructor
      *  If the domain size isn't a multiple of the cutoff radius
@@ -55,6 +53,9 @@ public:
     ~ParticleContainerLinCel();
 
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
+
+    void iterOverAllParticles(const std::function<void(Particle &)> &f);
+
     /**
      * @brief overriding the add method so that particles get added to the correct cell
      * according to their coordinates
@@ -66,9 +67,9 @@ public:
      *       \   |   /
      *        \ Cell -- > Calc
      * @param x_arg position of the particle
-	 * @param v_arg velocity of the particle
-	 * @param mass mass of the particle
-	 * @param type typenumber of the particle
+     * @param v_arg velocity of the particle
+     * @param mass mass of the particle
+     * @param type typenumber of the particle
      */
     void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
 
@@ -124,24 +125,28 @@ public:
      */
     std::vector<std::vector<Particle>> getCells();
 
-     /**
-      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
-      * @param x xIndex of the cell
-      * @param y yIndex of the cell
-      * @param z zIndex of the cell
-      * @return 1D index for our cells vector
-      */
-     int translate3DIndTo1D(int x, int y, int z);
+    /**
+     * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
+     * @param x xIndex of the cell
+     * @param y yIndex of the cell
+     * @param z zIndex of the cell
+     * @return 1D index for our cells vector
+     */
+    int translate3DIndTo1D(int x, int y, int z);
 
     /**
-    * @brief translate 3d coordinates to an index of our cells vector
-    * @param position the position as 3D coordinate
-    * @return the index in our vector
-    */
+     * @brief translate 3d coordinates to an index of our cells vector
+     * @param position the position as 3D coordinate
+     * @return the index in our vector
+     */
     unsigned int translate3DPosTo1D(std::array<double, 3> position);
 
     /**
      *
      */
-     std::array<int, 3> translate1DIndTo3DInd(int index);
+    std::array<int, 3> translate1DIndTo3DInd(int index);
+
+    double calculateKinEnergy();
+
+    double calculateTemperature();
 };

@@ -19,7 +19,6 @@ int main(int argc, char *const argv[])
 	std::string outName;
 	ParticleContainer *container = nullptr;
 	option longOpts[] = {
-		// TODO: update help.txt with these
 		{"deltaT", required_argument, nullptr, 'd'},
 		{"endTime", required_argument, nullptr, 'e'},
 		{"help", no_argument, nullptr, 'h'},
