@@ -194,59 +194,64 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  */
 void ParticleContainerLinCel::iterBoundary()
 {
-    for (int z = 1; z < cellsZ - 1; ++z)
-    {
-        if (z == 1 || z == cellsZ - 2)
-        { // all cells in this plane are boundary cells
+    for (int z = 1; z < cellsZ - 1; ++z) {
+        if (z == 1) {
+            if (conditions_[5].affectsForce()) {
+                for (int x = 1; x < cellsX - 1; ++x) {
+                    for (int y = 1; y < cellsY - 1; ++y) {
+                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                        for (auto &pi: currentCell) {
+                            conditions_[5].applyBoundCondition(pi);
+                        }
+                    }
+                }
+            }
         }
-        else
-        { // iterate over the outer ring of inner cells for each inner z index
-            // from down left corner to down right corner
-            if (conditions_[2].affectsForce())
-            {
-                for (int x = 1; x < cellsX - 1; ++x)
-                {
-                    cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
-                    for (auto &pi : currentCell)
-                    {
-                        conditions_[2].applyBoundCondition(*pi);
+        if (z == cellsZ - 2) {
+            for (int x = 1; x < cellsX - 1; ++x) {
+                for (int y = 1; y < cellsY - 1; ++y) {
+                    cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                    for (auto &pi: currentCell) {
+                        conditions_[4].applyBoundCondition(pi);
                     }
                 }
             }
-            // from down right corner to top right corner
-            if (conditions_[1].affectsForce())
-            {
-                for (int y = 1; y < cellsY - 1; ++y)
-                {
-                    cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
-                    for (auto &pi : currentCell)
-                    {
-                        conditions_[1].applyBoundCondition(*pi);
-                    }
+        }
+        //iterate over the outer ring of inner cells for each inner z index
+        // from down left corner to down right corner
+        if (conditions_[2].affectsForce()) {
+            for (int x = 1; x < cellsX - 1; ++x) {
+                cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
+                for (auto &pi: currentCell) {
+                    conditions_[2].applyBoundCondition(pi);
                 }
             }
-            if (conditions_[3].affectsForce())
-            {
-                // from top right corner to top left corner
-                for (int x = cellsX - 2; x > 0; --x)
-                {
-                    cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
-                    for (auto &pi : currentCell)
-                    {
-                        conditions_[3].applyBoundCondition(*pi);
-                    }
+        }
+        // from down right corner to top right corner
+        if (conditions_[1].affectsForce()) {
+            for (int y = 1; y < cellsY - 1; ++y) {
+                cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
+                for (auto &pi: currentCell) {
+                    conditions_[1].applyBoundCondition(pi);
                 }
             }
-            // from top left corner to down left corner
-            if (conditions_[0].affectsForce())
-            {
-                for (int y = cellsY - 2; y > 0; --y)
-                {
-                    cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
-                    for (auto &pi : currentCell)
-                    {
-                        conditions_[0].applyBoundCondition(*pi);
-                    }
+        }
+        if (conditions_[3].affectsForce()) {
+            // from top right corner to top left corner
+
+            for (int x = cellsX - 2; x > 0; --x) {
+                cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
+                for (auto &pi: currentCell) {
+                    conditions_[3].applyBoundCondition(pi);
+                }
+            }
+        }
+        // from top left corner to down left corner
+        if (conditions_[0].affectsForce()) {
+            for (int y = cellsY - 2; y > 0; --y) {
+                cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
+                for (auto &pi: currentCell) {
+                    conditions_[0].applyBoundCondition(pi);
                 }
             }
         }
