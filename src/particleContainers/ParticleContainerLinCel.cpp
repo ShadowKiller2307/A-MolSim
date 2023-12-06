@@ -52,7 +52,8 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         domainSize_[1] = -domainSize_[1];
     }
 
-    if (domainSize_[2] < 0.0) {
+    if (domainSize_[2] < 0.0)
+    {
         domainSize_[2] = -domainSize_[2];
     }
 
@@ -64,13 +65,14 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     { // last row of cells are smaller in height
         upperModulo = true;
     }
-    if (fmod(domainSize_[2], cutoffRadius_) != 0.0) {
+    if (fmod(domainSize_[2], cutoffRadius_) != 0.0)
+    {
         depthModulo = true;
     }
 
     cellsX = static_cast<unsigned int>(ceil(domainSize_[0] / cutoffRadius_) + 2);
     cellsY = static_cast<unsigned int>(ceil(domainSize_[1] / cutoffRadius_) + 2);
-    cellsZ = static_cast<unsigned int>(ceil(domainSize_[2]/cutoffRadius_) + 2);
+    cellsZ = static_cast<unsigned int>(ceil(domainSize_[2] / cutoffRadius_) + 2);
     // amountOfCells = cellsX * cellsY + 2 * (cellsX + 2) + 2 * cellsY;
     amountOfCells = cellsX * cellsY * cellsZ;
     /**
@@ -87,49 +89,65 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
-    
-    for (int x = 1; x < cellsX-1; ++x) {
-        for (int y = 1; y < cellsY-1; ++y) {
-            for (int z = 1; z < cellsZ-1; ++z) {
+
+    for (int x = 1; x < cellsX - 1; ++x)
+    {
+        for (int y = 1; y < cellsY - 1; ++y)
+        {
+            for (int z = 1; z < cellsZ - 1; ++z)
+            {
                 cell &current = cells.at(translate3DIndTo1D(x, y, z));
-                for (auto &pi : current) {
+                for (auto &pi : current)
+                {
                     // right cell
-                    if (x != cellsX - 2) {
-                        for (auto &pj: cells.at(translate3DIndTo1D(x+1, y, z))) {
+                    if (x != cellsX - 2)
+                    {
+                        for (auto &pj : cells.at(translate3DIndTo1D(x + 1, y, z)))
+                        {
                             // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
+                            {
                                 f(pi, pj);
                             }
                         }
                     }
                     // upper cell
-                    if (y != cellsY - 2) {
-                        for (auto &pj: cells.at(translate3DIndTo1D(x, y+1, z))) {
+                    if (y != cellsY - 2)
+                    {
+                        for (auto &pj : cells.at(translate3DIndTo1D(x, y + 1, z)))
+                        {
                             // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
+                            {
                                 f(pi, pj);
                             }
                         }
                     }
-                    //right upper cell
-                    if ((x != cellsX - 2) && (y != cellsY - 2)) {
-                        for (auto &pj: cells.at(translate3DIndTo1D(x+1, y+1, z))) {
+                    // right upper cell
+                    if ((x != cellsX - 2) && (y != cellsY - 2))
+                    {
+                        for (auto &pj : cells.at(translate3DIndTo1D(x + 1, y + 1, z)))
+                        {
                             // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
+                            {
                                 f(pi, pj);
                             }
                         }
                     }
                     // left upper cell
-                    if ((x > 1) && (y != cellsY - 2)) {
-                        for (auto &pj: cells.at(translate3DIndTo1D(x-1, y+1, z))) {
+                    if ((x > 1) && (y != cellsY - 2))
+                    {
+                        for (auto &pj : cells.at(translate3DIndTo1D(x - 1, y + 1, z)))
+                        {
                             // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_) {
+                            if (ArrayUtils::L2Norm(pj.getX() - pi.getX()) <= cutoffRadius_)
+                            {
                                 f(pi, pj);
                             }
                         }
                     }
-                    //TODO: expand implementation for 3D cases
+                    // TODO: expand implementation for 3D cases
 
                     // z + 1
 
@@ -140,7 +158,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                     // right upper cell
 
                     // left upper cell
-
                 }
             }
         }
@@ -247,11 +264,14 @@ void ParticleContainerLinCel::iterBoundary()
 
 void ParticleContainerLinCel::iterHalo()
 {
-    for (int x = 0; x < cellsX; ++x) {
-        for (int y = 0; y < cellsY; ++y) {
-            for (int z = 0; z < cellsZ; ++z) {
-                if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY -1) || (z == 0)
-                || (z == cellsZ -1)) {
+    for (int x = 0; x < cellsX; ++x)
+    {
+        for (int y = 0; y < cellsY; ++y)
+        {
+            for (int z = 0; z < cellsZ; ++z)
+            {
+                if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
+                {
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
                     currentCell.clear();
                 }
@@ -413,6 +433,5 @@ double ParticleContainerLinCel::calculateTemperature()
     auto numberofDimensions = 3;
     return calculateKinEnergy() / getAmountOfParticles() * 2.0 / numberofDimensions;
 }
-
 
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;
