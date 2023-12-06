@@ -6,7 +6,7 @@
 class ParticleContainerLinCel : public ParticleContainer
 {
 private:
-    using cell = std::vector<Particle>;
+    using cell = std::vector<Particle *>;
     std::vector<cell> cells;
     std::vector<BoundaryCondition> conditions_;
     bool upperModulo = false;
@@ -54,7 +54,7 @@ public:
 
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
-    void iterOverAllParticles(const std::function<void(Particle &)> &f);
+    void iterOverAllParticles(const std::function<void(Particle &, size_t)> &f);
 
     /**
      * @brief overriding the add method so that particles get added to the correct cell
@@ -123,7 +123,7 @@ public:
      * @param None
      * @return void
      */
-    std::vector<std::vector<Particle>> getCells();
+    std::vector<std::vector<Particle *>> getCells();
 
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
