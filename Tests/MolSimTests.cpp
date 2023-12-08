@@ -151,13 +151,13 @@ TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
     particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 1}, startV, 1.0, 1, 0);
     EXPECT_EQ(containerLinCel.getAmountOfCells(), 75);
     std::array<double, 3> test{0.5, 0.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0)->getX());
     test = {0.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0)->getX());
     test = {1.5, 0.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0)->getX());
     test = {1.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0).getX());
+    EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0)->getX());
 }
 
 
@@ -177,9 +177,9 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     std::array<double, 3> expectedValuesOne{-120, 0.0, 0.0};
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
     std::array<double, 3> expectedValuesThree{120, 0.0, 0.0};
-    EXPECT_EQ(linCel2.getCells().at(5).at(0).getF(), expectedValuesOne);
-    EXPECT_EQ(linCel2.getCells().at(5).at(1).getF(), expectedValuesTwo);
-    EXPECT_EQ(linCel2.getCells().at(6).at(0).getF(), expectedValuesThree);
+    EXPECT_EQ(linCel2.getCells().at(5).at(0)->getF(), expectedValuesOne);
+    EXPECT_EQ(linCel2.getCells().at(5).at(1)->getF(), expectedValuesTwo);
+    EXPECT_EQ(linCel2.getCells().at(6).at(0)->getF(), expectedValuesThree);
 }
 
 
