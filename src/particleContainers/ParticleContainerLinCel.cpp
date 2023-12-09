@@ -99,53 +99,53 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
             for (uint32_t z = 1; z < cellsZ - 1; ++z)
             {
                 cell &current = cells.at(translate3DIndTo1D(x, y, z));
-                for (auto &pi : current)
+                for (auto &pIndexI : current)
                 {
                     // right cell
                     if (x != cellsX - 2)
                     {
-                        for (auto &pj : cells.at(translate3DIndTo1D(x + 1, y, z)))
+                        for (auto pIndexJ : cells.at(translate3DIndTo1D(x + 1, y, z)))
                         {
-                            // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj->getX() - pi->getX()) <= cutoffRadius_)
+                            // check whether pIndexJ is within the cutoff radius of pIndexI
+                            if (ArrayUtils::L2Norm(particles_.at(pIndexJ).getX() - particles_.at(pIndexI).getX()) <= cutoffRadius_)
                             {
-                                f(*pi, *pj);
+                                f(particles_.at(pIndexI), particles_.at(pIndexJ));
                             }
                         }
                     }
                     // upper cell
                     if (y != cellsY - 2)
                     {
-                        for (auto &pj : cells.at(translate3DIndTo1D(x, y + 1, z)))
+                        for (auto &pIndexJ : cells.at(translate3DIndTo1D(x, y + 1, z)))
                         {
-                            // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj->getX() - pi->getX()) <= cutoffRadius_)
+                            // check whether pIndexJ is within the cutoff radius of pIndexI
+                            if (ArrayUtils::L2Norm(particles_.at(pIndexJ).getX() - particles_.at(pIndexI).getX()) <= cutoffRadius_)
                             {
-                                f(*pi, *pj);
+                                f(particles_.at(pIndexI), particles_.at(pIndexJ));
                             }
                         }
                     }
                     // right upper cell
                     if ((x != cellsX - 2) && (y != cellsY - 2))
                     {
-                        for (auto &pj : cells.at(translate3DIndTo1D(x + 1, y + 1, z)))
+                        for (auto &pIndexJ : cells.at(translate3DIndTo1D(x + 1, y + 1, z)))
                         {
-                            // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj->getX() - pi->getX()) <= cutoffRadius_)
+                            // check whether pIndexJ is within the cutoff radius of pIndexI
+                            if (ArrayUtils::L2Norm(particles_.at(pIndexJ).getX() - particles_.at(pIndexI).getX()) <= cutoffRadius_)
                             {
-                                f(*pi, *pj);
+                                f(particles_.at(pIndexI), particles_.at(pIndexJ));
                             }
                         }
                     }
                     // left upper cell
                     if ((x > 1) && (y != cellsY - 2))
                     {
-                        for (auto &pj : cells.at(translate3DIndTo1D(x - 1, y + 1, z)))
+                        for (auto &pIndexJ : cells.at(translate3DIndTo1D(x - 1, y + 1, z)))
                         {
-                            // check whether pj is within the cutoff radius of pi
-                            if (ArrayUtils::L2Norm(pj->getX() - pi->getX()) <= cutoffRadius_)
+                            // check whether pIndexJ is within the cutoff radius of pIndexI
+                            if (ArrayUtils::L2Norm(particles_.at(pIndexJ).getX() - particles_.at(pIndexI).getX()) <= cutoffRadius_)
                             {
-                                f(*pi, *pj);
+                                f(particles_.at(pIndexI), particles_.at(pIndexJ));
                             }
                         }
                     }
@@ -177,7 +177,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
                 cell &c = cells[translate3DIndTo1D(x, y, z)];
                 for (size_t i = 0; i < c.size(); ++i)
                 {
-                    f(*(c[i]), i);
+                    f(particles_.at(c.at(i)), i);
                 }
             }
         }
@@ -207,9 +207,9 @@ void ParticleContainerLinCel::iterBoundary()
                     for (uint32_t y = 1; y < cellsY - 1; ++y)
                     {
                         cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                        for (auto &pi : currentCell)
+                        for (auto &pIndex : currentCell)
                         {
-                            conditions_[5].applyBoundCondition(*pi);
+                            conditions_[5].applyBoundCondition(particles_.at(pIndex));
                         }
                     }
                 }
@@ -222,9 +222,9 @@ void ParticleContainerLinCel::iterBoundary()
                 for (uint32_t y = 1; y < cellsY - 1; ++y)
                 {
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                    for (auto &pi : currentCell)
+                    for (auto &pIndex : currentCell)
                     {
-                        conditions_[4].applyBoundCondition(*pi);
+                        conditions_[4].applyBoundCondition(particles_.at(pIndex));
                     }
                 }
             }
@@ -236,9 +236,9 @@ void ParticleContainerLinCel::iterBoundary()
             for (uint32_t x = 1; x < cellsX - 1; ++x)
             {
                 cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
-                for (auto &pi : currentCell)
+                for (auto &pIndex : currentCell)
                 {
-                    conditions_[2].applyBoundCondition(*pi);
+                    conditions_[2].applyBoundCondition(particles_.at(pIndex));
                 }
             }
         }
@@ -248,9 +248,9 @@ void ParticleContainerLinCel::iterBoundary()
             for (uint32_t y = 1; y < cellsY - 1; ++y)
             {
                 cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
-                for (auto &pi : currentCell)
+                for (auto &pIndex : currentCell)
                 {
-                    conditions_[1].applyBoundCondition(*pi);
+                    conditions_[1].applyBoundCondition(particles_.at(pIndex));
                 }
             }
         }
@@ -261,9 +261,9 @@ void ParticleContainerLinCel::iterBoundary()
             for (uint32_t x = cellsX - 2; x > 0; --x)
             {
                 cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
-                for (auto &pi : currentCell)
+                for (auto &pIndex : currentCell)
                 {
-                    conditions_[3].applyBoundCondition(*pi);
+                    conditions_[3].applyBoundCondition(particles_.at(pIndex));
                 }
             }
         }
@@ -275,7 +275,7 @@ void ParticleContainerLinCel::iterBoundary()
                 cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
                 for (auto &pi : currentCell)
                 {
-                    conditions_[0].applyBoundCondition(*pi);
+                    conditions_[0].applyBoundCondition(particles_.at(pi));
                 }
             }
         }
@@ -293,6 +293,10 @@ void ParticleContainerLinCel::iterHalo()
                 if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
                 {
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                    for (auto &i : currentCell)
+                    {
+                        particles_.erase(particles_.begin() + i);
+                    }
                     currentCell.clear();
                 }
             }
@@ -307,16 +311,16 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
         x_arg[2] >= 0 && x_arg[2] <= domainSize_[2])   // in z bounds
     {
         // add the particle
-        Particle *p = &particles_.emplace_back(x_arg, v_arg, mass, type);
+        particles_.emplace_back(x_arg, v_arg, mass, type);
         // compute the cell to which the particle will be added
-        cells.at(translate3DPosTo1D(x_arg)).emplace_back(p);
+        cells.at(translate3DPosTo1D(x_arg)).emplace_back(particles_.size() - 1);
     }
 }
 
 void ParticleContainerLinCel::calculatePosition()
 {
-    std::vector<Particle *> addBack;
-    auto updateLambda = [&](Particle &p, size_t i)
+    std::vector<size_t> addBack;
+    auto updateLambda = [&](Particle &p, size_t indexInCell)
     {
         int beforeCellIndex = translate3DPosTo1D(p.getX());
         std::array<double, 3> force = p.getF();
@@ -330,16 +334,17 @@ void ParticleContainerLinCel::calculatePosition()
         }
         else
         {
-            cells[beforeCellIndex].erase(cells[beforeCellIndex].begin() + i);
+            size_t temp = cells.at(beforeCellIndex).at(indexInCell);
+            cells[beforeCellIndex].erase(cells[beforeCellIndex].begin() + indexInCell);
             p.setX(newPosition);
-            addBack.push_back(&p);
+            addBack.push_back(temp);
         }
     };
     iterOverAllParticles(updateLambda);
-    for (auto &p : addBack)
+    for (auto pI : addBack)
     {
-        int newIndex = translate3DPosTo1D(p->getX());
-        cells.at(newIndex).push_back(p);
+        int newIndex = translate3DPosTo1D(particles_.at(pI).getX());
+        cells.at(newIndex).push_back(pI);
     }
     iterHalo();
 }
@@ -349,7 +354,7 @@ unsigned int ParticleContainerLinCel::getAmountOfCells() const
     return amountOfCells;
 }
 
-std::vector<std::vector<Particle *>> ParticleContainerLinCel::getCells()
+std::vector<std::vector<size_t>> ParticleContainerLinCel::getCells()
 {
     return cells;
 }
@@ -363,12 +368,12 @@ void ParticleContainerLinCel::calculateForces()
 {
     for (auto &cell : cells)
     {
-        for (auto &p : cell)
+        for (size_t &pI : cell)
         {
-            auto oldForce = p->getF();
+            auto oldForce = particles_.at(pI).getF();
             std::array<double, 3> zero = {0.0, 0.0, 0.0};
-            p->setF(zero);
-            p->setOldF(oldForce);
+            particles_.at(pI).setF(zero);
+            particles_.at(pI).setOldF(oldForce);
         }
     }
     iterOverInnerPairs(force_);
