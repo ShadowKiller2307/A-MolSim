@@ -4,7 +4,7 @@
 		"deltaT": 0.00005,
 		"endTime": 10,
 		"containerType": "LinCel",
-		"boundaries": "oooooo",
+		"boundaries": "rrrrrr",
 		"cutoffRadius": 3.0,
 		"domainSize": [120, 50, 1]
 	},

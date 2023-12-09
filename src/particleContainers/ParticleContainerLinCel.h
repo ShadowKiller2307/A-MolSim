@@ -55,15 +55,15 @@ public:
     ~ParticleContainerLinCel();
 
     /**
-    * if a new cell is iterated over, only calculate the forces in the cell itself
-            * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
-    * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
-    * Calc       Calc   Calc
-    *      \    |     /
-    *       \   |   /
-    *        \ Cell -- > Calc
-    *
-    */
+     * if a new cell is iterated over, only calculate the forces in the cell itself
+     * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
+     * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
+     * Calc       Calc   Calc
+     *      \    |     /
+     *       \   |   /
+     *        \ Cell -- > Calc
+     *
+     */
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
     void iterOverAllParticles(const std::function<void(Particle &, size_t)> &f);
@@ -110,11 +110,11 @@ public:
     void calculateForces() override;
 
     /**
-     * @brief return the sum of all particles in all the cells of the LinCel container
+     * @brief return the number of all particles in all the cells of the LinCel container
      * @param None
-     * @return void
+     * @return number of particles in the domain
      */
-    unsigned int getAmountOfParticles();
+    size_t getAmountOfParticles();
 
     /**
      * @brief return of how many cells the current LinCel container consists
