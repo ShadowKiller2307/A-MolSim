@@ -1,6 +1,6 @@
 {
 	"params":{
-		"numParticles": 1,
+		"numParticles": 2,
 		"deltaT": 0.00005,
 		"endTime": 10,
 		"containerType": "LinCel",
@@ -10,10 +10,17 @@
 	},
 	"particles": [
 		{
-			"shape":"sphere",
-			"x": [60, 25, 0],
+			"shape":"cuboid",
+			"x": [60, 10, 0],
+			"v":[0, -15, 0],
+			"N": [1,1,1],
+			"m": 1
+		},
+		{
+			"shape":"cuboid",
+			"x": [60, 9, 0],
 			"v":[0, -10, 0],
-			"R": 15,
+			"N": [1,1,1],
 			"m": 1
 		}
 ]

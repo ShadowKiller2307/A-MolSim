@@ -86,6 +86,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     { // initialize the cells
         cells.emplace_back();
     }
+    buildLookUp();
 }
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
@@ -176,7 +177,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
                 cell &c = cells[translate3DIndTo1D(x, y, z)];
                 for (size_t i = 0; i < c.size(); ++i)
                 {
-                    f(*c[i], i);
+                    f(*(c[i]), i);
                 }
             }
         }
@@ -390,7 +391,8 @@ void ParticleContainerLinCel::buildLookUp()
 
 int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z)
 {
-    return lookup.at(x).at(y).at(z);
+    // return lookup.at(x).at(y).at(z);
+    return x + cellsX * y + cellsX * cellsY * z;
 }
 
 unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) const

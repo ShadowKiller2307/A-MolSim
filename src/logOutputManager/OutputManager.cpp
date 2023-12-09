@@ -31,6 +31,7 @@ void OutputManager::writeJSON(std::string &name, ParticleContainer &container)
 	json output = {
 		{"params", {{"numParticles", container.getParticles().size()}, {"deltaT", container.getDeltaT()}, {"endTime", container.getEndTime()}}},
 		{"particles", json::array()}};
+	// TODO: Add Particles to JSON
 	std::ofstream o(name);
 	o << std::setw(4) << output << std::endl;
 }
