@@ -1,4 +1,5 @@
 #include "Reflecting.h"
+#include <iostream>
 
 Reflecting::Reflecting(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda) : BoundaryCondition(position, direction, forceLambda)
 {
@@ -6,6 +7,7 @@ Reflecting::Reflecting(double position, int direction, std::function<void(Partic
 
 bool Reflecting::affectsForce()
 {
+    std::cout << "Bitte mich aufrufen!" << std::endl;
 	return true;
 }
 

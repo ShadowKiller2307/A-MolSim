@@ -2,13 +2,17 @@
 #include "particleContainers/ParticleContainer.h"
 #include "boundaryConditions/BoundaryCondition.h"
 #include "forces/Force.h"
+#include "boundaryConditions/Outflow.h"
+#include "boundaryConditions/Reflecting.h"
 
 class ParticleContainerLinCel : public ParticleContainer
 {
 private:
     using cell = std::vector<size_t>;
     std::vector<cell> cells;
-    std::vector<BoundaryCondition> conditions_;
+    std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
+    std::vector<Reflecting> reflectingBounds;
+    std::vector<Outflow> outflowBounds;
     bool upperModulo = false;
     bool rightModulo = false;
     bool depthModulo = false;
@@ -156,5 +160,6 @@ public:
 
     double calculateTemperature();
 
-    std::vector<BoundaryCondition> getBounds();
+    bool affectsForce(int index);
+    //std::vector<BoundaryCondition> getBounds();
 };

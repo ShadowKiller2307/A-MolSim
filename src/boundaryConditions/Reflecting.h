@@ -6,6 +6,6 @@ class Reflecting : public BoundaryCondition
 public:
 	Reflecting(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda);
 	~Reflecting() = default;
-	bool affectsForce();
+	bool affectsForce() override;
 	void applyBoundCondition(Particle &a) override;
 };

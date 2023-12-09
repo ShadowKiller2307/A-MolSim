@@ -48,7 +48,7 @@ protected:
     GravPot gravPot1{};
     ParticleContainerDirSum containerDirSum{0.5, 1, 1, lennJon.innerPairs()};
     ParticleContainerDirSum containerDirSum2{0.5, 1, 1, gravPot1.innerPairs()};
-    ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrrr", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+    ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrro", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
     ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", lennJon, 1.5};
     GravPot gravPot{};
     ParticleContainer *containerCuboid;
@@ -182,6 +182,8 @@ TEST_F(MolSimTest, testReflectingBoundary)
 {
     // left domain border should have the BoundaryCondition Reflecting
     containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
+    EXPECT_EQ(containerLinCel.affectsForce(0), true);
+    EXPECT_EQ(containerLinCel.affectsForce(5), false);
     for (int i = 0; i < 10; ++i)
     {
         // check whether the particle leaves the domain and gets deleted
@@ -195,15 +197,18 @@ TEST_F(MolSimTest, testReflectingBoundary)
     }
 }
 
-TEST_F(MolSimTest, testSetBoundary) {
+/*TEST_F(MolSimTest, testSetBoundary) {
     LennJon lennJon{5, 1};
     //ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", lennJon, 1.5};
     ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "rooooo", lennJon, 1.0};
-    EXPECT_EQ(test_1.getBounds().at(0).affectsForce(), true);
-    /*ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oroooo", lennJon, 1.0};
+    for (int i = 0; i < 6; ++i) {
+        std::cout << test_1.getBounds().at(i)->affectsForce() << std::endl;
+    }
 
-    ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oorooo", lennJon, 1.0};*/
-}
+    EXPECT_EQ(test_1.getBounds().at(0)->affectsForce(), true);
+    *//*ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oroooo", lennJon, 1.0};
+    ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oorooo", lennJon, 1.0};*//*
+}*/
 
 
 
