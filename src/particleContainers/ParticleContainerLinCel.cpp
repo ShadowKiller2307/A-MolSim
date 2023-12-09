@@ -23,6 +23,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     for (int i = 0; i < 6; ++i)
     {
         const char c = bounds.at(i);
+        // 0, 120, 0, 50, 1, 0 for WS3
         const double pos = i % 2 == 0 ? 0.0 : domainSize[i / 2];
         const int dir = i / 2;
         auto f = force.boundaryPairs();
@@ -91,7 +92,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
-
     for (uint32_t x = 1; x < cellsX - 1; ++x)
     {
         for (uint32_t y = 1; y < cellsY - 1; ++y)
@@ -192,7 +192,6 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  * upper plane
  * back plane
  * front plane
- *
  */
 void ParticleContainerLinCel::iterBoundary()
 {
@@ -359,7 +358,7 @@ std::vector<std::vector<size_t>> ParticleContainerLinCel::getCells()
     return cells;
 }
 
-unsigned int ParticleContainerLinCel::getAmountOfParticles()
+size_t ParticleContainerLinCel::getAmountOfParticles()
 {
     return particles_.size();
 }
