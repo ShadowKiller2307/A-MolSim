@@ -155,4 +155,6 @@ public:
     double calculateKinEnergy();
 
     double calculateTemperature();
+
+    std::vector<BoundaryCondition> getBounds();
 };

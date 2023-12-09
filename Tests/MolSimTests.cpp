@@ -195,6 +195,19 @@ TEST_F(MolSimTest, testReflectingBoundary)
     }
 }
 
+TEST_F(MolSimTest, testSetBoundary) {
+    LennJon lennJon{5, 1};
+    //ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", lennJon, 1.5};
+    ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "rooooo", lennJon, 1.0};
+    EXPECT_EQ(test_1.getBounds().at(0).affectsForce(), true);
+    /*ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oroooo", lennJon, 1.0};
+
+    ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oorooo", lennJon, 1.0};*/
+}
+
+
+
+
 /**
  * @brief: check force calculation for Lennard Jones for the Linked cells
  */

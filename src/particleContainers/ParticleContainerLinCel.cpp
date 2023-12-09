@@ -440,4 +440,8 @@ double ParticleContainerLinCel::calculateTemperature()
     return calculateKinEnergy() / getAmountOfParticles() * 2.0 / numberofDimensions;
 }
 
+std::vector<BoundaryCondition> ParticleContainerLinCel::getBounds() {
+    return conditions_;
+}
+
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;
