@@ -200,7 +200,7 @@ void ParticleContainerLinCel::iterBoundary()
     {
         if (z == 1)
         {
-            if (conditions_[5].affectsForce())
+            if (conditions_[4].affectsForce())
             {
                 for (uint32_t x = 1; x < cellsX - 1; ++x)
                 {
@@ -209,7 +209,7 @@ void ParticleContainerLinCel::iterBoundary()
                         cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
                         for (auto &pIndex : currentCell)
                         {
-                            conditions_[5].applyBoundCondition(particles_.at(pIndex));
+                            conditions_[4].applyBoundCondition(particles_.at(pIndex));
                         }
                     }
                 }
@@ -224,7 +224,7 @@ void ParticleContainerLinCel::iterBoundary()
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
                     for (auto &pIndex : currentCell)
                     {
-                        conditions_[4].applyBoundCondition(particles_.at(pIndex));
+                        conditions_[5].applyBoundCondition(particles_.at(pIndex));
                     }
                 }
             }
