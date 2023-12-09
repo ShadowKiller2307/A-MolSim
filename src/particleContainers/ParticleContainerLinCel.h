@@ -54,6 +54,16 @@ public:
      */
     ~ParticleContainerLinCel();
 
+    /**
+    * if a new cell is iterated over, only calculate the forces in the cell itself
+            * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
+    * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
+    * Calc       Calc   Calc
+    *      \    |     /
+    *       \   |   /
+    *        \ Cell -- > Calc
+    *
+    */
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
     void iterOverAllParticles(const std::function<void(Particle &, size_t)> &f);
@@ -61,13 +71,6 @@ public:
     /**
      * @brief overriding the add method so that particles get added to the correct cell
      * according to their coordinates
-     * if a new cell is iterated over, only calculate the forces in the cell itself
-     * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
-     * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
-     * Calc       Calc   Calc
-     *      \    |     /
-     *       \   |   /
-     *        \ Cell -- > Calc
      * @param x_arg position of the particle
      * @param v_arg velocity of the particle
      * @param mass mass of the particle
@@ -129,6 +132,7 @@ public:
 
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
+     * first index (0,0,0) corresponds to the left front corner cell within the domain (so not halo cells)
      * @param x xIndex of the cell
      * @param y yIndex of the cell
      * @param z zIndex of the cell

@@ -341,6 +341,7 @@ void ParticleContainerLinCel::calculatePosition()
         int newIndex = translate3DPosTo1D(p->getX());
         cells.at(newIndex).push_back(p);
     }
+    iterHalo();
 }
 
 unsigned int ParticleContainerLinCel::getAmountOfCells() const
