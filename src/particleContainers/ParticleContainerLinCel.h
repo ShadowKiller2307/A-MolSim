@@ -6,7 +6,7 @@
 class ParticleContainerLinCel : public ParticleContainer
 {
 private:
-    using cell = std::vector<Particle *>;
+    using cell = std::vector<size_t>;
     std::vector<cell> cells;
     std::vector<BoundaryCondition> conditions_;
     bool upperModulo = false;
@@ -125,7 +125,7 @@ public:
      * @param None
      * @return void
      */
-    std::vector<std::vector<Particle *>> getCells();
+    std::vector<std::vector<size_t>> getCells();
 
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
