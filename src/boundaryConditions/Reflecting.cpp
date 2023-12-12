@@ -1,7 +1,7 @@
 #include "Reflecting.h"
 #include <iostream>
 
-Reflecting::Reflecting(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda) : BoundaryCondition(position, direction, forceLambda)
+Reflecting::Reflecting(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda, std::array<double, 3> domainSize) : BoundaryCondition(position, direction, forceLambda, domainSize)
 {
 }
 
@@ -18,4 +18,7 @@ void Reflecting::applyBoundCondition(Particle &a)
 	ghostPos[direction_] = position_ + (position_ - ghostPos[direction_]);
 	ghostParticle.setX(ghostPos);
 	forceLambda_(a, ghostParticle);
+}
+
+void Reflecting::applyHaloCondition(Particle &a) {
 }
