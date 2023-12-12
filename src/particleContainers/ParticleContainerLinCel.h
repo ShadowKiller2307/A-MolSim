@@ -8,7 +8,7 @@
 class ParticleContainerLinCel : public ParticleContainer
 {
 private:
-    using cell = std::vector<size_t>;
+    using cell = std::vector<Particle **>;
     std::vector<cell> cells;
     std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
     std::vector<Reflecting> reflectingBounds;
@@ -41,6 +41,8 @@ private:
     void buildLookUp();
 
 public:
+    bool cellPointerNeedUpdate;
+
     /**
      * @brief constructor
      *  If the domain size isn't a multiple of the cutoff radius
@@ -58,6 +60,8 @@ public:
      */
     ~ParticleContainerLinCel();
 
+    void recalculateParticlesinCells();
+
     /**
      * if a new cell is iterated over, only calculate the forces in the cell itself
      * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
@@ -70,7 +74,7 @@ public:
      */
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
-    void iterOverAllParticles(const std::function<void(Particle &, size_t)> &f);
+    void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     /**
      * @brief overriding the add method so that particles get added to the correct cell
@@ -96,7 +100,7 @@ public:
      * @param None
      * @return void
      */
-    void iterHalo();
+    void iterHalo(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     /**
      * @brief overriding the position calculation, so that the particles and cells get updated
@@ -132,7 +136,7 @@ public:
      * @param None
      * @return void
      */
-    std::vector<std::vector<size_t>> getCells();
+    std::vector<std::vector<Particle **>> getCells();
 
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
@@ -161,5 +165,5 @@ public:
     double calculateTemperature();
 
     bool affectsForce(int index);
-    //std::vector<BoundaryCondition> getBounds();
+    // std::vector<BoundaryCondition> getBounds();
 };

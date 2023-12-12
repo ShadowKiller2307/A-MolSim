@@ -29,7 +29,7 @@ void ParticleContainer::calculateVelocity()
 {
 	for (size_t i = 0; i < particles_.size(); i++)
 	{
-		Particle &p = particles_.at(i);
+		Particle &p = *particles_.at(i);
 		double factor = deltaT_ / (2 * p.getM());
 		std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
 		sumOfForces = factor * sumOfForces;
@@ -45,7 +45,7 @@ void ParticleContainer::calculatePosition()
 {
 	for (size_t i = 0; i < particles_.size(); i++)
 	{
-		Particle &p = particles_.at(i);
+		Particle &p = *particles_.at(i);
 		std::array<double, 3> force = p.getF();
 		double factor = std::pow(deltaT_, 2) / (2 * p.getM());
 		force = factor * force;
@@ -130,12 +130,12 @@ ParticleContainer::~ParticleContainer()
 	delete outManager_;
 }
 
-std::vector<Particle> &ParticleContainer::getParticles()
+std::vector<Particle *> &ParticleContainer::getParticles()
 {
 	return particles_;
 }
 
-void ParticleContainer::setParticles(std::vector<Particle> &particles)
+void ParticleContainer::setParticles(std::vector<Particle *> &particles)
 {
 	this->particles_ = particles;
 }

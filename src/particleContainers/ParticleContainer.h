@@ -14,7 +14,7 @@ protected:
 	double deltaT_, startTime_, endTime_;
 	int outputEveryNIterations_;
 	size_t iteration_;
-	std::vector<Particle> particles_;
+	std::vector<Particle *> particles_;
 	OutputManager *outManager_;
 	std::function<void(Particle &a, Particle &b)> force_;
 	ParticleContainer(double deltaT, double endTime, int writeFrequency, std::function<void(Particle &a, Particle &b)> f);
@@ -65,9 +65,9 @@ public:
 
 	void writeJSON(std::string &name);
 
-	std::vector<Particle> &getParticles();
+	std::vector<Particle *> &getParticles();
 
-	void setParticles(std::vector<Particle> &particles);
+	void setParticles(std::vector<Particle *> &particles);
 
 	const double getDeltaT() const;
 
