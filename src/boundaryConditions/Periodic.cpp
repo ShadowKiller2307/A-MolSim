@@ -62,7 +62,6 @@ void Periodic::applyHaloCondition(Particle &a) {
     //directions: x == 0
     // y == 1
     // z == 2
-    double diffABound; // difference between the position of particle a and the position of the domain boundary
      if (direction_ == 0) { //
          if (position_ == 0) { // in the halo cell next to the left domain boundary
              double newX = a.getX().at(0) + domainSize_[0];

@@ -32,11 +32,11 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         if (c == 'r')
         {
            // reflectingBounds.emplace_back(pos, dir, f);
-            conditions_.emplace_back(std::make_unique<Reflecting>((reflectingBounds.emplace_back(pos, dir, f))));
+            conditions_.emplace_back(std::make_unique<Reflecting>((reflectingBounds.emplace_back(pos, dir, f, domainSize_))));
         }
         else if (c == 'o')
         {
-            conditions_.emplace_back(std::make_unique<Outflow>((outflowBounds.emplace_back(pos, dir, f))));
+            conditions_.emplace_back(std::make_unique<Outflow>((outflowBounds.emplace_back(pos, dir, f, domainSize_))));
         }
         else
         {
