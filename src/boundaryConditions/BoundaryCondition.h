@@ -19,6 +19,7 @@ public:
     BoundaryCondition(double position, int direction, std::function<void(Particle &, Particle &)> &forceLambda, std::array<double, 3> domainSize);
     ~BoundaryCondition() = default;
     virtual bool affectsForce();
+    virtual bool affectsHalo() = 0;
     virtual void applyHaloCondition(Particle &a);
     virtual void applyBoundCondition(Particle &a);
     virtual void applyBoundCondition(Particle &a, std::vector<cell> &particlesOtherSide);

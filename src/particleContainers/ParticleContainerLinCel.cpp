@@ -111,9 +111,9 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         for (auto ppj : cells.at(translate3DIndTo1D(x + 1, y, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
-                            if (ArrayUtils::L2Norm((*ppj)->getX() - (*ppi)->getX()) <= cutoffRadius_)
+                            if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                f(**ppi, **ppj);
+                                f(ppi, ppj);
                             }
                         }
                     }
@@ -123,9 +123,9 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         for (auto ppj : cells.at(translate3DIndTo1D(x, y + 1, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
-                            if (ArrayUtils::L2Norm((*ppj)->getX() - (*ppi)->getX()) <= cutoffRadius_)
+                            if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                f(**ppi, **ppj);
+                                f(ppi, ppj);
                             }
                         }
                     }
@@ -135,9 +135,9 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         for (auto ppj : cells.at(translate3DIndTo1D(x + 1, y + 1, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
-                            if (ArrayUtils::L2Norm((*ppj)->getX() - (*ppi)->getX()) <= cutoffRadius_)
+                            if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                f(**ppi, **ppj);
+                                f(ppi, ppj);
                             }
                         }
                     }
@@ -147,9 +147,9 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         for (auto ppj : cells.at(translate3DIndTo1D(x - 1, y + 1, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
-                            if (ArrayUtils::L2Norm((*ppj)->getX() - (*ppi)->getX()) <= cutoffRadius_)
+                            if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                f(**ppi, **ppj);
+                                f(ppi, ppj);
                             }
                         }
                     }
@@ -178,7 +178,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
         {
             for (size_t z = 1; z < cellsZ - 1; z++)
             {
-                cell &c = cells[translate3DIndTo1D(x, y, z)];
+                cell &c = cells.at(translate3DIndTo1D(x, y, z));
                 for (auto it = c.begin();;)
                 {
                     if (it == c.end())
@@ -216,7 +216,7 @@ void ParticleContainerLinCel::iterBoundary()
                         cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
                         for (auto ppi : currentCell)
                         {
-                            conditions_[4]->applyBoundCondition(**ppi);
+                            conditions_[4]->applyBoundCondition(ppi);
                         }
                     }
                 }
@@ -231,7 +231,7 @@ void ParticleContainerLinCel::iterBoundary()
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
                     for (auto ppi : currentCell)
                     {
-                        conditions_[5]->applyBoundCondition(**ppi);
+                        conditions_[5]->applyBoundCondition(ppi);
                     }
                 }
             }
@@ -245,7 +245,7 @@ void ParticleContainerLinCel::iterBoundary()
                 cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
                 for (auto ppi : currentCell)
                 {
-                    conditions_[2]->applyBoundCondition(**ppi);
+                    conditions_[2]->applyBoundCondition(ppi);
                 }
             }
         }
@@ -257,7 +257,7 @@ void ParticleContainerLinCel::iterBoundary()
                 cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
                 for (auto ppi : currentCell)
                 {
-                    conditions_[1]->applyBoundCondition(**ppi);
+                    conditions_[1]->applyBoundCondition(ppi);
                 }
             }
         }
@@ -270,7 +270,7 @@ void ParticleContainerLinCel::iterBoundary()
                 cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
                 for (auto ppi : currentCell)
                 {
-                    conditions_[3]->applyBoundCondition(**ppi);
+                    conditions_[3]->applyBoundCondition(ppi);
                 }
             }
         }
@@ -282,16 +282,37 @@ void ParticleContainerLinCel::iterBoundary()
                 cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
                 for (auto &ppi : currentCell)
                 {
-                    conditions_[0]->applyBoundCondition(**ppi);
+                    conditions_[0]->applyBoundCondition(ppi);
                 }
             }
         }
     }
 }
 
-void ParticleContainerLinCel::iterHalo(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
+/*void ParticleContainerLinCel::iterHalo(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
 {
     for (uint32_t x = 0; x < cellsX; ++x)
+    {
+        for (uint32_t y = 0; y < cellsY; ++y)
+        {
+            for (uint32_t z = 0; z < cellsZ; ++z)
+            {
+                if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
+                {
+                    cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                    for (auto &p : currentCell)
+                    {
+                        f(p);
+                    }
+                }
+            }
+        }
+    }
+}*/
+
+void ParticleContainerLinCel::iterHalo() //const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
+{
+    /*for (uint32_t x = 0; x < cellsX; ++x)
     {
         for (uint32_t y = 0; y < cellsY; ++y)
         {
@@ -307,7 +328,7 @@ void ParticleContainerLinCel::iterHalo(const std::function<void(ParticleContaine
                 }
             }
         }
-    }
+    }*/
 }
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
@@ -316,57 +337,57 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
         x_arg[1] >= 0 && x_arg[1] <= domainSize_[1] && // in y bounds
         x_arg[2] >= 0 && x_arg[2] <= domainSize_[2])   // in z bounds
     {
-        auto particle = new Particle(x_arg, v_arg, mass, type);
+        /*auto particle = new Particle(x_arg, v_arg, mass, type);
         // add the particle
-        particles_.push_back(particle);
+        particles_.push_back(particle);*/
         // compute the cell to which the particle will be added
-        cells.at(translate3DPosTo1D(x_arg)).push_back(&particle);
+        cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
     }
 }
 
 void ParticleContainerLinCel::calculatePosition()
 {
-    std::vector<Particle **> addBack;
+    std::vector<Particle> addBack;
     auto updateLambda = [&](ParticleContainerLinCel::cell::iterator it)
     {
-        int beforeCellIndex = translate3DPosTo1D((**it)->getX());
-        std::array<double, 3> force = (**it)->getF();
-        double factor = std::pow(deltaT_, 2) / (2 * (**it)->getM());
+        unsigned int beforeCellIndex = translate3DPosTo1D((*it).getX());
+        std::array<double, 3> force = (*it).getF();
+        double factor = std::pow(deltaT_, 2) / (2 * (*it).getM());
         force = factor * force;
-        std::array<double, 3> newPosition = (**it)->getX() + deltaT_ * (**it)->getV() + force; // calculate position
-        int afterCellIndex = translate3DPosTo1D(newPosition);
+        std::array<double, 3> newPosition = ((*it).getX()) + deltaT_ * ((*it).getV()) + force; // calculate position
+        unsigned int afterCellIndex = translate3DPosTo1D(newPosition);
         if (beforeCellIndex == afterCellIndex)
         {
-            (**it)->setX(newPosition);
+            (*it).setX(newPosition);
             it++;
         }
         else
         {
-            Particle **temp = *it;
-            cells[beforeCellIndex].erase(it);
-            (**it)->setX(newPosition);
+            Particle temp = *it;
+            cells.at(beforeCellIndex).erase(it);
+            (*it).setX(newPosition);
             addBack.push_back(temp);
         }
     };
     iterOverAllParticles(updateLambda);
-    for (auto pI : addBack)
+    for (const auto& pI : addBack)
     {
-        int newIndex = translate3DPosTo1D((*pI)->getX());
+        unsigned int newIndex = translate3DPosTo1D(pI.getX());
         cells.at(newIndex).push_back(pI);
     }
     auto haloLambda /*delete all Halo Particles*/ = [&](ParticleContainerLinCel::cell::iterator it)
     {
-        int beforeCellIndex = translate3DPosTo1D((**it)->getX());
-        auto p = **it;
-        particles_.erase(std::remove(particles_.begin(), particles_.end(), p)); // delete particle from particle vector
+        int beforeCellIndex = translate3DPosTo1D((*it).getX());
+        auto p = *it;
+       // particles_.erase(std::remove(particles_.begin(), particles_.end(), p)); // delete particle from particle vector
         cellPointerNeedUpdate = true;
         cells[beforeCellIndex].erase(it); // delete pointer to now removed particle from cell
     };
-    iterHalo(haloLambda);
-    if (cellPointerNeedUpdate)
+    iterHalo();
+    /*if (cellPointerNeedUpdate)
     {
         recalculateParticlesinCells();
-    }
+    }*/
 }
 
 unsigned int ParticleContainerLinCel::getAmountOfCells() const
@@ -374,7 +395,7 @@ unsigned int ParticleContainerLinCel::getAmountOfCells() const
     return amountOfCells;
 }
 
-std::vector<std::vector<Particle **>> ParticleContainerLinCel::getCells()
+std::vector<std::vector<Particle>> ParticleContainerLinCel::getCells()
 {
     return cells;
 }
@@ -412,17 +433,44 @@ void ParticleContainerLinCel::buildLookUp()
     }
 }
 
-int ParticleContainerLinCel::translate3DIndTo1D(int x, int y, int z)
+unsigned int ParticleContainerLinCel::translate3DIndTo1D(unsigned int x, unsigned int y, unsigned int z) const
 {
     // return lookup.at(x).at(y).at(z);
-    return x + cellsX * y + cellsX * cellsY * z;
+    return (x + cellsX * y + cellsX * cellsY * z);
 }
 
 unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) const
 {
-    unsigned int xIndex = static_cast<unsigned int>(floor(position[0] / cutoffRadius_)) + 1;
-    unsigned int yIndex = static_cast<unsigned int>(floor(position[1] / cutoffRadius_)) + 1;
-    unsigned int zIndex = static_cast<unsigned int>(floor(position[2] / cutoffRadius_)) + 1;
+    unsigned int xIndex;
+    unsigned int yIndex;
+    unsigned int zIndex;
+    if (position[0] >= 0) {
+        if (position[0] >= (domainSize_[0] + 1)) {
+            xIndex = cellsX - 1;
+        }
+        xIndex = static_cast<unsigned int>(floor(position[0] / cutoffRadius_)) + 1;
+    }
+    else {
+        xIndex = 0;
+    }
+    if (position[1] >= 0) {
+        if (position[1] >= (domainSize_[1] + 1)) {
+            yIndex = cellsY - 1;
+        }
+        yIndex = static_cast<unsigned int>(floor(position[1] / cutoffRadius_)) + 1;
+    }
+    else {
+        yIndex = 0;
+    }
+    if (position[2] >= 0) {
+        if (position[2] >= (domainSize_[2] + 1)) {
+            zIndex = cellsZ - 1;
+        }
+        zIndex = static_cast<unsigned int>(floor(position[2] / cutoffRadius_)) + 1;
+    }
+    else {
+        zIndex = 0;
+    }
     unsigned int index = xIndex + cellsX * yIndex + cellsX * cellsY * zIndex;
     return index;
 }
@@ -446,7 +494,7 @@ double ParticleContainerLinCel::calculateKinEnergy()
     double energy = 0.0;
     auto energyLambda = [&energy](ParticleContainerLinCel::cell::iterator it)
     {
-        energy += (**it)->getM() * std::inner_product((**it)->getV().begin(), (**it)->getV().end(), (**it)->getV().begin(), 0.0) / 2;
+        energy += (*it).getM() * std::inner_product((*it).getV().begin(), (*it).getV().end(), (*it).getV().begin(), 0.0) / 2;
     };
     iterOverAllParticles(energyLambda);
     return energy;
@@ -482,9 +530,9 @@ std::vector<BoundaryCondition> ParticleContainerLinCel::getBounds() {
 
 ParticleContainerLinCel::~ParticleContainerLinCel() = default;
 
-void ParticleContainerLinCel::recalculateParticlesinCells()
+/*void ParticleContainerLinCel::recalculateParticlesinCells()
 {
-    for (auto &c : cells)
+   *//* for (auto &c : cells)
     {
         c.clear();
     }
@@ -493,5 +541,5 @@ void ParticleContainerLinCel::recalculateParticlesinCells()
         int newIndex = translate3DPosTo1D(p->getX());
         cells.at(newIndex).push_back(&p);
     }
-    cellPointerNeedUpdate = false;
-}
+    cellPointerNeedUpdate = false;*//*
+}*/

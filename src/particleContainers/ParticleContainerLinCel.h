@@ -8,7 +8,7 @@
 class ParticleContainerLinCel : public ParticleContainer
 {
 private:
-    using cell = std::vector<Particle **>;
+    using cell = std::vector<Particle>;
     std::vector<cell> cells;
     std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
     std::vector<Reflecting> reflectingBounds;
@@ -74,6 +74,8 @@ public:
      */
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
+    //void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
+
     void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     /**
@@ -100,7 +102,7 @@ public:
      * @param None
      * @return void
      */
-    void iterHalo(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
+    void iterHalo();
 
     /**
      * @brief overriding the position calculation, so that the particles and cells get updated
@@ -136,7 +138,7 @@ public:
      * @param None
      * @return void
      */
-    std::vector<std::vector<Particle **>> getCells();
+    std::vector<std::vector<Particle>> getCells();
 
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
@@ -146,7 +148,7 @@ public:
      * @param z zIndex of the cell
      * @return 1D index for our cells vector
      */
-    int translate3DIndTo1D(int x, int y, int z);
+    unsigned int translate3DIndTo1D(unsigned int x, unsigned int y, unsigned int z) const;
 
     /**
      * @brief translate 3d coordinates to an index of our cells vector

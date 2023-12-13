@@ -22,3 +22,7 @@ void Reflecting::applyBoundCondition(Particle &a)
 
 void Reflecting::applyHaloCondition(Particle &a) {
 }
+
+bool Reflecting::affectsHalo() {
+    return true;
+}

@@ -118,3 +118,7 @@ void Periodic::applyBoundCondition(Particle &a, std::vector<cell> &particlesOthe
         }
     }
 }
+
+bool Periodic::affectsHalo() {
+    return true;
+}

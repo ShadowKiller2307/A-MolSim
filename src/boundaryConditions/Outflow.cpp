@@ -22,3 +22,7 @@ void Outflow::applyBoundCondition(Particle &a)
 void Outflow::applyHaloCondition(Particle &a) {
     BoundaryCondition::applyHaloCondition(a);
 }
+
+bool Outflow::affectsHalo() {
+    return true;
+}
