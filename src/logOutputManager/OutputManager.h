@@ -16,6 +16,7 @@ public:
 	bool outputFiles;
 	bool outputBaseName;
 	void plotParticles(const std::vector<Particle *> &particles, const size_t iteration);
+    void plotParticles2(const std::vector<Particle> &particles, const size_t iteration);
 	void writeJSON(std::string &name, ParticleContainer &container);
 	OutputManager();
 };

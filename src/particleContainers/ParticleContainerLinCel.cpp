@@ -12,14 +12,15 @@
  * "pppppp"
  */
 
-enum class BoundaryCondition2 {
+/*enum class BoundaryCondition2 {
     Reflecting2,
     Periodic2,
     Outflow2
-};
+};*/
 
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
 {
+    //std::cout << "Constructor begin\n";
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
     if (bounds.length() < 6)
@@ -98,10 +99,12 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     }
     buildLookUp();
     cellPointerNeedUpdate = true;
+    //std::cout << "constructor end\n";
 }
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
+    //std::cout << "iterOverInnerPairs begin\n";
     for (uint32_t x = 1; x < cellsX - 1; ++x)
     {
         for (uint32_t y = 1; y < cellsY - 1; ++y)
@@ -174,6 +177,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
             }
         }
     }
+    //std::cout << "iterOverInnerPairs end\n";
 }
 
 void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
@@ -209,6 +213,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  */
 void ParticleContainerLinCel::iterBoundary()
 {
+    //std::cout << "iterBoundaries begin\n";
     for (uint32_t z = 1; z < cellsZ - 1; ++z)
     {
         if (z == 1)
@@ -292,10 +297,10 @@ void ParticleContainerLinCel::iterBoundary()
             }
         }
     }
+    //std::cout << "iterBoundaries end\n";
 }
 
-/*void ParticleContainerLinCel::iterHalo(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
-{
+void ParticleContainerLinCel::iterHalo() {
     for (uint32_t x = 0; x < cellsX; ++x)
     {
         for (uint32_t y = 0; y < cellsY; ++y)
@@ -305,119 +310,15 @@ void ParticleContainerLinCel::iterBoundary()
                 if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
                 {
                     cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                    for (auto &p : currentCell)
-                    {
-                        f(p);
-                    }
+                    currentCell.clear();
                 }
             }
         }
     }
-}*/
 
-void ParticleContainerLinCel::iterHalo() //const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
-{
-    for (uint32_t z = 0; z < cellsZ; ++z)
-    {
-        if (z == 0)
-        {
-            if (conditions_[4]->affectsHalo())
-            {
-                for (uint32_t x = 1; x < cellsX - 1; ++x)
-                {
-                    for (uint32_t y = 1; y < cellsY - 1; ++y)
-                    {
-                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                        for (auto ppi : currentCell)
-                        {
-                            conditions_[4]->applyBoundCondition(ppi);
-                        }
-                    }
-                }
-            }
-        }
-        if (z == cellsZ - 1)
-        {
-            if (conditions_[5]->affectsHalo()) {
-                for (uint32_t x = 1; x < cellsX - 1; ++x) {
-                    for (uint32_t y = 1; y < cellsY - 1; ++y) {
-                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                        for (auto ppi: currentCell) {
-                            conditions_[5]->applyBoundCondition(ppi);
-                        }
-                    }
-                }
-            }
-        }
-        // iterate over the outer ring of inner cells for each inner z index
-        //  from down left corner to down right corner
-        if (conditions_[2]->affectsHalo())
-        {
-            for (uint32_t x = 1; x < cellsX - 1; ++x)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
-                for (auto ppi : currentCell)
-                {
-                    conditions_[2]->applyBoundCondition(ppi);
-                }
-            }
-        }
-        // from down right corner to top right corner
-        if (conditions_[1]->affectsHalo())
-        {
-            for (uint32_t y = 1; y < cellsY - 1; ++y)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
-                for (auto ppi : currentCell)
-                {
-                    conditions_[1]->applyBoundCondition(ppi);
-                }
-            }
-        }
-        if (conditions_[3]->affectsHalo())
-        {
-            // from top right corner to top left corner
-
-            for (uint32_t x = cellsX - 2; x > 0; --x)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
-                for (auto ppi : currentCell)
-                {
-                    conditions_[3]->applyBoundCondition(ppi);
-                }
-            }
-        }
-        // from top left corner to down left corner
-        if (conditions_[0]->affectsHalo())
-        {
-            for (uint32_t y = cellsY - 2; y > 0; --y)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
-                for (auto &ppi : currentCell)
-                {
-                    conditions_[0]->applyBoundCondition(ppi);
-                }
-            }
-        }
-    }
-    /*for (uint32_t x = 0; x < cellsX; ++x)
-    {
-        for (uint32_t y = 0; y < cellsY; ++y)
-        {
-            for (uint32_t z = 0; z < cellsZ; ++z)
-            {
-                if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
-                {
-                    cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                    for (auto it = currentCell.begin();;)
-                    {
-                        f(it);
-                    }
-                }
-            }
-        }
-    }*/
 }
+
+
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
 {
@@ -433,10 +334,60 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     }
 }
 
-void ParticleContainerLinCel::calculatePosition()
-{
+void ParticleContainerLinCel::calculatePosition() {
+   // std::cout << "Richtiges calculatePosition\n";
     std::vector<Particle> addBack;
-    auto updateLambda = [&](ParticleContainerLinCel::cell::iterator it)
+    for (uint32_t x = 0; x < cellsX; ++x)
+    {
+        for (uint32_t y = 0; y < cellsY; ++y)
+        {
+            for (uint32_t z = 0; z < cellsZ; ++z)
+            {
+               cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+               std::vector<unsigned int> indexesToDelete;
+                for (unsigned int i = 0; i < currentCell.size(); ++i) {
+                    Particle &particle = currentCell.at(i);
+                    std::array<double, 3> force = particle.getF();
+                    double factor = std::pow(deltaT_, 2) / (2 * particle.getM());
+                    force = factor * force;
+                    std::array<double, 3> newPosition = (particle.getX()) + deltaT_ * (particle.getV()) + force; // calculate position
+                    unsigned int afterCellIndex = translate3DPosTo1D(newPosition);
+                    if (translate3DIndTo1D(x,y,z) == afterCellIndex)
+                    {
+                        particle.setX(newPosition);
+                    }
+                    else
+                    {
+                        // the particle has to move to a new cell
+                        particle.setX(newPosition);
+                        currentCell.erase(currentCell.begin() + i);
+                        --i;
+                        //indexesToDelete.emplace_back(i);
+                    /*    Particle temp = *it;
+                        cells.at(beforeCellIndex).erase(it);
+                        (*it).setX(newPosition);
+                        addBack.push_back(temp);*/
+                    }
+                }
+               /* for (unsigned int i = 0; i < indexesToDelete.size(); ++i) {
+
+                }*/
+            }
+        }
+    }
+    // add all particles from addback to the cells
+    for (unsigned int i = 0; i < addBack.size(); ++i) {
+        cells.at(translate3DPosTo1D(addBack.at(i).getX())).emplace_back(addBack.at(i));
+    }
+    iterHalo();
+}
+
+
+/*void ParticleContainerLinCel::calculatePosition()
+{
+    std::cout << "Richtiges calculatePosition\n";
+    std::vector<Particle> addBack;
+    *//*auto updateLambda = [&](ParticleContainerLinCel::cell::iterator it)
     {
         unsigned int beforeCellIndex = translate3DPosTo1D((*it).getX());
         std::array<double, 3> force = (*it).getF();
@@ -456,27 +407,17 @@ void ParticleContainerLinCel::calculatePosition()
             (*it).setX(newPosition);
             addBack.push_back(temp);
         }
-    };
+    };*//*
+
+
     iterOverAllParticles(updateLambda);
     for (const auto& pI : addBack)
     {
         unsigned int newIndex = translate3DPosTo1D(pI.getX());
         cells.at(newIndex).push_back(pI);
     }
-    auto haloLambda /*delete all Halo Particles*/ = [&](ParticleContainerLinCel::cell::iterator it)
-    {
-        int beforeCellIndex = translate3DPosTo1D((*it).getX());
-        auto p = *it;
-       // particles_.erase(std::remove(particles_.begin(), particles_.end(), p)); // delete particle from particle vector
-        cellPointerNeedUpdate = true;
-        cells[beforeCellIndex].erase(it); // delete pointer to now removed particle from cell
-    };
     iterHalo();
-    /*if (cellPointerNeedUpdate)
-    {
-        recalculateParticlesinCells();
-    }*/
-}
+}*/
 
 unsigned int ParticleContainerLinCel::getAmountOfCells() const
 {
@@ -607,31 +548,71 @@ void ParticleContainerLinCel::iterBoundary2() {
 
 }
 
-/*
-std::vector<BoundaryCondition> ParticleContainerLinCel::getBounds() {
-    std::vector<BoundaryCondition>
-    for (int i = 0; i < conditions_; ++i) {
+std::vector<Particle> ParticleContainerLinCel::getAllParticles() {
+    std::vector<Particle> returnVector;
+    for (auto &cell : cells) {
+        for (int i = 0; i < cell.size(); ++i) {
+            returnVector.emplace_back(cell.at(i));
+        }
 
     }
 }
-*/
 
-/*std::vector<std::unique_ptr<BoundaryCondition>> ParticleContainerLinCel::getBounds() {
-    return conditions_;
-}*/
+void ParticleContainerLinCel::simulateParticles2() {
+    auto begin = std::chrono::high_resolution_clock::now();
+    this->cells;
+    std::vector<Particle> allParticles;// = getAllParticles(); //TODO <-- hieran liegt der Fehler
+    for (auto &cell : cells) {
+        for (int i = 0; i < cell.size(); ++i) {
+            allParticles.emplace_back(cell.at(i));
+        }
 
-//ParticleContainerLinCel::~ParticleContainerLinCel() = default;
-
-/*void ParticleContainerLinCel::recalculateParticlesinCells()
-{
-   *//* for (auto &c : cells)
-    {
-        c.clear();
     }
-    for (auto &p : particles_)
+    while (startTime_ < endTime_)
     {
-        int newIndex = translate3DPosTo1D(p->getX());
-        cells.at(newIndex).push_back(&p);
+        /*if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
+        {*/
+        outManager_->plotParticles2(allParticles, iteration_);
+        //}
+        if (iteration_ % 100 == 0)
+        {
+            LogManager::infoLog("Iteration {} finished. ({}%)", iteration_, std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100);
+            if (iteration_)
+            {
+                auto end = std::chrono::high_resolution_clock::now();
+                size_t diff = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
+                auto remainig = (static_cast<double>(diff) / iteration_) * (endTime_ - startTime_) / deltaT_;
+                std::string min, sec;
+                if (remainig > 60)
+                {
+                    min = std::to_string(static_cast<int>(remainig / 60)) + "m, ";
+                    remainig = std::fmod(remainig, 60);
+                }
+                else
+                {
+                    min = "0m, ";
+                }
+                sec = std::to_string(static_cast<int>(remainig)) + "s   \r";
+                std::cout << "ETA: " << min << sec << std::flush;
+            }
+        }
+       /* std::cout << "bis hier ok 4\n";
+
+        std::cout << "richtiges simulateParticles\n";*/
+        // calculate new x
+        calculatePosition();
+        // std::cout << "bis hier ok: nach calculatePosition\n";
+        // calculate new f
+        calculateForces();
+        // calculate new v
+        calculateVelocity();
+
+        iteration_++;
+        startTime_ += deltaT_;
     }
-    cellPointerNeedUpdate = false;*//*
-}*/
+    //  TODO (ADD): Log
+    auto end = std::chrono::high_resolution_clock::now();
+    size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
+
+}

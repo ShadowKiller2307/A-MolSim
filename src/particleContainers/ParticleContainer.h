@@ -61,7 +61,7 @@ public:
 	 * @param None
 	 * @return void
 	 */
-	void simulateParticles();
+	virtual void simulateParticles();
 
 	void writeJSON(std::string &name);
 

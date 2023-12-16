@@ -63,6 +63,7 @@ void ParticleContainer::calculatePosition()
 
 void ParticleContainer::simulateParticles()
 {
+    std::cout << "Falsches simulateParticle\n";
 	auto begin = std::chrono::high_resolution_clock::now();
 
 	while (startTime_ < endTime_)
@@ -96,6 +97,7 @@ void ParticleContainer::simulateParticles()
 
 		// calculate new x
 		calculatePosition();
+       // std::cout << "bis hier ok: nach calculatePosition\n";
 		// calculate new f
 		calculateForces();
 		// calculate new v

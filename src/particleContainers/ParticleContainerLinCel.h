@@ -60,7 +60,9 @@ public:
      */
     ~ParticleContainerLinCel();
 
-    void recalculateParticlesinCells();
+    //void recalculateParticlesinCells();
+
+    void simulateParticles2();
 
     /**
      * if a new cell is iterated over, only calculate the forces in the cell itself
@@ -170,5 +172,7 @@ public:
     double calculateTemperature();
 
     bool affectsForce(int index);
+
+    std::vector<Particle> getAllParticles();
     // std::vector<BoundaryCondition> getBounds();
 };

@@ -180,59 +180,6 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	}
 }
 
-void particleGenerator::instantiatePicture(ParticleContainer **container, const std::string &path, Force &force,
-										   SimParams params)
-{
-	// gross C code, brace yourself
-	if (!(*container))
-	{
-		(*container) = new ParticleContainerDirSum(params.deltaT, params.endTime, params.writeFrequency,
-												   force.innerPairs());
-	}
-	int width, height, bpp;
-	char *charPath = new char[path.size()];
-	strcpy(charPath, path.c_str());										// convert std::string to char*
-	charPath[path.size() - 1] = '\0';									// explicitly set null terminator
-	uint8_t *rgb_image = stbi_load(charPath, &width, &height, &bpp, 3); // load the image
-	if (!rgb_image)
-	{
-		LogManager::errorLog("Error, could not load image!");
-		exit(1);
-	}
-	std::vector<std::array<uint8_t, 3>> lookup;
-	for (int i = 0; i < height; ++i)
-	{
-		for (int j = 0; j < width; j++)
-		{
-			int index = i * width * 3 + j * 3;
-			uint8_t r = rgb_image[index + 0]; // x-movement
-			uint8_t g = rgb_image[index + 1]; // y-movement
-			uint8_t b = rgb_image[index + 2]; // mass
-			if (!(r == 255 && g == 255 && b == 255))
-			{
-				int8_t sr = r <= INT8_MAX ? static_cast<int8_t>(r) : static_cast<int>(r - INT8_MIN) + INT8_MIN;
-				int8_t sg = g <= INT8_MAX ? static_cast<int8_t>(g) : static_cast<int>(g - INT8_MIN) + INT8_MIN;
-				std::array<double, 3> x_arg{static_cast<double>(j) * h_, static_cast<double>(-i) * h_, 0};
-				std::array<double, 3> v_arg = {sr / 127.0 * 40.0, sg / 127.0 * 40.0, 0.0};
-				std::array<uint8_t, 3> val = {r, g, b};
-				auto index = std::find(lookup.begin(), lookup.end(), val);
-				int type;
-				if (index == lookup.end())
-				{
-					lookup.push_back(val);
-					type = lookup.size() - 1;
-				}
-				else
-				{
-					type = std::distance(lookup.begin(), index);
-				}
-				(*container)->add(x_arg, v_arg, b, type);
-			}
-		}
-	}
-	stbi_image_free(rgb_image);
-}
-
 void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, Force &force,
 									   SimParams params)
 {

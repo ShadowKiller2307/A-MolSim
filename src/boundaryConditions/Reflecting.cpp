@@ -7,7 +7,7 @@ Reflecting::Reflecting(double position, int direction, std::function<void(Partic
 
 bool Reflecting::affectsForce()
 {
-    std::cout << "Bitte mich aufrufen!" << std::endl;
+    //std::cout << "Bitte mich aufrufen!" << std::endl;
 	return true;
 }
 

@@ -8,9 +8,11 @@
 #include <getopt.h>
 #include <chrono>
 #include "logOutputManager/LogManager.h"
+#include "particleContainers/ParticleContainerLinCel.h"
 
 int main(int argc, char *const argv[])
 {
+    //std::cout << "bis hier ok1\n";
 	LogManager &logManager = LogManager::getInstance();
 	logManager.setLogLevel(spdlog::level::info); // standard default level
 
@@ -96,12 +98,12 @@ int main(int argc, char *const argv[])
 		auto force = LennJon(5.0, 1.0);
 		particleGenerator::instantiateJSON(&container, path, force, params);
 	}
-	else if (ending == "png")
+	/*else if (ending == "png")
 	{
 		path = std::string("_.png").compare(argv[optind]) == 0 ? "../input/Cool MolSim.png" : argv[optind];
 		auto force = LennJon(5.0, 1.0);
 		particleGenerator::instantiatePicture(&container, path, force, SimParams{.deltaT = 0.0002, .endTime = 5});
-	}
+	}*/
 	else if (ending == "txt")
 	{
 		auto force = GravPot();
@@ -114,7 +116,14 @@ int main(int argc, char *const argv[])
 		container->writeJSON(newName);
 		return 0;
 	}
-	container->simulateParticles();
+    //std::cout << "bis hier ok2\n";
+    //std::cout << params.containerType << std::endl;
+    if (true) {
+        std::cout << "Linked Cells!\n";
+        ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);
+        lincelContainer->simulateParticles2();
+    }
+    //std::cout << "bis hier ok3\n";
 	delete container;
 	return 0;
 }
