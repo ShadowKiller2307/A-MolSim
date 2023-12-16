@@ -17,13 +17,13 @@ ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFre
 	force_ = f;
 }
 
-void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
+/*void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
 {
 }
 
 void ParticleContainer::calculateForces()
 {
-}
+}*/
 
 void ParticleContainer::calculateVelocity()
 {
@@ -57,9 +57,9 @@ void ParticleContainer::calculatePosition()
 	}
 }
 
-void ParticleContainer::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
+/*void ParticleContainer::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
 {
-}
+}*/
 
 void ParticleContainer::simulateParticles()
 {

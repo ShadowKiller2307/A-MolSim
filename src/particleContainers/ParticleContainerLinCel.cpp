@@ -12,6 +12,12 @@
  * "pppppp"
  */
 
+enum class BoundaryCondition2 {
+    Reflecting2,
+    Periodic2,
+    Outflow2
+};
+
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
 {
     domainSize_ = domainSize;
@@ -224,14 +230,13 @@ void ParticleContainerLinCel::iterBoundary()
         }
         if (z == cellsZ - 2)
         {
-            for (uint32_t x = 1; x < cellsX - 1; ++x)
-            {
-                for (uint32_t y = 1; y < cellsY - 1; ++y)
-                {
-                    cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                    for (auto ppi : currentCell)
-                    {
-                        conditions_[5]->applyBoundCondition(ppi);
+            if (conditions_[5]->affectsForce()) {
+                for (uint32_t x = 1; x < cellsX - 1; ++x) {
+                    for (uint32_t y = 1; y < cellsY - 1; ++y) {
+                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                        for (auto ppi: currentCell) {
+                            conditions_[5]->applyBoundCondition(ppi);
+                        }
                     }
                 }
             }
@@ -312,6 +317,89 @@ void ParticleContainerLinCel::iterBoundary()
 
 void ParticleContainerLinCel::iterHalo() //const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
 {
+    for (uint32_t z = 0; z < cellsZ; ++z)
+    {
+        if (z == 0)
+        {
+            if (conditions_[4]->affectsHalo())
+            {
+                for (uint32_t x = 1; x < cellsX - 1; ++x)
+                {
+                    for (uint32_t y = 1; y < cellsY - 1; ++y)
+                    {
+                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                        for (auto ppi : currentCell)
+                        {
+                            conditions_[4]->applyBoundCondition(ppi);
+                        }
+                    }
+                }
+            }
+        }
+        if (z == cellsZ - 1)
+        {
+            if (conditions_[5]->affectsHalo()) {
+                for (uint32_t x = 1; x < cellsX - 1; ++x) {
+                    for (uint32_t y = 1; y < cellsY - 1; ++y) {
+                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
+                        for (auto ppi: currentCell) {
+                            conditions_[5]->applyBoundCondition(ppi);
+                        }
+                    }
+                }
+            }
+        }
+        // iterate over the outer ring of inner cells for each inner z index
+        //  from down left corner to down right corner
+        if (conditions_[2]->affectsHalo())
+        {
+            for (uint32_t x = 1; x < cellsX - 1; ++x)
+            {
+                cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
+                for (auto ppi : currentCell)
+                {
+                    conditions_[2]->applyBoundCondition(ppi);
+                }
+            }
+        }
+        // from down right corner to top right corner
+        if (conditions_[1]->affectsHalo())
+        {
+            for (uint32_t y = 1; y < cellsY - 1; ++y)
+            {
+                cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
+                for (auto ppi : currentCell)
+                {
+                    conditions_[1]->applyBoundCondition(ppi);
+                }
+            }
+        }
+        if (conditions_[3]->affectsHalo())
+        {
+            // from top right corner to top left corner
+
+            for (uint32_t x = cellsX - 2; x > 0; --x)
+            {
+                cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
+                for (auto ppi : currentCell)
+                {
+                    conditions_[3]->applyBoundCondition(ppi);
+                }
+            }
+        }
+        // from top left corner to down left corner
+        if (conditions_[0]->affectsHalo())
+        {
+            for (uint32_t y = cellsY - 2; y > 0; --y)
+            {
+                cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
+                for (auto &ppi : currentCell)
+                {
+                    conditions_[0]->applyBoundCondition(ppi);
+                }
+            }
+        }
+    }
     /*for (uint32_t x = 0; x < cellsX; ++x)
     {
         for (uint32_t y = 0; y < cellsY; ++y)
@@ -515,6 +603,10 @@ bool ParticleContainerLinCel::affectsForce(int index)
     return conditions_.at(index).get()->affectsForce();
 }
 
+void ParticleContainerLinCel::iterBoundary2() {
+
+}
+
 /*
 std::vector<BoundaryCondition> ParticleContainerLinCel::getBounds() {
     std::vector<BoundaryCondition>
@@ -528,7 +620,7 @@ std::vector<BoundaryCondition> ParticleContainerLinCel::getBounds() {
     return conditions_;
 }*/
 
-ParticleContainerLinCel::~ParticleContainerLinCel() = default;
+//ParticleContainerLinCel::~ParticleContainerLinCel() = default;
 
 /*void ParticleContainerLinCel::recalculateParticlesinCells()
 {

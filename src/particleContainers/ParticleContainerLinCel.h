@@ -96,6 +96,9 @@ public:
      */
     void iterBoundary();
 
+    void iterBoundary2();
+
+
     /**
      * @brief iterate over the particles which are currectly located in the halo zone and
      * delete them

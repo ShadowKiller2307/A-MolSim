@@ -24,14 +24,14 @@ public:
 	 * @brief iterate over every particle pair in the container and apply the lambda function
 	 * @param f the lambda function
 	 */
-	virtual void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f);
+	virtual void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) = 0;
 
 	/**
 	 * @brief calculate the forces for all particles
 	 * @param None
 	 * @return void
 	 */
-	virtual void calculateForces();
+	virtual void calculateForces() = 0;
 
 	/**
 	 * @brief calculate the velocity for all particles
@@ -54,7 +54,7 @@ public:
 	 *	@param mass mass of the particle
 	 *	@param type typenumber of the particle
 	 */
-	virtual void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type);
+	virtual void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) = 0;
 
 	/**
 	 * @brief runs the simulation
