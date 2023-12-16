@@ -98,7 +98,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         cells.emplace_back();
     }
     buildLookUp();
-    cellPointerNeedUpdate = true;
     //std::cout << "constructor end\n";
 }
 
@@ -112,16 +111,17 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
             for (uint32_t z = 1; z < cellsZ - 1; ++z)
             {
                 cell &current = cells.at(translate3DIndTo1D(x, y, z));
-                for (auto ppi : current)
+                for (auto &ppi : current)
                 {
                     // right cell
                     if (x != cellsX - 2)
                     {
-                        for (auto ppj : cells.at(translate3DIndTo1D(x + 1, y, z)))
+                        for (auto &ppj : cells.at(translate3DIndTo1D(x + 1, y, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
+                                std::cout << "right cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -129,11 +129,12 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                     // upper cell
                     if (y != cellsY - 2)
                     {
-                        for (auto ppj : cells.at(translate3DIndTo1D(x, y + 1, z)))
+                        for (auto &ppj : cells.at(translate3DIndTo1D(x, y + 1, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
+                                std::cout << "upper cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -141,11 +142,12 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                     // right upper cell
                     if ((x != cellsX - 2) && (y != cellsY - 2))
                     {
-                        for (auto ppj : cells.at(translate3DIndTo1D(x + 1, y + 1, z)))
+                        for (auto &ppj : cells.at(translate3DIndTo1D(x + 1, y + 1, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
+                                std::cout << "right upper cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -153,11 +155,12 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                     // left upper cell
                     if ((x > 1) && (y != cellsY - 2))
                     {
-                        for (auto ppj : cells.at(translate3DIndTo1D(x - 1, y + 1, z)))
+                        for (auto &ppj : cells.at(translate3DIndTo1D(x - 1, y + 1, z)))
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
+                                std::cout << "left upper cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -382,43 +385,6 @@ void ParticleContainerLinCel::calculatePosition() {
     iterHalo();
 }
 
-
-/*void ParticleContainerLinCel::calculatePosition()
-{
-    std::cout << "Richtiges calculatePosition\n";
-    std::vector<Particle> addBack;
-    *//*auto updateLambda = [&](ParticleContainerLinCel::cell::iterator it)
-    {
-        unsigned int beforeCellIndex = translate3DPosTo1D((*it).getX());
-        std::array<double, 3> force = (*it).getF();
-        double factor = std::pow(deltaT_, 2) / (2 * (*it).getM());
-        force = factor * force;
-        std::array<double, 3> newPosition = ((*it).getX()) + deltaT_ * ((*it).getV()) + force; // calculate position
-        unsigned int afterCellIndex = translate3DPosTo1D(newPosition);
-        if (beforeCellIndex == afterCellIndex)
-        {
-            (*it).setX(newPosition);
-            it++;
-        }
-        else
-        {
-            Particle temp = *it;
-            cells.at(beforeCellIndex).erase(it);
-            (*it).setX(newPosition);
-            addBack.push_back(temp);
-        }
-    };*//*
-
-
-    iterOverAllParticles(updateLambda);
-    for (const auto& pI : addBack)
-    {
-        unsigned int newIndex = translate3DPosTo1D(pI.getX());
-        cells.at(newIndex).push_back(pI);
-    }
-    iterHalo();
-}*/
-
 unsigned int ParticleContainerLinCel::getAmountOfCells() const
 {
     return amountOfCells;
@@ -436,12 +402,13 @@ size_t ParticleContainerLinCel::getAmountOfParticles()
 
 void ParticleContainerLinCel::calculateForces()
 {
-    for (auto &p : particles_)
-    {
-        auto oldForce = p->getF();
-        std::array<double, 3> zero = {0.0, 0.0, 0.0};
-        p->setF(zero);
-        p->setOldF(oldForce);
+    for (auto &cell : cells) {
+        for (auto &p : cell) {
+            auto oldForce = p.getF();
+            std::array<double, 3> zero = {0.0, 0.0, 0.0};
+            p.setF(zero);
+            p.setOldF(oldForce);
+        }
     }
     iterOverInnerPairs(force_);
     iterBoundary();
@@ -560,16 +527,17 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles() {
 
 void ParticleContainerLinCel::simulateParticles2() {
     auto begin = std::chrono::high_resolution_clock::now();
-    this->cells;
-    std::vector<Particle> allParticles;// = getAllParticles(); //TODO <-- hieran liegt der Fehler
-    for (auto &cell : cells) {
-        for (int i = 0; i < cell.size(); ++i) {
-            allParticles.emplace_back(cell.at(i));
-        }
-
-    }
+    //this->cells;
     while (startTime_ < endTime_)
     {
+        std::cout << "Richtige simulation!\n";
+        std::vector<Particle> allParticles;
+        allParticles.clear();
+        for (auto &cell : cells) {
+            for (auto & i : cell) {
+                allParticles.emplace_back(i);
+            }
+        }
         /*if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
         {*/
         outManager_->plotParticles2(allParticles, iteration_);
