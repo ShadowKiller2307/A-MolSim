@@ -313,7 +313,7 @@ void ParticleContainerLinCel::iterBoundary()
     // std::cout << "iterBoundaries end\n";
 }
 
-std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambda(int direction, int position)
+std::function<void(Particle &)> ParticleContainerLinCel::createReflectingLambda(int direction, int position)
 {
     return [&](Particle &a)
     {
@@ -327,32 +327,40 @@ std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambda(in
 
 void ParticleContainerLinCel::iterBoundary2()
 {
-    unsigned x, y, z;
-    // left plane
-    x = 1;
-    std::function<void(Particle &)> lambda;
-    switch (conditions2[0])
+    auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
-    case BoundaryCondition2::Outflow2:
-        lambda = [](Particle &a) {};
-        break;
-    case BoundaryCondition2::Reflecting2:
-        lambda = createPeriodicLambda(0, 0);
-        break;
-    case BoundaryCondition2::Periodic2:
-        break;
-    }
-    for (z = 1; z < cellsZ - 1; ++z)
-    {
-        for (y = 1; y < cellsY - 1; ++y)
+        uint32_t i, j, k;
+        std::function<void(Particle &)> lambda;
+        for (i = 1; i < primaryDimension - 1; i += (primaryDimension - 3))
         {
-            auto &c = cells.at(translate3DIndTo1D(x, y, z));
-            for (auto &p : c)
+            switch (conditions2[direction + i == 1 ? 0 : 1])
             {
-                lambda(p);
+            case BoundaryCondition2::Outflow2:
+                lambda = [](Particle &a) {};
+                break;
+            case BoundaryCondition2::Reflecting2:
+                lambda = createReflectingLambda(0, domainSize_[direction + i == 1 ? 0 : 1]);
+                break;
+            case BoundaryCondition2::Periodic2:
+                break;
+            }
+            for (j = 1; j < secondaryDimension1 - 1; ++j)
+            {
+                for (k = 1; k < secondaryDimension2 - 1; ++k)
+                {
+                    auto &c = cells.at(translate3DIndTo1D(i, j, k));
+                    std::cout << i << ", " << j << ", " << k << ", " << std::endl;
+                    for (auto &p : c)
+                    {
+                        lambda(p);
+                    }
+                }
             }
         }
-    }
+    };
+    calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
+    calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
+    calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
 }
 
 void ParticleContainerLinCel::iterHalo()
@@ -371,10 +379,7 @@ void ParticleContainerLinCel::iterHalo()
             }
         }
     }
-
 }
-
-
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
 {
@@ -429,17 +434,19 @@ void ParticleContainerLinCel::calculatePosition()
         }
     }
     // add all particles from addback to the cells
-    for (auto & i : addBack) {
-       // std::cout << "adding particles back\n";
-       if ((translate3DPosTo1D(i.getX())) >= cells.size()) {
+    for (auto &i : addBack)
+    {
+        // std::cout << "adding particles back\n";
+        if ((translate3DPosTo1D(i.getX())) >= cells.size())
+        {
             continue;
         }
-       /* std::cout << "addBack begin: \n";
-        std::cout << "Velocity :" << i.getV() << std::endl;
-        std::cout << "Force :" << i.getF() << std::endl;
-        std::cout << "Position :" << i.getX() << std::endl;*/
+        /* std::cout << "addBack begin: \n";
+         std::cout << "Velocity :" << i.getV() << std::endl;
+         std::cout << "Force :" << i.getF() << std::endl;
+         std::cout << "Position :" << i.getX() << std::endl;*/
         cells.at(translate3DPosTo1D(i.getX())).emplace_back(i);
-        //std::cout << "addBack end: \n";
+        // std::cout << "addBack end: \n";
     }
     iterHalo();
 }
@@ -457,8 +464,10 @@ std::vector<std::vector<Particle>> ParticleContainerLinCel::getCells()
 size_t ParticleContainerLinCel::getAmountOfParticles()
 {
     unsigned int acc = 0;
-    for (auto &cell : cells) {
-        for (auto &p : cell) {
+    for (auto &cell : cells)
+    {
+        for (auto &p : cell)
+        {
             acc++;
         }
     }
@@ -600,7 +609,6 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles()
         {
             returnVector.emplace_back(cell.at(i));
         }
-
     }
 }
 
@@ -655,5 +663,4 @@ void ParticleContainerLinCel::simulateParticles2()
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
-
 }
