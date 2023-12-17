@@ -293,19 +293,53 @@ std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaHal
 
 void ParticleContainerLinCel::iterHalo()
 {
-    for (uint32_t x = 0; x < cellsX; ++x)
+    auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
-        for (uint32_t y = 0; y < cellsY; ++y)
+        uint32_t i, j, k;
+        uint32_t &x = direction == 0 ? i : j;
+        uint32_t &y = direction == 1 ? i : direction == 0 ? j
+                                                          : k;
+        uint32_t &z = direction == 2 ? i : k;
+        std::function<void(uint32_t x, uint32_t y, uint32_t z)> lambda;
+        for (i = 0; i < primaryDimension; i += (primaryDimension - 1))
         {
-            for (uint32_t z = 0; z < cellsZ; ++z)
+            switch (conditions[direction + i == 1 ? 0 : 1])
             {
-                if ((x == 0) || (x == cellsX - 1) || (y == 0) || (y == cellsY - 1) || (z == 0) || (z == cellsZ - 1))
+                case BoundaryCondition::Outflow:
+                    lambda /*delete Lambda*/;
+                    break;
+                case BoundaryCondition::Reflecting:
+                    lambda = [](uint32_t x, uint32_t y, uint32_t z) {}; // do nothing
+                    break;
+                case BoundaryCondition::Periodic:
+                    lambda /*move Lambda*/;
+                    break;
+            }
+            for (j = 0; j < secondaryDimension1; ++j)
+            {
+                for (k = 0; k < secondaryDimension2; ++k)
                 {
-                    cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                    currentCell.clear();
+                    lambda(x, y, z);
                 }
             }
         }
+    };
+    calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
+    calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
+    calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
+}
+
+void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
+{
+    if (x_arg[0] >= 0 && x_arg[0] <= domainSize_[0] && // in x bounds
+        x_arg[1] >= 0 && x_arg[1] <= domainSize_[1] && // in y bounds
+        x_arg[2] >= 0 && x_arg[2] <= domainSize_[2])   // in z bounds
+    {
+        /*auto particle = new Particle(x_arg, v_arg, mass, type);
+        // add the particle
+        particles_.push_back(particle);*/
+        // compute the cell to which the particle will be added
+        cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
     }
 }
 
