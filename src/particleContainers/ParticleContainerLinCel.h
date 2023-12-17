@@ -43,9 +43,9 @@ private:
     // only needed for the 3D case
     uint32_t cellsZ = 0;
     void buildLookUp();
-    std::function<void(Particle &)> createReflectingLambdaBoundary(int direction, int position);
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
     std::function<void(Particle &)> createPeriodicLambdaBoundary(int direction, int position);
-    std::function<void(Particle &)> createOutflowLambdaHalo(int direction, int position);
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createOutflowLambdaHalo();
     std::function<void(Particle &)> createPeriodicLambdaHalo(int direction, int position);
 
 public:

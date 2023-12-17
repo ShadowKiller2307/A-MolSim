@@ -262,28 +262,29 @@ void ParticleContainerLinCel::iterBoundary()
     calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
 }
 
-std::function<void(Particle &)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
 {
-   /* return [&](uint32_t x, uint32_t y, uint32_t z)
+
+    return [&](uint32_t x, uint32_t y, uint32_t z)
     {
-        Particle ghostParticle = Particle();
-        auto ghostPos = a.getX();
-        ghostPos[direction] = position + (position - ghostPos[direction]);
-        ghostParticle.setX(ghostPos);
-        force_(a, ghostParticle);
-    };*/
-    return [&](Particle &a)
-    {
-        Particle ghostParticle = Particle();
-        auto ghostPos = a.getX();
-        ghostPos[direction] = position + (position - ghostPos[direction]);
-        ghostParticle.setX(ghostPos);
-        force_(a, ghostParticle);
+        unsigned int cellIndex= translate3DIndTo1D(x,y,z);
+        auto &cell = cells.at(cellIndex);
+        for(auto &p:cell) {
+            Particle ghostParticle = Particle();
+            auto ghostPos = p.getX();
+            ghostPos[direction] = position + (position - ghostPos[direction]);
+            ghostParticle.setX(ghostPos);
+            force_(p, ghostParticle);
+        }
     };
 }
 
-std::function<void(Particle &)> createOutflowLambdaHalo(int direction, int position){
-    
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createOutflowLambdaHalo(){
+    return [&](uint32_t x, uint32_t y, uint32_t z){
+        unsigned int _1DIndex = translate3DIndTo1D(x,y,z);
+        std::cout<<"Deleting the particles in the cell at "<<_1DIndex<<"\n";
+        cells.at(_1DIndex).clear();
+    };
 }
 
 std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position) {
