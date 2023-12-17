@@ -117,7 +117,7 @@ int main(int argc, char *const argv[])
 		return 0;
 	}
     //std::cout << "bis hier ok2\n";
-    //std::cout << params.containerType << std::endl;
+    std::cout << "Container type: " << params.containerType << std::endl;
     if (true) {
         std::cout << "Linked Cells!\n";
         ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);

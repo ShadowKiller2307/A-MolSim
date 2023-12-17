@@ -13,7 +13,7 @@ std::function<void(Particle &a, Particle &b)> LennJon::innerPairs()
 			double pow12 = 2 * std::pow(pow6, 2);
 			double middle = (pow6 - pow12);
 			auto force = (first * middle) * diff;
-            std::cout << "Force: " << force << std::endl;
+            //std::cout << "Force: " << force << std::endl;
 			a.addF(force);
 			force = -1 * force;
 			b.addF(force); });

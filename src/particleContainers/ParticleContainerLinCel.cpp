@@ -121,7 +121,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                std::cout << "right cell\n";
+                               // std::cout << "right cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -134,7 +134,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                std::cout << "upper cell\n";
+                             //   std::cout << "upper cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -147,7 +147,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                std::cout << "right upper cell\n";
+                               // std::cout << "right upper cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -160,7 +160,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                std::cout << "left upper cell\n";
+                             //   std::cout << "left upper cell\n";
                                 f(ppi, ppj);
                             }
                         }
@@ -347,7 +347,7 @@ void ParticleContainerLinCel::calculatePosition() {
             for (uint32_t z = 0; z < cellsZ; ++z)
             {
                cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-               std::vector<unsigned int> indexesToDelete;
+               //std::vector<unsigned int> indexesToDelete;
                 for (unsigned int i = 0; i < currentCell.size(); ++i) {
                     Particle &particle = currentCell.at(i);
                     std::array<double, 3> force = particle.getF();
@@ -362,24 +362,19 @@ void ParticleContainerLinCel::calculatePosition() {
                     else
                     {
                         // the particle has to move to a new cell
+                        //std::cout <<"erasing particle\n";
                         particle.setX(newPosition);
+                        addBack.emplace_back(particle);
                         currentCell.erase(currentCell.begin() + i);
                         --i;
-                        //indexesToDelete.emplace_back(i);
-                    /*    Particle temp = *it;
-                        cells.at(beforeCellIndex).erase(it);
-                        (*it).setX(newPosition);
-                        addBack.push_back(temp);*/
                     }
                 }
-               /* for (unsigned int i = 0; i < indexesToDelete.size(); ++i) {
-
-                }*/
             }
         }
     }
     // add all particles from addback to the cells
     for (unsigned int i = 0; i < addBack.size(); ++i) {
+       // std::cout << "adding particles back\n";
         cells.at(translate3DPosTo1D(addBack.at(i).getX())).emplace_back(addBack.at(i));
     }
     iterHalo();
@@ -397,7 +392,13 @@ std::vector<std::vector<Particle>> ParticleContainerLinCel::getCells()
 
 size_t ParticleContainerLinCel::getAmountOfParticles()
 {
-    return particles_.size();
+    unsigned int acc;
+    for (auto &cell : cells) {
+        for (auto &p : cell) {
+            acc++;
+        }
+    }
+    return acc;
 }
 
 void ParticleContainerLinCel::calculateForces()
@@ -527,10 +528,19 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles() {
 
 void ParticleContainerLinCel::simulateParticles2() {
     auto begin = std::chrono::high_resolution_clock::now();
+    iteration_ = 0;
     //this->cells;
     while (startTime_ < endTime_)
     {
-        std::cout << "Richtige simulation!\n";
+        if (iteration_ == 0) {
+            std::cout << "Anzahl Partikel iteration 0: " << getAmountOfParticles() << std::endl;
+            std::cout << "Anzahl cells iter 0 " << getAmountOfCells() << std::endl;
+        }
+        if (iteration_ == 1) {
+            std::cout << "Anzahl Partikel iteration 1: " << getAmountOfParticles() << std::endl;
+            std::cout << "Anzahl cells iter 1 " << getAmountOfCells() << std::endl;
+        }
+       // std::cout << "Richtige simulation!\n";
         std::vector<Particle> allParticles;
         allParticles.clear();
         for (auto &cell : cells) {
@@ -540,30 +550,10 @@ void ParticleContainerLinCel::simulateParticles2() {
         }
         /*if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
         {*/
-        outManager_->plotParticles2(allParticles, iteration_);
-        //}
-        if (iteration_ % 100 == 0)
-        {
-            LogManager::infoLog("Iteration {} finished. ({}%)", iteration_, std::round(iteration_ * 10000 / (endTime_ / deltaT_)) / 100);
-            if (iteration_)
-            {
-                auto end = std::chrono::high_resolution_clock::now();
-                size_t diff = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
-                auto remainig = (static_cast<double>(diff) / iteration_) * (endTime_ - startTime_) / deltaT_;
-                std::string min, sec;
-                if (remainig > 60)
-                {
-                    min = std::to_string(static_cast<int>(remainig / 60)) + "m, ";
-                    remainig = std::fmod(remainig, 60);
-                }
-                else
-                {
-                    min = "0m, ";
-                }
-                sec = std::to_string(static_cast<int>(remainig)) + "s   \r";
-                std::cout << "ETA: " << min << sec << std::flush;
-            }
+        if (iteration_ % 100 == 0) {
+            outManager_->plotParticles2(allParticles, iteration_);
         }
+        //}
        /* std::cout << "bis hier ok 4\n";
 
         std::cout << "richtiges simulateParticles\n";*/
