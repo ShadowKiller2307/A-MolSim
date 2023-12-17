@@ -529,7 +529,6 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles() {
 void ParticleContainerLinCel::simulateParticles2() {
     auto begin = std::chrono::high_resolution_clock::now();
     iteration_ = 0;
-    //this->cells;
     while (startTime_ < endTime_)
     {
         if (iteration_ == 0) {

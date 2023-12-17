@@ -5,8 +5,16 @@
 #include "boundaryConditions/Outflow.h"
 #include "boundaryConditions/Reflecting.h"
 
+
+enum class BoundaryCondition2 {
+    Reflecting2,
+    Periodic2,
+    Outflow2
+};
+
 class ParticleContainerLinCel : public ParticleContainer
 {
+
 private:
     using cell = std::vector<Particle>;
     std::vector<cell> cells;
