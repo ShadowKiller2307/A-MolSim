@@ -103,6 +103,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
 
 void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Particle &, Particle &)> &f)
 {
+   // std::cout << "iterOverInnerPairs begin\n";
     //std::cout << "iterOverInnerPairs begin\n";
     for (uint32_t x = 1; x < cellsX - 1; ++x)
     {
@@ -180,7 +181,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
             }
         }
     }
-    //std::cout << "iterOverInnerPairs end\n";
+   // std::cout << "iterOverInnerPairs end\n";
 }
 
 void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
@@ -216,6 +217,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  */
 void ParticleContainerLinCel::iterBoundary()
 {
+  //  std::cout << "iterbounndary begin\n";
     //std::cout << "iterBoundaries begin\n";
     for (uint32_t z = 1; z < cellsZ - 1; ++z)
     {
@@ -300,7 +302,7 @@ void ParticleContainerLinCel::iterBoundary()
             }
         }
     }
-    //std::cout << "iterBoundaries end\n";
+  //  std::cout << "iterBoundaries end\n";
 }
 
 void ParticleContainerLinCel::iterHalo() {
@@ -338,8 +340,9 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
 }
 
 void ParticleContainerLinCel::calculatePosition() {
-   // std::cout << "Richtiges calculatePosition\n";
+    //std::cout << "calculatePosition begin\n";
     std::vector<Particle> addBack;
+    addBack.clear();
     for (uint32_t x = 0; x < cellsX; ++x)
     {
         for (uint32_t y = 0; y < cellsY; ++y)
@@ -373,11 +376,20 @@ void ParticleContainerLinCel::calculatePosition() {
         }
     }
     // add all particles from addback to the cells
-    for (unsigned int i = 0; i < addBack.size(); ++i) {
+    for (auto & i : addBack) {
        // std::cout << "adding particles back\n";
-        cells.at(translate3DPosTo1D(addBack.at(i).getX())).emplace_back(addBack.at(i));
+       if ((translate3DPosTo1D(i.getX())) >= cells.size()) {
+            continue;
+        }
+       /* std::cout << "addBack begin: \n";
+        std::cout << "Velocity :" << i.getV() << std::endl;
+        std::cout << "Force :" << i.getF() << std::endl;
+        std::cout << "Position :" << i.getX() << std::endl;*/
+        cells.at(translate3DPosTo1D(i.getX())).emplace_back(i);
+        //std::cout << "addBack end: \n";
     }
     iterHalo();
+    //std::cout << "calculatePosition end\n";
 }
 
 unsigned int ParticleContainerLinCel::getAmountOfCells() const
@@ -392,7 +404,7 @@ std::vector<std::vector<Particle>> ParticleContainerLinCel::getCells()
 
 size_t ParticleContainerLinCel::getAmountOfParticles()
 {
-    unsigned int acc;
+    unsigned int acc = 0;
     for (auto &cell : cells) {
         for (auto &p : cell) {
             acc++;
@@ -438,6 +450,7 @@ unsigned int ParticleContainerLinCel::translate3DIndTo1D(unsigned int x, unsigne
 
 unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> position) const
 {
+   // std::cout<<"translate3DPosTo1D begin \n";
     unsigned int xIndex;
     unsigned int yIndex;
     unsigned int zIndex;
@@ -469,6 +482,7 @@ unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> p
         zIndex = 0;
     }
     unsigned int index = xIndex + cellsX * yIndex + cellsX * cellsY * zIndex;
+   // std::cout<<"translate3DPosTo1D end, index = "<<index<<"\n";
     return index;
 }
 
@@ -549,7 +563,7 @@ void ParticleContainerLinCel::simulateParticles2() {
         }
         /*if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
         {*/
-        if (iteration_ % 100 == 0) {
+        if (iteration_ % 10 == 0) {
             outManager_->plotParticles2(allParticles, iteration_);
         }
         //}
@@ -558,7 +572,6 @@ void ParticleContainerLinCel::simulateParticles2() {
         std::cout << "richtiges simulateParticles\n";*/
         // calculate new x
         calculatePosition();
-        // std::cout << "bis hier ok: nach calculatePosition\n";
         // calculate new f
         calculateForces();
         // calculate new v

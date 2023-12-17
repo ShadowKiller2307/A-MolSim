@@ -27,9 +27,10 @@ void ParticleContainer::calculateForces()
 
 void ParticleContainer::calculateVelocity()
 {
-	for (size_t i = 0; i < particles_.size(); i++)
+   // std::cout << "calculateVelocity begin: \n";
+	for (auto & particle : particles_)
 	{
-		Particle &p = *particles_.at(i);
+		Particle &p = *particle;
 		double factor = deltaT_ / (2 * p.getM());
 		std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
 		sumOfForces = factor * sumOfForces;
@@ -39,13 +40,14 @@ void ParticleContainer::calculateVelocity()
 		// ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
 		p.setV(newVelocity);
 	}
+   // std::cout << "calculateVelocity end: \n";
 }
 
 void ParticleContainer::calculatePosition()
 {
-	for (size_t i = 0; i < particles_.size(); i++)
+	for (auto & particle : particles_)
 	{
-		Particle &p = *particles_.at(i);
+		Particle &p = *particle;
 		std::array<double, 3> force = p.getF();
 		double factor = std::pow(deltaT_, 2) / (2 * p.getM());
 		force = factor * force;
