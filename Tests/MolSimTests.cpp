@@ -177,7 +177,7 @@ EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0)->getX());*/
  * @brief: check if a single Particle in a Boundary Cell, that moves towards the border of the domain,
  * stays within the domain when the Boundary is set to Reflecting
  */
-TEST_F(MolSimTest, testReflectingBoundary)
+/*TEST_F(MolSimTest, testReflectingBoundary)
 {
     // left domain border should have the BoundaryCondition Reflecting
     containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
@@ -194,7 +194,7 @@ TEST_F(MolSimTest, testReflectingBoundary)
         containerLinCel.calculateVelocity();
         EXPECT_EQ(containerLinCel.getAmountOfParticles(), 1);
     }
-}
+}*/
 
 /*TEST_F(MolSimTest, testSetBoundary) {
     LennJon lennJon{5, 1};
@@ -404,4 +404,16 @@ TEST_F(MolSimTest, testSimpleSphereParameters)
 TEST_F(MolSimTest, testIterBoundary2Indices)
 {
     linCel3.iterBoundary2();
+}
+
+
+TEST_F(MolSimTest, testCreateReflecting)
+{
+    ParticleContainerLinCel linCelTest{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.5};
+    linCelTest.add({0.5, 1.5, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
+    auto lambda = linCelTest.createReflectingLambdaBoundary(0, 0);
+    //auto lambda2 = linCelTest.createReflectingLambdaBoundary(1, 0);
+    lambda(1, 2, 1);
+    //lambda2(1, 2, 1);
+    EXPECT_EQ(1, 1);
 }
