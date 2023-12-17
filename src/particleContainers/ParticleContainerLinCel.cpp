@@ -234,13 +234,13 @@ void ParticleContainerLinCel::iterBoundary()
         uint32_t &y = direction == 1 ? i : direction == 0 ? j
                                                           : k;
         uint32_t &z = direction == 2 ? i : k;
-        std::function<void(Particle &)> lambda;
+        std::function<void(uint32_t x, uint32_t y, uint32_t z)> lambda;
         for (i = 1; i < primaryDimension - 1; i += (primaryDimension - 3))
         {
             switch (conditions[direction + i == 1 ? 0 : 1])
             {
                 case BoundaryCondition::Outflow:
-                    lambda = [](Particle &a) {};
+                    lambda = [](uint32_t x, uint32_t y, uint32_t z) {};
                     break;
                 case BoundaryCondition::Reflecting:
                     lambda = createReflectingLambdaBoundary(0, domainSize_[direction + i == 1 ? 0 : 1]);
@@ -252,12 +252,7 @@ void ParticleContainerLinCel::iterBoundary()
             {
                 for (k = 1; k < secondaryDimension2 - 1; ++k)
                 {
-                    auto &c = cells.at(translate3DIndTo1D(x, y, z));
-                    std::cout << x << ", " << y << ", " << z << ", " << std::endl;
-                    for (auto &p : c)
-                    {
-                        lambda(p);
-                    }
+                    lambda(x, y, z);
                 }
             }
         }
@@ -289,6 +284,14 @@ std::function<void(Particle &)> ParticleContainerLinCel::createReflectingLambdaB
 
 std::function<void(Particle &)> createOutflowLambdaHalo(int direction, int position){
     
+}
+
+std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position) {
+    return std::function<void(Particle &)>();
+}
+
+std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaHalo(int direction, int position) {
+    return std::function<void(Particle &)>();
 }
 
 
@@ -573,6 +576,7 @@ void ParticleContainerLinCel::simulateParticles2()
         // calculate new v
         calculateVelocity();
 
+        std::cout << "Iteration: " << iteration_ << std::endl;
         iteration_++;
         startTime_ += deltaT_;
     }
