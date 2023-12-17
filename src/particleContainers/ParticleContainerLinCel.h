@@ -1,15 +1,12 @@
 #pragma once
 #include "particleContainers/ParticleContainer.h"
-#include "boundaryConditions/BoundaryCondition.h"
 #include "forces/Force.h"
-#include "boundaryConditions/Outflow.h"
-#include "boundaryConditions/Reflecting.h"
 
-enum class BoundaryCondition2
+enum class BoundaryCondition
 {
-    Reflecting2,
-    Periodic2,
-    Outflow2
+    Reflecting,
+    Periodic,
+    Outflow
 };
 
 class ParticleContainerLinCel : public ParticleContainer
@@ -18,10 +15,8 @@ class ParticleContainerLinCel : public ParticleContainer
 private:
     using cell = std::vector<Particle>;
     std::vector<cell> cells;
-    std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
-    std::vector<BoundaryCondition2> conditions2;
-    std::vector<Reflecting> reflectingBounds;
-    std::vector<Outflow> outflowBounds;
+    //std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
+    std::vector<BoundaryCondition> conditions;
     bool upperModulo = false;
     bool rightModulo = false;
     bool depthModulo = false;
@@ -48,7 +43,10 @@ private:
     // only needed for the 3D case
     uint32_t cellsZ = 0;
     void buildLookUp();
-    std::function<void(Particle &)> createReflectingLambda(int direction, int position);
+    std::function<void(Particle &)> createReflectingLambdaBoundary(int direction, int position);
+    std::function<void(Particle &)> createPeriodicLambdaBoundary(int direction, int position);
+    std::function<void(Particle &)> createOutflowLambdaHalo(int direction, int position);
+    std::function<void(Particle &)> createPeriodicLambdaHalo(int direction, int position);
 
 public:
     bool cellPointerNeedUpdate;
@@ -107,8 +105,6 @@ public:
      * @return void
      */
     void iterBoundary();
-
-    void iterBoundary2();
 
     /**
      * @brief iterate over the particles which are currectly located in the halo zone and
@@ -179,8 +175,6 @@ public:
     double calculateKinEnergy();
 
     double calculateTemperature();
-
-    bool affectsForce(int index);
 
     std::vector<Particle> getAllParticles();
     // std::vector<BoundaryCondition> getBounds();

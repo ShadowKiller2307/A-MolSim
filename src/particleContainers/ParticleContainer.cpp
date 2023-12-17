@@ -1,7 +1,5 @@
 #include "particleContainers/ParticleContainer.h"
-#include "boundaryConditions/Reflecting.h"
 #include "logOutputManager/LogManager.h"
-#include "boundaryConditions/Outflow.h"
 #include "forces/LennJon.h"
 #include <iostream>
 #include <iomanip>

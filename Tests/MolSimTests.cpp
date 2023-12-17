@@ -15,10 +15,6 @@
 #include "../src/particleContainers/ParticleContainer.h"
 #include "../src/particleContainers/ParticleContainerDirSum.h"
 #include "../src/particleContainers/ParticleContainerLinCel.h"
-#include "../src/boundaryConditions/BoundaryCondition.h"
-#include "../src/boundaryConditions/Outflow.h"
-#include "../src/boundaryConditions/Reflecting.h"
-
 // Difference ASSERT vs EXPECT macros
 // ASSERT -> fatal failures
 // EXPECT -> nonfatal failures

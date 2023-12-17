@@ -1,6 +1,4 @@
 #include "particleContainers/ParticleContainerLinCel.h"
-#include "boundaryConditions/Reflecting.h"
-#include "boundaryConditions/Outflow.h"
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 #include <array>
@@ -38,18 +36,15 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         // std::unique_ptr<BoundaryCondition> temp;
         if (c == 'r')
         {
-            // reflectingBounds.emplace_back(pos, dir, f);
-            conditions_.emplace_back(std::make_unique<Reflecting>((reflectingBounds.emplace_back(pos, dir, f, domainSize_))));
-            conditions2.push_back(BoundaryCondition2::Reflecting2);
+            conditions.push_back(BoundaryCondition::Reflecting);
         }
         else if (c == 'o')
         {
-            conditions2.push_back(BoundaryCondition2::Outflow2);
-            conditions_.emplace_back(std::make_unique<Outflow>((outflowBounds.emplace_back(pos, dir, f, domainSize_))));
+            conditions.push_back(BoundaryCondition::Outflow);
         }
         else if (c == 'p')
         {
-            conditions2.push_back(BoundaryCondition2::Periodic2);
+            conditions.push_back(BoundaryCondition::Periodic);
         }
         else
         {
@@ -232,111 +227,6 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  */
 void ParticleContainerLinCel::iterBoundary()
 {
-    // std::cout << "iterBoundaries begin\n";
-    for (uint32_t z = 1; z < cellsZ - 1; ++z)
-    {
-        if (z == 1)
-        {
-            if (conditions_[4]->affectsForce())
-            {
-                for (uint32_t x = 1; x < cellsX - 1; ++x)
-                {
-                    for (uint32_t y = 1; y < cellsY - 1; ++y)
-                    {
-                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                        for (auto ppi : currentCell)
-                        {
-                            conditions_[4]->applyBoundCondition(ppi);
-                        }
-                    }
-                }
-            }
-        }
-        if (z == cellsZ - 2)
-        {
-            if (conditions_[5]->affectsForce())
-            {
-                for (uint32_t x = 1; x < cellsX - 1; ++x)
-                {
-                    for (uint32_t y = 1; y < cellsY - 1; ++y)
-                    {
-                        cell &currentCell = cells.at(translate3DIndTo1D(x, y, z));
-                        for (auto ppi : currentCell)
-                        {
-                            conditions_[5]->applyBoundCondition(ppi);
-                        }
-                    }
-                }
-            }
-        }
-        // iterate over the outer ring of inner cells for each inner z index
-        //  from down left corner to down right corner
-        if (conditions_[2]->affectsForce())
-        {
-            for (uint32_t x = 1; x < cellsX - 1; ++x)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
-                for (auto ppi : currentCell)
-                {
-                    conditions_[2]->applyBoundCondition(ppi);
-                }
-            }
-        }
-        // from down right corner to top right corner
-        if (conditions_[1]->affectsForce())
-        {
-            for (uint32_t y = 1; y < cellsY - 1; ++y)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
-                for (auto ppi : currentCell)
-                {
-                    conditions_[1]->applyBoundCondition(ppi);
-                }
-            }
-        }
-        if (conditions_[3]->affectsForce())
-        {
-            // from top right corner to top left corner
-
-            for (uint32_t x = cellsX - 2; x > 0; --x)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
-                for (auto ppi : currentCell)
-                {
-                    conditions_[3]->applyBoundCondition(ppi);
-                }
-            }
-        }
-        // from top left corner to down left corner
-        if (conditions_[0]->affectsForce())
-        {
-            for (uint32_t y = cellsY - 2; y > 0; --y)
-            {
-                cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
-                for (auto &ppi : currentCell)
-                {
-                    conditions_[0]->applyBoundCondition(ppi);
-                }
-            }
-        }
-    }
-    // std::cout << "iterBoundaries end\n";
-}
-
-std::function<void(Particle &)> ParticleContainerLinCel::createReflectingLambda(int direction, int position)
-{
-    return [&](Particle &a)
-    {
-        Particle ghostParticle = Particle();
-        auto ghostPos = a.getX();
-        ghostPos[direction] = position + (position - ghostPos[direction]);
-        ghostParticle.setX(ghostPos);
-        force_(a, ghostParticle);
-    };
-}
-
-void ParticleContainerLinCel::iterBoundary2()
-{
     auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
         uint32_t i, j, k;
@@ -347,16 +237,16 @@ void ParticleContainerLinCel::iterBoundary2()
         std::function<void(Particle &)> lambda;
         for (i = 1; i < primaryDimension - 1; i += (primaryDimension - 3))
         {
-            switch (conditions2[direction + i == 1 ? 0 : 1])
+            switch (conditions[direction + i == 1 ? 0 : 1])
             {
-            case BoundaryCondition2::Outflow2:
-                lambda = [](Particle &a) {};
-                break;
-            case BoundaryCondition2::Reflecting2:
-                lambda = createReflectingLambda(0, domainSize_[direction + i == 1 ? 0 : 1]);
-                break;
-            case BoundaryCondition2::Periodic2:
-                break;
+                case BoundaryCondition::Outflow:
+                    lambda = [](Particle &a) {};
+                    break;
+                case BoundaryCondition::Reflecting:
+                    lambda = createReflectingLambdaBoundary(0, domainSize_[direction + i == 1 ? 0 : 1]);
+                    break;
+                case BoundaryCondition::Periodic:
+                    break;
             }
             for (j = 1; j < secondaryDimension1 - 1; ++j)
             {
@@ -376,6 +266,31 @@ void ParticleContainerLinCel::iterBoundary2()
     calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
     calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
 }
+
+std::function<void(Particle &)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
+{
+   /* return [&](uint32_t x, uint32_t y, uint32_t z)
+    {
+        Particle ghostParticle = Particle();
+        auto ghostPos = a.getX();
+        ghostPos[direction] = position + (position - ghostPos[direction]);
+        ghostParticle.setX(ghostPos);
+        force_(a, ghostParticle);
+    };*/
+    return [&](Particle &a)
+    {
+        Particle ghostParticle = Particle();
+        auto ghostPos = a.getX();
+        ghostPos[direction] = position + (position - ghostPos[direction]);
+        ghostParticle.setX(ghostPos);
+        force_(a, ghostParticle);
+    };
+}
+
+std::function<void(Particle &)> createOutflowLambdaHalo(int direction, int position){
+    
+}
+
 
 void ParticleContainerLinCel::iterHalo()
 {
@@ -599,15 +514,6 @@ double ParticleContainerLinCel::calculateTemperature()
 {
     auto numberofDimensions = 3;
     return calculateKinEnergy() / getAmountOfParticles() * 2.0 / numberofDimensions;
-}
-
-bool ParticleContainerLinCel::affectsForce(int index)
-{
-    if (index < 0 || index >= 6)
-    {
-        return false;
-    }
-    return conditions_.at(index).get()->affectsForce();
 }
 
 std::vector<Particle> ParticleContainerLinCel::getAllParticles()
