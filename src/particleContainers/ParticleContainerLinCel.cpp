@@ -196,7 +196,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                 }
         }
     }
-    // std::cout << "iterOverInnerPairs end\n";
+    
 }
 
 void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
