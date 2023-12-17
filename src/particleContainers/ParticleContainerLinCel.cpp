@@ -2,7 +2,7 @@
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 #include <array>
-#include <memory>
+
 
 /**
  * "rrrrrr"
@@ -10,15 +10,11 @@
  * "pppppp"
  */
 
-// enum class BoundaryCondition2 {
-//     Reflecting2,
-//     Periodic2,
-//     Outflow2
-// };
+
 
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency)
 {
-    // std::cout << "Constructor begin\n";
+
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
     if (bounds.length() < 6)
@@ -33,7 +29,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         const double pos = i % 2 == 0 ? 0.0 : domainSize[i / 2];
         const int dir = i / 2;
         auto f = force_; // TODO: lennJon.innerPairs() at the moment, replace back with boundaryPairs later //.boundaryPairs();
-        // std::unique_ptr<BoundaryCondition> temp;
+
         if (c == 'r')
         {
             conditions.push_back(BoundaryCondition::Reflecting);
@@ -222,6 +218,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
  */
 void ParticleContainerLinCel::iterBoundary()
 {
+    //std::cout << "iterBoundary begin\n";
     auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
         uint32_t i, j, k;
@@ -252,14 +249,18 @@ void ParticleContainerLinCel::iterBoundary()
             }
         }
     };
+   // std::cout << "iterBoundary0 end\n";
     calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
+   // std::cout << "iterBoundary1 end\n";
     calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
-    calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
+   // std::cout << "iterBoundary2 end\n";
+  //  calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
+  //  std::cout << "iterBoundary3 end\n";
 }
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
 {
-
+  // std::cout << "create reflecting start: "<< std::endl;
     return [&](uint32_t x, uint32_t y, uint32_t z)
     {
         unsigned int cellIndex= translate3DIndTo1D(x,y,z);
@@ -271,13 +272,14 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             ghostParticle.setX(ghostPos);
             force_(p, ghostParticle);
         }
+
     };
 }
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createOutflowLambdaHalo(){
     return [&](uint32_t x, uint32_t y, uint32_t z){
         unsigned int _1DIndex = translate3DIndTo1D(x,y,z);
-        std::cout<<"Deleting the particles in the cell at "<<_1DIndex<<"\n";
+       // std::cout<<"Deleting the particles in the cell at "<<_1DIndex<<"\n";
         cells.at(_1DIndex).clear();
     };
 }
@@ -293,6 +295,7 @@ std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaHal
 
 void ParticleContainerLinCel::iterHalo()
 {
+    //std::cout << "iterHalo begin\n";
     auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
         uint32_t i, j, k;
@@ -306,7 +309,7 @@ void ParticleContainerLinCel::iterHalo()
             switch (conditions[direction + i == 1 ? 0 : 1])
             {
                 case BoundaryCondition::Outflow:
-                    lambda /*delete Lambda*/;
+                    lambda = createOutflowLambdaHalo();
                     break;
                 case BoundaryCondition::Reflecting:
                     lambda = [](uint32_t x, uint32_t y, uint32_t z) {}; // do nothing
@@ -327,20 +330,7 @@ void ParticleContainerLinCel::iterHalo()
     calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
     calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
     calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
-}
-
-void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
-{
-    if (x_arg[0] >= 0 && x_arg[0] <= domainSize_[0] && // in x bounds
-        x_arg[1] >= 0 && x_arg[1] <= domainSize_[1] && // in y bounds
-        x_arg[2] >= 0 && x_arg[2] <= domainSize_[2])   // in z bounds
-    {
-        /*auto particle = new Particle(x_arg, v_arg, mass, type);
-        // add the particle
-        particles_.push_back(particle);*/
-        // compute the cell to which the particle will be added
-        cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
-    }
+    //std::cout << "iterHalo end\n";
 }
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
@@ -559,6 +549,7 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles()
             returnVector.emplace_back(i);
         }
     }
+    return returnVector;
 }
 
 void ParticleContainerLinCel::simulateParticles2()

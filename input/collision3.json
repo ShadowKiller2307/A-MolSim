@@ -2,9 +2,9 @@
   "params":{
     "numParticles": 2,
     "deltaT": 0.0002,
-    "endTime": 0.1,
+    "endTime": 5,
     "containerType": "LinCel",
-    "boundaries": "oooooo",
+    "boundaries": "rrrrrr",
     "cutoffRadius": 3.0,
     "domainSize": [120, 60, 1]
   },
