@@ -48,7 +48,7 @@ private:
     // only needed for the 3D case
     uint32_t cellsZ = 0;
     void buildLookUp();
-    std::function<void(Particle &)> createPeriodicLambda(int direction, int position);
+    std::function<void(Particle &)> createReflectingLambda(int direction, int position);
 
 public:
     bool cellPointerNeedUpdate;

@@ -50,6 +50,7 @@ protected:
     ParticleContainerDirSum containerDirSum2{0.5, 1, 1, gravPot1.innerPairs()};
     ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrro", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
     ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", lennJon, 1.5};
+    ParticleContainerLinCel linCel3{0.5, 1, 1, {5.0, 5.0, 5.0}, "oooooo", lennJon, 1.0};
     GravPot gravPot{};
     ParticleContainer *containerCuboid;
     particleGenerator generator{};
@@ -63,7 +64,6 @@ TEST_F(MolSimTest, testGetParticles)
 {
     EXPECT_EQ(3, containerDirSum.getParticles().size());
 }
-
 
 /**
  * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid method was
@@ -117,9 +117,7 @@ TEST_F(MolSimTest, testGetParticles)
     EXPECT_EQ(1.0, containerCuboid->getParticles().at(16).getM());
 }*/
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 /*
  * std::array<double, 3> domainSize{3.0, 3.0, 1.0};
@@ -127,18 +125,19 @@ TEST_F(MolSimTest, testGetParticles)
  * ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrrr", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
  */
 
-TEST_F(MolSimTest, testPositionIndexTranslation) {
+TEST_F(MolSimTest, testPositionIndexTranslation)
+{
     std::array<double, 3> pos = {0.5, 0.5, 0};
     EXPECT_EQ(31, containerLinCel.translate3DPosTo1D(pos));
     std::array<double, 3> pos2 = {-0.5, -0.5, 0};
     EXPECT_EQ(25, containerLinCel.translate3DPosTo1D(pos2));
 }
 
-TEST_F(MolSimTest, test3DIndexTo1DIndexTranslation) {
+TEST_F(MolSimTest, test3DIndexTo1DIndexTranslation)
+{
     int index = containerLinCel.translate3DIndTo1D(0, 0, 0);
     EXPECT_EQ(0, index);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -167,13 +166,15 @@ TEST_F(MolSimTest, test3DIndexTo1DIndexTranslation) {
         }
     }
 
-   *//* EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0)->getX());
-    test = {0.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0)->getX());
-    test = {1.5, 0.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0)->getX());
-    test = {1.5, 1.5, 0.0};
-    EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0)->getX());*//*
+   */
+/* EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0)->getX());
+test = {0.5, 1.5, 0.0};
+EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0)->getX());
+test = {1.5, 0.5, 0.0};
+EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0)->getX());
+test = {1.5, 1.5, 0.0};
+EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0)->getX());*/
+/*
 }*/
 
 /**
@@ -208,12 +209,11 @@ TEST_F(MolSimTest, testReflectingBoundary)
     }
 
     EXPECT_EQ(test_1.getBounds().at(0)->affectsForce(), true);
-    *//*ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oroooo", lennJon, 1.0};
-    ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oorooo", lennJon, 1.0};*//*
+    */
+/*ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oroooo", lennJon, 1.0};
+ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oorooo", lennJon, 1.0};*/
+/*
 }*/
-
-
-
 
 /**
  * @brief: check force calculation for Lennard Jones for the Linked cells
@@ -225,8 +225,8 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     EXPECT_EQ(linCel2.getAmountOfCells(), 16);
     EXPECT_EQ(linCel2.getAmountOfParticles(), 3);
     // check against hardcoded values
-    //different values than the direct sum container as the distance between the particle on the left and the particle on the right
-    //are bigger than the cutoff radius
+    // different values than the direct sum container as the distance between the particle on the left and the particle on the right
+    // are bigger than the cutoff radius
     std::array<double, 3> expectedValuesOne{-120, 0.0, 0.0};
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
     std::array<double, 3> expectedValuesThree{120, 0.0, 0.0};
@@ -240,12 +240,11 @@ TEST_F(MolSimTest, testForcesLinkedCells)
  *  gets deleted when leaving the cell if the Boundary is set to Overflow
  */
 
-
 TEST_F(MolSimTest, testOverflowBoundary)
 {
     // left domain border should have the BoundaryCondition Overflow
     ParticleContainerLinCel containerLinCel2{0.5, 1, 1, domainSize, "oooooo", lennJon, 1.0};
-    //containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
+    // containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
     for (int i = 0; i < 10; ++i)
     {
         // check whether the particle leaves the domain and gets deleted
@@ -258,8 +257,6 @@ TEST_F(MolSimTest, testOverflowBoundary)
     }
     EXPECT_EQ(containerLinCel2.getAmountOfParticles(), 0);
 }
-
-
 
 /**
  * @brief: Test the ForceV1Calculation against hard coded values
@@ -275,8 +272,6 @@ TEST_F(MolSimTest, testForceV1)
     EXPECT_EQ(containerDirSum2.getParticles().at(1)->getF(), expectedValuesTwo);
     EXPECT_EQ(containerDirSum2.getParticles().at(2)->getF(), expectedValuesThree);
 }
-
-
 
 /**
  * @brief: Test the LennardJonesForceCalculation against hard coded values
@@ -365,46 +360,49 @@ TEST_F(MolSimTest, testSimpleSimulationParameters)
     EXPECT_EQ(simulationConstructor.getDomainSize().at(2), 1);
 
     EXPECT_EQ(simulationConstructor.getContainerType(), "LinCel");
-    EXPECT_EQ(simulationConstructor.getBoundaries(),"Outflow");
-    EXPECT_EQ(simulationConstructor.getCutOffRadius(),3);
+    EXPECT_EQ(simulationConstructor.getBoundaries(), "Outflow");
+    EXPECT_EQ(simulationConstructor.getCutOffRadius(), 3);
 }
-///This test checks if the parameters of two spheres are retrieved correctly
-TEST_F(MolSimTest, testSimpleSphereParameters){
+/// This test checks if the parameters of two spheres are retrieved correctly
+TEST_F(MolSimTest, testSimpleSphereParameters)
+{
     std::string path = "../../Tests/xmlTestInput/simpleSphere.xml";
 
     XMLReader xmlReader(path);
 
     xmlReader.extractSphere();
 
-    EXPECT_EQ(xmlReader.getSphereConstructors().size(),2);
+    EXPECT_EQ(xmlReader.getSphereConstructors().size(), 2);
 
     SphereConstructor sphereConstructor = xmlReader.getSphereConstructors().at(0);
     SphereConstructor sphereConstructor1 = xmlReader.getSphereConstructors().at(1);
 
-    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(0),60);
-    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(1),25);
-    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(2),0);
+    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(0), 60);
+    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(1), 25);
+    EXPECT_EQ(sphereConstructor.getCenterCoordinates().at(2), 0);
 
-    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(0),0);
-    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(1),-10);
-    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(2),0);
+    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(0), 0);
+    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(1), -10);
+    EXPECT_EQ(sphereConstructor.getInitialVelocity().at(2), 0);
 
-    EXPECT_EQ(sphereConstructor.getRadius(),15);
-    EXPECT_EQ(sphereConstructor.getDistance(),1.1225);
-    EXPECT_EQ(sphereConstructor.getMass(),1.0);
+    EXPECT_EQ(sphereConstructor.getRadius(), 15);
+    EXPECT_EQ(sphereConstructor.getDistance(), 1.1225);
+    EXPECT_EQ(sphereConstructor.getMass(), 1.0);
 
-    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(0),90);
-    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(1),20);
-    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(2),0);
+    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(0), 90);
+    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(1), 20);
+    EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(2), 0);
 
-    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(0),0);
-    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(1),20);
-    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(2),0);
+    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(0), 0);
+    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(1), 20);
+    EXPECT_EQ(sphereConstructor1.getInitialVelocity().at(2), 0);
 
-    EXPECT_EQ(sphereConstructor1.getRadius(),19);
-    EXPECT_EQ(sphereConstructor1.getDistance(),1.1226);
-    EXPECT_EQ(sphereConstructor1.getMass(),1.0);
-
+    EXPECT_EQ(sphereConstructor1.getRadius(), 19);
+    EXPECT_EQ(sphereConstructor1.getDistance(), 1.1226);
+    EXPECT_EQ(sphereConstructor1.getMass(), 1.0);
 }
 
-
+TEST_F(MolSimTest, testIterBoundary2Indices)
+{
+    linCel3.iterBoundary2();
+}
