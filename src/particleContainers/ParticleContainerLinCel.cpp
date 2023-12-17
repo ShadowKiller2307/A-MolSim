@@ -18,7 +18,7 @@
 //     Outflow2
 // };
 
-ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
+ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency)
 {
     // std::cout << "Constructor begin\n";
     domainSize_ = domainSize;
@@ -34,7 +34,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         // 0, 120, 0, 50, 1, 0 for WS3
         const double pos = i % 2 == 0 ? 0.0 : domainSize[i / 2];
         const int dir = i / 2;
-        auto f = force.boundaryPairs();
+        auto f = force_; // TODO: lennJon.innerPairs() at the moment, replace back with boundaryPairs later //.boundaryPairs();
         // std::unique_ptr<BoundaryCondition> temp;
         if (c == 'r')
         {
@@ -115,105 +115,85 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
     {
         for (uint32_t y = 1; y < cellsY - 1; ++y)
         {
-            /*for (uint32_t z = 1; z < cellsZ - 1; ++z)
-            {*/
+             //   std::cout <<  "Aktueller Index: " << translate3DIndTo1D(x, y, 1) << std::endl;
                 cell &current = cells.at(translate3DIndTo1D(x, y, 1));
-                for (unsigned int i = 0; i < current.size(); i++)
+                for (unsigned int i = 0; i < current.size(); ++i)
                 {
                     // current cell
                     Particle &ppi = current.at(i);
                     for (size_t j = i + 1; j < current.size(); ++j)
                     {
                         Particle &ppj = current.at(j);
-                       // std::cout<<"ppi force before: "<<ppi.getF()<<"\n";
-                       // std::cout<<"ppj force before: " << ppj.getF() << "\n";
-                        f(ppi, ppj);
-                       // std::cout<<"ppi force after: "<<ppi.getF()<<"\n";
-                       // std::cout<<"ppj force after: " << ppj.getF() << "\n";
+                        calcF(ppi, ppj);
+
                     }
                     // right cell
                     if (x != cellsX - 2)
                     {
-                        for (auto &ppj : cells.at(translate3DIndTo1D(x + 1, y, 1)))
+                        auto &rightCell = cells.at(translate3DIndTo1D(x+1,y,1));
+                        for (auto &ppj : rightCell)
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                // std::cout << "right cell\n";
 
-                               // std::cout<<"ppi force before: "<<ppi.getF()<<"\n";
-                               // std::cout<<"ppj force before: " << ppj.getF() << "\n";
-                                f(ppi, ppj);
-                               // std::cout<<"ppi force after: "<<ppi.getF()<<"\n";
-                                //std::cout<<"ppj force after: " << ppj.getF() << "\n";
+                               //std::cout << "distance inner : " << ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) << std::endl;
+                                calcF(ppi, ppj);
 
+
+                            }
+                            else {
+                              //  std::cout << "distance outer : " << ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) << std::endl;
                             }
                         }
                     }
                     // upper cell
                     if (y != cellsY - 2)
+
                     {
-                        for (auto &ppj : cells.at(translate3DIndTo1D(x, y + 1, 1)))
+                        auto &upperCell = cells.at(translate3DIndTo1D(x,y+1,1));
+                        for (auto &ppj : upperCell)
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                //   std::cout << "upper cell\n";
-                               // std::cout<<"ppi force before: "<<ppi.getF()<<"\n";
-                               // std::cout<<"ppj force before: " << ppj.getF() << "\n";
-                                f(ppi, ppj);
-                               // std::cout<<"ppi force after: "<<ppi.getF()<<"\n";
-                               // std::cout<<"ppj force after: " << ppj.getF() << "\n";
+
+                                calcF(ppi, ppj);
+
                             }
                         }
                     }
                     // right upper cell
                     if ((x != cellsX - 2) && (y != cellsY - 2))
                     {
-                        for (auto &ppj : cells.at(translate3DIndTo1D(x + 1, y + 1, 1)))
+                        auto &rightUpperCell = cells.at(translate3DIndTo1D(x+1,y+1,1));
+                        for (auto &ppj : rightUpperCell)
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                // std::cout << "right upper cell\n";
-                                //std::cout<<"ppi force before: "<<ppi.getF()<<"\n";
-                                //std::cout<<"ppj force before: " << ppj.getF() << "\n";
-                                f(ppi, ppj);
-                                //std::cout<<"ppi force after: "<<ppi.getF()<<"\n";
-                                //std::cout<<"ppj force after: " << ppj.getF() << "\n";
+
+                                calcF(ppi, ppj);
+
                             }
                         }
                     }
                     // left upper cell
                     if ((x > 1) && (y != cellsY - 2))
                     {
-                        for (auto &ppj : cells.at(translate3DIndTo1D(x - 1, y + 1, 1)))
+                        auto &leftUpperCell = cells.at(translate3DIndTo1D(x-1,y+1,1));
+                        for (auto &ppj : leftUpperCell)
                         {
                             // check whether ppj is within the cutoff radius of ppi
                             if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                             {
-                                //   std::cout << "left upper cell\n";
-                                //std::cout<<"ppi force before: "<<ppi.getF()<<"\n";
-                                //std::cout<<"ppj force before: " << ppj.getF() << "\n";
-                                f(ppi, ppj);
-                                //std::cout<<"ppi force after: "<<ppi.getF()<<"\n";
-                                //std::cout<<"ppj force after: " << ppj.getF() << "\n";
+
+                                calcF(ppi, ppj);
+
                             }
                         }
                     }
-                    // TODO: expand implementation for 3D cases
-
-                    // z + 1
-
-                    // right cell
-
-                    // upper cell
-
-                    // right upper cell
-
-                    // left upper cell
                 }
-            //}
         }
     }
     // std::cout << "iterOverInnerPairs end\n";

@@ -125,7 +125,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 
 		if (containerType == "DirSum")
 		{
-			(*container) = new ParticleContainerDirSum(deltaT, endTime, writeFrequency, force.innerPairs());
+			(*container) = new ParticleContainerDirSum(deltaT, endTime, writeFrequency);
 		}
 		else
 		{
@@ -142,7 +142,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 
 			if (containerType == "LinCel")
 			{
-				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds, force,
+				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
 														   cutoffRadius);
 			}
 			else
@@ -185,8 +185,7 @@ void particleGenerator::instantiateTxt(ParticleContainer **container, const std:
 {
 	if (!(*container))
 	{
-		(*container) = new ParticleContainerDirSum(params.deltaT, params.endTime, params.writeFrequency,
-												   force.innerPairs());
+		(*container) = new ParticleContainerDirSum(params.deltaT, params.endTime, params.writeFrequency);
 	}
 	FileReader fr = FileReader();
 	auto actualPath = std::string("_.txt").compare(path) == 0 ? "../input/eingabe-sonne.txt" : path;
@@ -228,7 +227,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 	if (containerT == "LinCel")
 	{
 		(*container) = new ParticleContainerLinCel(delta_t,t_end,writeFrequency,domainSize,boundaries,
-                                                   force,cutOffRadius);
+                                                   cutOffRadius);
 
 		for (auto &cuboid : cuboidConst)
 		{
@@ -246,7 +245,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 		}
 	}
     else if(containerT == "DirSum"){
-        (*container) = new ParticleContainerDirSum(delta_t,t_end,writeFrequency,force.innerPairs());
+        (*container) = new ParticleContainerDirSum(delta_t,t_end,writeFrequency);
     }
     else{
         LogManager::errorLog("Type {} is not a valid type!",containerT);

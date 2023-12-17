@@ -17,7 +17,7 @@ protected:
 	std::vector<Particle *> particles_;
 	OutputManager *outManager_;
 	std::function<void(Particle &a, Particle &b)> force_;
-	ParticleContainer(double deltaT, double endTime, int writeFrequency, std::function<void(Particle &a, Particle &b)> f);
+	ParticleContainer(double deltaT, double endTime, int writeFrequency);
 
 public:
 	/**
@@ -72,6 +72,8 @@ public:
 	const double getDeltaT() const;
 
 	const double getEndTime() const;
+
+    void calcF(Particle &a, Particle &b);
 
 	~ParticleContainer();
 };

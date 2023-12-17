@@ -2,7 +2,7 @@
 #include "ParticleContainerDirSum.h"
 #include <iostream>
 
-ParticleContainerDirSum::ParticleContainerDirSum(double deltaT, double endTime, int writeFrequency, std::function<void(Particle &a, Particle &b)> f) : ParticleContainer(deltaT, endTime, writeFrequency, f)
+ParticleContainerDirSum::ParticleContainerDirSum(double deltaT, double endTime, int writeFrequency) : ParticleContainer(deltaT, endTime, writeFrequency)
 {
 }
 
@@ -19,8 +19,10 @@ void ParticleContainerDirSum::iterOverInnerPairs(const std::function<void(Partic
 		for (size_t j = i + 1; j < particles_.size(); ++j)
 		{
 			Particle &pj = *particles_.at(j);
-			f(pi, pj);
-		}
+			calcF(pi, pj);
+            std::cout << "force pi" << pi.getF() << std::endl;
+            std::cout << "force pj" << pj.getF() << std::endl;
+        }
 	}
 }
 

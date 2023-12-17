@@ -64,7 +64,7 @@ public:
      * @param force the force calulation which will be used in this container
      * @param cutoffRadius the cutoff radius according to the Linked Cell algorithm
      */
-    ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius);
+    ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, double cutoffRadius);
     /**
      * @brief destructor
      */

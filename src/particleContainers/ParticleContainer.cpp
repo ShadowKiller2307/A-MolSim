@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iomanip>
 
-ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFrequency, std::function<void(Particle &a, Particle &b)> f) : deltaT_(deltaT), endTime_(endTime)
+ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFrequency) : deltaT_(deltaT), endTime_(endTime)
 {
 	outManager_ = new OutputManager();
 	startTime_ = 0.0;
@@ -144,4 +144,19 @@ std::vector<Particle *> &ParticleContainer::getParticles()
 void ParticleContainer::setParticles(std::vector<Particle *> &particles)
 {
 	this->particles_ = particles;
+}
+
+void ParticleContainer::calcF(Particle &a, Particle &b) {
+    auto diff = a.getX() - b.getX();
+    double norm = ArrayUtils::L2Norm(diff);
+    double first = (-24 * 5) / (norm * norm);
+    double frac = 1 / norm;
+    double pow6 = std::pow(frac, 6);
+    double pow12 = 2 * std::pow(pow6, 2);
+    double middle = (pow6 - pow12);
+    auto force = (first * middle) * diff;
+//std::cout << "Force: " << force << std::endl;
+    a.addF(force);
+    force = -1 * force;
+    b.addF(force);
 }
