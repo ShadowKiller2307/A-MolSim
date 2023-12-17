@@ -5,8 +5,8 @@
 #include "boundaryConditions/Outflow.h"
 #include "boundaryConditions/Reflecting.h"
 
-
-enum class BoundaryCondition2 {
+enum class BoundaryCondition2
+{
     Reflecting2,
     Periodic2,
     Outflow2
@@ -19,6 +19,7 @@ private:
     using cell = std::vector<Particle>;
     std::vector<cell> cells;
     std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
+    std::vector<BoundaryCondition2> conditions2;
     std::vector<Reflecting> reflectingBounds;
     std::vector<Outflow> outflowBounds;
     bool upperModulo = false;
@@ -47,6 +48,7 @@ private:
     // only needed for the 3D case
     uint32_t cellsZ = 0;
     void buildLookUp();
+    std::function<void(Particle &)> createPeriodicLambda(int direction, int position);
 
 public:
     bool cellPointerNeedUpdate;
@@ -66,9 +68,9 @@ public:
     /**
      * @brief destructor
      */
-    ~ParticleContainerLinCel();
+    ~ParticleContainerLinCel() = default;
 
-    //void recalculateParticlesinCells();
+    // void recalculateParticlesinCells();
 
     void simulateParticles2();
 
@@ -84,7 +86,7 @@ public:
      */
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
-    //void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
+    // void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
@@ -107,7 +109,6 @@ public:
     void iterBoundary();
 
     void iterBoundary2();
-
 
     /**
      * @brief iterate over the particles which are currectly located in the halo zone and
