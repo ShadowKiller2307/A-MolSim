@@ -2,6 +2,7 @@
 #include "boundaryConditions/Reflecting.h"
 #include "logOutputManager/LogManager.h"
 #include "boundaryConditions/Outflow.h"
+#include "forces/LennJon.h"
 #include <iostream>
 #include <iomanip>
 
@@ -14,7 +15,8 @@ ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFre
 		outManager_->outputFiles = false;
 	}
 	outputEveryNIterations_ = writeFrequency;
-	force_ = f;
+    LennJon lennJon{5, 1};
+	force_ = lennJon.innerPairs();
 }
 
 /*void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
