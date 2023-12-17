@@ -363,7 +363,7 @@ void ParticleContainerLinCel::iterBoundary2()
                 for (k = 1; k < secondaryDimension2 - 1; ++k)
                 {
                     auto &c = cells.at(translate3DIndTo1D(x, y, z));
-                    std::cout << i << ", " << j << ", " << k << ", " << std::endl;
+                    std::cout << x << ", " << y << ", " << z << ", " << std::endl;
                     for (auto &p : c)
                     {
                         lambda(p);
