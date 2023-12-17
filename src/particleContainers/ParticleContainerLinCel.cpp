@@ -12,11 +12,11 @@
  * "pppppp"
  */
 
-/*enum class BoundaryCondition2 {
-    Reflecting2,
-    Periodic2,
-    Outflow2
-};*/
+//enum class BoundaryCondition2 {
+//    Reflecting2,
+//    Periodic2,
+//    Outflow2
+//};
 
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, Force &force, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency, force.innerPairs())
 {
