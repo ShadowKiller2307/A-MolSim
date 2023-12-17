@@ -340,6 +340,10 @@ void ParticleContainerLinCel::iterBoundary2()
     auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
         uint32_t i, j, k;
+        uint32_t &x = direction == 0 ? i : j;
+        uint32_t &y = direction == 1 ? i : direction == 0 ? j
+                                                          : k;
+        uint32_t &z = direction == 2 ? i : k;
         std::function<void(Particle &)> lambda;
         for (i = 1; i < primaryDimension - 1; i += (primaryDimension - 3))
         {
@@ -358,7 +362,7 @@ void ParticleContainerLinCel::iterBoundary2()
             {
                 for (k = 1; k < secondaryDimension2 - 1; ++k)
                 {
-                    auto &c = cells.at(translate3DIndTo1D(i, j, k));
+                    auto &c = cells.at(translate3DIndTo1D(x, y, z));
                     std::cout << i << ", " << j << ", " << k << ", " << std::endl;
                     for (auto &p : c)
                     {
@@ -611,7 +615,7 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles()
     std::vector<Particle> returnVector;
     for (auto &cell : cells)
     {
-        for (auto & i : cell)
+        for (auto &i : cell)
         {
             returnVector.emplace_back(i);
         }
@@ -622,7 +626,7 @@ void ParticleContainerLinCel::simulateParticles2()
 {
     auto begin = std::chrono::high_resolution_clock::now();
     iteration_ = 0;
- 
+
     while (startTime_ < endTime_)
     {
         if (iteration_ == 0)
