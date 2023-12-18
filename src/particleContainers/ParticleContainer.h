@@ -17,6 +17,8 @@ protected:
 	std::vector<Particle *> particles_;
 	OutputManager *outManager_;
 	std::function<void(Particle &a, Particle &b)> force_;
+    int epsilon = 5;
+    int omega = 1;
 	ParticleContainer(double deltaT, double endTime, int writeFrequency);
 
 public:

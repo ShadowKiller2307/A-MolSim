@@ -178,4 +178,6 @@ public:
 
     std::vector<Particle> getAllParticles();
     // std::vector<BoundaryCondition> getBounds();
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary2;
+    void createRefectingForce(uint32_t x, uint32_t y, uint32_t z, int direction, int position);
 };
