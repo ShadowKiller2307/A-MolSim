@@ -228,10 +228,10 @@ void ParticleContainerLinCel::iterBoundary2()
                // std::cout << "Passt!" << std::endl;
                 /*auto lambda = createReflectingLambdaBoundary(0,0);
                 lambda(x, 1, z);*/
-                createRefectingForce(x, 1, z, 0, 0);
+                createRefectingForce(x, 1, z, 1, 0);
             }
             else {
-                auto lambda = createPeriodicLambdaBoundary(0,0);
+                auto lambda = createPeriodicLambdaBoundary(1,0);
                 lambda(x, 1, z);
             }
         }
@@ -308,8 +308,8 @@ void ParticleContainerLinCel::createRefectingForce(uint32_t x, uint32_t y, uint3
         if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0/6)) {
             calcF(p, ghostParticle);
         }
-        std::cout << "ghostParticle pos: " << ghostParticle.getX() << std::endl;
-        std::cout << "particle force within createLambda: " << p.getF() << std::endl;
+      //  std::cout << "ghostParticle pos: " << ghostParticle.getX() << std::endl;
+      //  std::cout << "particle force within createLambda: " << p.getF() << std::endl;
     }
 }
 
@@ -725,8 +725,8 @@ void ParticleContainerLinCel::simulateParticles2()
         calculatePosition();
         // calculate new v
         calculateVelocity();
-       std::cout << "Position at iteration " << iteration_ << " " << getAllParticles().at(0).getX() << std::endl;
-       std::cout << "Force at iteration " << iteration_ << " " << getAllParticles().at(0).getF() << std::endl;
+   //    std::cout << "Position at iteration " << iteration_ << " " << getAllParticles().at(0).getX() << std::endl;
+   //    std::cout << "Force at iteration " << iteration_ << " " << getAllParticles().at(0).getF() << std::endl;
         iteration_++;
         startTime_ += deltaT_;
     }
