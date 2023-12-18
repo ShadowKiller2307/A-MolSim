@@ -417,3 +417,11 @@ TEST_F(MolSimTest, testCreateReflecting)
     //lambda2(1, 2, 1);
     EXPECT_EQ(1, 1);
 }
+
+TEST_F(MolSimTest, testReflectingOneParticle) {
+    ParticleContainerLinCel linCelTest{1, 10, 1, {3.0, 3.0, 1.0}, "rooooo", 1.5};
+    linCelTest.add({0.5, 1.5, 0.0}, {-0.5, 0.0, 0.0}, 1, 0);
+    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getAllParticles().at(0).getX());
+    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getAllParticles().at(0).getF());
+    linCelTest.simulateParticles2();
+}

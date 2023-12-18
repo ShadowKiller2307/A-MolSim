@@ -226,14 +226,12 @@ void ParticleContainerLinCel::iterBoundary2()
             cell &currentCell = cells.at(translate3DIndTo1D(x, 1, z));
             if (conditions[2] == BoundaryCondition::Reflecting) {
                 auto lambda = createReflectingLambdaBoundary(0,0);
+                lambda(x, 1, z);
             }
             else {
                 auto lambda = createPeriodicLambdaBoundary(0,0);
+                lambda(x, 1, z);
             }
-            /*for (auto &ppi : currentCell)
-            {
-                conditions_[2]->applyBoundCondition(**ppi);
-            }*/
         }
     }
     // from down right corner to top right corner
@@ -244,9 +242,11 @@ void ParticleContainerLinCel::iterBoundary2()
             cell &currentCell = cells.at(translate3DIndTo1D(cellsX - 2, y, z));
             if (conditions[1] == BoundaryCondition::Reflecting) {
                 auto lambda = createReflectingLambdaBoundary(1,0);
+                lambda(cellsX - 2, y, z);
             }
             else {
                 auto lambda = createPeriodicLambdaBoundary(1,0);
+                lambda(cellsX - 2, y, z);
             }
         }
     }
@@ -258,10 +258,12 @@ void ParticleContainerLinCel::iterBoundary2()
         {
             cell &currentCell = cells.at(translate3DIndTo1D(x, cellsY - 2, z));
             if (conditions[3] == BoundaryCondition::Reflecting) {
-                auto lambda = createReflectingLambdaBoundary(1,domainSize_[1]);
+                auto lambda = createReflectingLambdaBoundary(1,static_cast<int> (domainSize_[1]));
+                lambda(x, cellsY - 2, z);
             }
             else {
-                auto lambda = createPeriodicLambdaBoundary(1,domainSize_[1]);
+                auto lambda = createPeriodicLambdaBoundary(1,static_cast<int> (domainSize_[1]));
+                lambda(x, cellsY - 2, z);
             }
         }
     }
@@ -272,10 +274,12 @@ void ParticleContainerLinCel::iterBoundary2()
         {
             cell &currentCell = cells.at(translate3DIndTo1D(1, y, z));
             if (conditions[0] == BoundaryCondition::Reflecting) {
-                auto lambda = createReflectingLambdaBoundary(0,domainSize_[0]);
+                auto lambda = createReflectingLambdaBoundary(0,static_cast<int> (domainSize_[0]));
+                lambda(1, y, z);
             }
             else {
-                auto lambda = createPeriodicLambdaBoundary(0,domainSize_[0]);
+                auto lambda = createPeriodicLambdaBoundary(0,static_cast<int> (domainSize_[0]));
+                lambda(1, y, z);
             }
         }
     }
@@ -303,9 +307,9 @@ void ParticleContainerLinCel::iterBoundary()
                     lambda = [](uint32_t x, uint32_t y, uint32_t z) {};
                     break;
                 case BoundaryCondition::Reflecting:
-                    std::cout << "test: " << (direction + i == 1 ? 0 : 1) << std::endl;
-                    std::cout << "domainSize[0]"<< domainSize_[0] << std::endl;
-                    std::cout << "domainSize[1]"<< domainSize_[1] << std::endl;
+                 //   std::cout << "test: " << (direction + i == 1 ? 0 : 1) << std::endl;
+                  //  std::cout << "domainSize[0]"<< domainSize_[0] << std::endl;
+                   // std::cout << "domainSize[1]"<< domainSize_[1] << std::endl;(0, 0);(0, 1);
                     lambda = createReflectingLambdaBoundary(0, domainSize_.at(direction + i == 1 ? 0 : 1)); //[direction + i == 1 ? 0 : 1]);
                     break;
                 case BoundaryCondition::Periodic:
@@ -315,7 +319,7 @@ void ParticleContainerLinCel::iterBoundary()
             {
                 for (k = 1; k < secondaryDimension2 - 1; ++k)
                 {
-                    std::cout << "x: " << x << std::endl;
+                    //std::cout << "x: " << x << std::endl;
                     lambda(x, y, z);
                 }
             }
@@ -353,10 +357,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             auto ghostPos = p.getX();
             ghostPos[direction] = position + (position - ghostPos[direction]);
             ghostParticle.setX(ghostPos);
-            /*std::cout << "particle pos: " << p.getX() << std::endl;
+            //std::cout << "particle pos: " << p.getX() << std::endl;
             std::cout << "ghostParticle pos: " << ghostParticle.getX() << std::endl;
-            std::cout << "particle force: " << p.getF() << std::endl;
-            std::cout << "ghostParticle force: " << ghostParticle.getF() << std::endl;*/
+            std::cout << "particle force within createLambda: " << p.getF() << std::endl;
+            /*std::cout << "ghostParticle force: " << ghostParticle.getF() << std::endl;*/
             calcF(p, ghostParticle);
         /*    std::cout << "particle force: " << p.getF() << std::endl;
             std::cout << "ghostParticle force: " << ghostParticle.getF() << std::endl;*/
@@ -389,8 +393,8 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     };
 }
 
-std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position) {
-    return std::function<void(Particle &)>();
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position) {
+    return std::function<void(uint32_t x, uint32_t y, uint32_t z)>();
 }
 
 std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaHalo(int direction, int position) {
@@ -401,7 +405,7 @@ std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaHal
 void ParticleContainerLinCel::iterHalo()
 {
     //std::cout << "iterHalo begin\n";
-    auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
+   /* auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
         uint32_t i, j, k;
         uint32_t &x = direction == 0 ? i : j;
@@ -420,7 +424,7 @@ void ParticleContainerLinCel::iterHalo()
                     lambda = [](uint32_t x, uint32_t y, uint32_t z) {}; // do nothing
                     break;
                 case BoundaryCondition::Periodic:
-                    lambda /*move Lambda*/;
+                    lambda *//*move Lambda*//*;
                     break;
             }
             for (j = 0; j < secondaryDimension1; ++j)
@@ -434,7 +438,7 @@ void ParticleContainerLinCel::iterHalo()
     };
     calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
     calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
-    calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
+    calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);*/
     //std::cout << "iterHalo end\n";
 }
 
@@ -544,7 +548,7 @@ void ParticleContainerLinCel::calculateForces()
         }
     }
     iterOverInnerPairs(force_);
-    iterBoundary();
+    iterBoundary2();
 }
 
 void ParticleContainerLinCel::buildLookUp()
@@ -657,14 +661,7 @@ std::vector<Particle> ParticleContainerLinCel::getAllParticles()
     return returnVector;
 }
 
-void ParticleContainerLinCel::simulateParticles2()
-{
-    auto begin = std::chrono::high_resolution_clock::now();
-    iteration_ = 0;
-
-    while (startTime_ < endTime_)
-    {
-        if (iteration_ == 0)
+/* if (iteration_ == 0)
         {
             std::cout << "Anzahl Partikel iteration 0: " << getAmountOfParticles() << std::endl;
             std::cout << "Anzahl cells iter 0 " << getAmountOfCells() << std::endl;
@@ -673,21 +670,28 @@ void ParticleContainerLinCel::simulateParticles2()
         {
             std::cout << "Anzahl Partikel iteration 1: " << getAmountOfParticles() << std::endl;
             std::cout << "Anzahl cells iter 1 " << getAmountOfCells() << std::endl;
-        }
-        // std::cout << "Richtige simulation!\n";
-        std::vector<Particle> allParticles;
-        allParticles.clear();
-        for (auto &cell : cells)
-        {
-            for (auto &i : cell)
-            {
-                allParticles.emplace_back(i);
-            }
-        }
-        /*if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
-        {*/
+        }*/
+// std::cout << "Richtige simulation!\n";
+/*if (outManager_->outputFiles && iteration_ % outputEveryNIterations_ == 0)
+{*/
+void ParticleContainerLinCel::simulateParticles2()
+{
+    auto begin = std::chrono::high_resolution_clock::now();
+    iteration_ = 0;
+
+    while (startTime_ < endTime_)
+    {
         if (iteration_ % 100 == 0)
         {
+            std::vector<Particle> allParticles;
+            allParticles.clear();
+            for (auto &cell : cells)
+            {
+                for (auto &i : cell)
+                {
+                    allParticles.emplace_back(i);
+                }
+            }
             outManager_->plotParticles2(allParticles, iteration_);
             if (iteration_)
             {
@@ -708,17 +712,17 @@ void ParticleContainerLinCel::simulateParticles2()
                 std::cout << "ETA: " << min << sec << std::flush;
             }
         }
-        //}
-        /* std::cout << "bis hier ok 4\n";
-
-          std::cout << "richtiges simulateParticles\n";*/
-        // calculate new x
-        calculatePosition();
-        // std::cout << "bis hier ok: nach calculatePosition\n";
         // calculate new f
         calculateForces();
+        // calculate new x
+        calculatePosition();
         // calculate new v
         calculateVelocity();
+        std::cout << "Position at iteration " << iteration_ << " " << getAllParticles().at(0).getX() << std::endl;
+        std::cout << "Force at iteration " << iteration_ << " " << getAllParticles().at(0).getF() << std::endl;
+
+
+
 
         iteration_++;
         startTime_ += deltaT_;
