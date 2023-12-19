@@ -13,7 +13,7 @@ ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFre
 		outManager_->outputFiles = false;
 	}
 	outputEveryNIterations_ = writeFrequency;
-    LennJon lennJon{5, 1};
+	LennJon lennJon{5, 1};
 	force_ = lennJon.innerPairs();
 }
 
@@ -27,10 +27,9 @@ void ParticleContainer::calculateForces()
 
 void ParticleContainer::calculateVelocity()
 {
-   // std::cout << "calculateVelocity begin: \n";
-	for (auto & particle : particles_)
+	// std::cout << "calculateVelocity begin: \n";
+	for (auto &p : particles_)
 	{
-		Particle &p = *particle;
 		double factor = deltaT_ / (2 * p.getM());
 		std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
 		sumOfForces = factor * sumOfForces;
@@ -40,14 +39,13 @@ void ParticleContainer::calculateVelocity()
 		// ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
 		p.setV(newVelocity);
 	}
-   // std::cout << "calculateVelocity end: \n";
+	// std::cout << "calculateVelocity end: \n";
 }
 
 void ParticleContainer::calculatePosition()
 {
-	for (auto & particle : particles_)
+	for (auto &p : particles_)
 	{
-		Particle &p = *particle;
 		std::array<double, 3> force = p.getF();
 		double factor = std::pow(deltaT_, 2) / (2 * p.getM());
 		force = factor * force;
@@ -65,7 +63,7 @@ void ParticleContainer::calculatePosition()
 
 void ParticleContainer::simulateParticles()
 {
-    std::cout << "Falsches simulateParticle\n";
+	std::cout << "Falsches simulateParticle\n";
 	auto begin = std::chrono::high_resolution_clock::now();
 
 	while (startTime_ < endTime_)
@@ -99,7 +97,7 @@ void ParticleContainer::simulateParticles()
 
 		// calculate new x
 		calculatePosition();
-       // std::cout << "bis hier ok: nach calculatePosition\n";
+		// std::cout << "bis hier ok: nach calculatePosition\n";
 		// calculate new f
 		calculateForces();
 		// calculate new v
@@ -134,26 +132,27 @@ ParticleContainer::~ParticleContainer()
 	delete outManager_;
 }
 
-std::vector<Particle *> &ParticleContainer::getParticles()
+std::vector<Particle> &ParticleContainer::getParticles()
 {
 	return particles_;
 }
 
-void ParticleContainer::setParticles(std::vector<Particle *> &particles)
+void ParticleContainer::setParticles(std::vector<Particle> &particles)
 {
 	this->particles_ = particles;
 }
 
-void ParticleContainer::calcF(Particle &a, Particle &b) {
-    auto diff = a.getX() - b.getX();
-    double norm = ArrayUtils::L2Norm(diff);
-    double first = (-24 * 5) / (norm * norm);
-    double frac = 1 / norm;
-    double pow6 = std::pow(frac, 6);
-    double pow12 = 2 * std::pow(pow6, 2);
-    double middle = (pow6 - pow12);
-    auto force = (first * middle) * diff;
-    a.addF(force);
-    force = -1 * force;
-    b.addF(force);
+void ParticleContainer::calcF(Particle &a, Particle &b)
+{
+	auto diff = a.getX() - b.getX();
+	double norm = ArrayUtils::L2Norm(diff);
+	double first = (-24 * 5) / (norm * norm);
+	double frac = 1 / norm;
+	double pow6 = std::pow(frac, 6);
+	double pow12 = 2 * std::pow(pow6, 2);
+	double middle = (pow6 - pow12);
+	auto force = (first * middle) * diff;
+	a.addF(force);
+	force = -1 * force;
+	b.addF(force);
 }

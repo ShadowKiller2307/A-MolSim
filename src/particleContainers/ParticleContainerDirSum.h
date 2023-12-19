@@ -9,5 +9,6 @@ public:
 	~ParticleContainerDirSum() = default;
 	void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
 	void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
-    void calculateForces() override;
+	void iterOverAllParticles(const std::function<void(std::vector<Particle>::iterator)> &f) override;
+	void calculateForces() override;
 };

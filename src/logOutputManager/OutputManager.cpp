@@ -15,29 +15,16 @@ OutputManager::OutputManager()
 	outputFiles = true;
 }
 
-//this has to be changed
-void OutputManager::plotParticles(const std::vector<Particle *> &particles, const size_t iteration)
+// this has to be changed
+void OutputManager::plotParticles(const std::vector<Particle> &particles, const size_t iteration)
 {
 	auto w = outputWriter::VTKWriter();
 	w.initializeOutput(particles.size());
 	for (auto &p : particles)
 	{
-		w.plotParticle(*p);
+		w.plotParticle(p);
 	}
 	w.writeFile("../output/MD_vtk", iteration);
-}
-
-void OutputManager::plotParticles2(const std::vector<Particle> &particles, const size_t iteration)
-{
-   // std::cout << "plotparticles begin\n";
-    auto w = outputWriter::VTKWriter();
-    w.initializeOutput(particles.size());
-    for (auto &p : particles)
-    {
-        w.plotParticle(p);
-    }
-    w.writeFile("../output/MD_vtk", iteration);
-   // std::cout << "plotparticles end\n";
 }
 
 void OutputManager::writeJSON(std::string &name, ParticleContainer &container)
@@ -46,6 +33,7 @@ void OutputManager::writeJSON(std::string &name, ParticleContainer &container)
 		{"params", {{"numParticles", container.getParticles().size()}, {"deltaT", container.getDeltaT()}, {"endTime", container.getEndTime()}}},
 		{"particles", json::array()}};
 	// TODO: Add Particles to JSON
+	container.iterOverAllParticles([](std::vector<Particle>::iterator it) {});
 	std::ofstream o(name);
 	o << std::setw(4) << output << std::endl;
 }

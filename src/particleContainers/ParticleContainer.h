@@ -14,11 +14,11 @@ protected:
 	double deltaT_, startTime_, endTime_;
 	int outputEveryNIterations_;
 	size_t iteration_;
-	std::vector<Particle *> particles_;
+	std::vector<Particle> particles_;
 	OutputManager *outManager_;
 	std::function<void(Particle &a, Particle &b)> force_;
-    int epsilon = 5;
-    int omega = 1;
+	int epsilon = 5;
+	int omega = 1;
 	ParticleContainer(double deltaT, double endTime, int writeFrequency);
 
 public:
@@ -27,6 +27,8 @@ public:
 	 * @param f the lambda function
 	 */
 	virtual void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) = 0;
+
+	virtual void iterOverAllParticles(const std::function<void(std::vector<Particle>::iterator)> &f) = 0;
 
 	/**
 	 * @brief calculate the forces for all particles
@@ -67,15 +69,15 @@ public:
 
 	void writeJSON(std::string &name);
 
-	std::vector<Particle *> &getParticles();
+	std::vector<Particle> &getParticles();
 
-	void setParticles(std::vector<Particle *> &particles);
+	void setParticles(std::vector<Particle> &particles);
 
 	const double getDeltaT() const;
 
 	const double getEndTime() const;
 
-    void calcF(Particle &a, Particle &b);
+	void calcF(Particle &a, Particle &b);
 
 	~ParticleContainer();
 };
