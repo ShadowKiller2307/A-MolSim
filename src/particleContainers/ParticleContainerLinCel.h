@@ -1,7 +1,6 @@
 #pragma once
 #include "particleContainers/ParticleContainer.h"
 #include "forces/Force.h"
-#include "Thermostat.h"
 
 enum class BoundaryCondition
 {
@@ -36,14 +35,14 @@ private:
     double cutoffRadius_;
     // amount of Cells in each dimension can only be an unsigned integer
     uint32_t cellsX, cellsY, cellsZ = 0;
-    //specifies if you want to use a thermostat
+    // specifies if you want to use a thermostat
     bool useThermostat;
     // after how many iterations should the thermostat be applied
     unsigned int nThermostat = 100;
     // isGradual ? gradual velocity scaling : direct temperature setting;
     bool isGradual;
     // the thermostat for this container
-    //Thermostat thermostat;
+    // Thermostat thermostat;
     void buildLookUp();
 
 public:
@@ -61,10 +60,10 @@ public:
     ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
                             const std::array<double, 3> &domainSize,
                             const std::string &bounds, double cutoffRadius,
-                            bool useThermostat=false, double nThermostat = 100,
-                            bool isGradual = true, double initT = 0,
-                            double tempTarget = 20,
-                            double maxDiff = 0.5);
+                            bool useThermostat, double nThermostat,
+                            bool isGradual, double initT,
+                            double tempTarget,
+                            double maxDiff);
 
     /**
      * @brief destructor
@@ -162,7 +161,7 @@ public:
      * @param None
      * @return number of particles in the domain
      */
-    size_t getAmountOfParticles();
+    size_t getAmountOfParticles() const override;
 
     std::vector<Particle> getParticles();
 

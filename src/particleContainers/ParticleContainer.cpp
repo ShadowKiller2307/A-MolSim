@@ -114,7 +114,7 @@ void ParticleContainer::simulateParticles()
 
 void ParticleContainer::writeJSON(std::string &name)
 {
-	outManager_->writeJSON(name, *this);
+	outManager_->writeJSON(name, this);
 }
 
 const double ParticleContainer::getDeltaT() const

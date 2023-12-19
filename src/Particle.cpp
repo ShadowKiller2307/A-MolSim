@@ -71,6 +71,19 @@ std::string Particle::toString() const
   return stream.str();
 }
 
+json Particle::toJSON() const
+{
+  nlohmann::json j;
+  j["shape"] = "particle";
+  j["x"] = x;
+  j["v"] = v;
+  j["f"] = f;
+  j["old_f"] = old_f;
+  j["type"] = type;
+  j["m"] = m;
+  return j;
+}
+
 bool Particle::operator==(Particle &other)
 {
   return (x == other.x) and (v == other.v) and (f == other.f) and

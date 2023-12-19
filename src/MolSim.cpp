@@ -81,8 +81,8 @@ int main(int argc, char *const argv[])
 
 	// read the inputfile depending on the file ending
 	auto str = std::string(argv[optind]);
-	int found = str.find_last_of(".");
-	auto ending = str.substr(found + 1);
+	int dot = str.find_last_of(".");
+	auto ending = str.substr(dot + 1);
 	std::string path;
 
 	// C++ can't do switch statements on strings😔, this does the job, let's not overcomplicate things
@@ -111,8 +111,9 @@ int main(int argc, char *const argv[])
 	}
 	if (writeToJSON)
 	{
-		auto name = str.substr(0, found);
-		auto newName = "generated_" + name + ".json";
+		int slash = str.find_last_of("/");
+		auto path = str.substr(0, slash + 1);
+		auto newName = path + "generated_" + str.substr(slash + 1, str.size() - slash - 6) + ".json";
 		container->writeJSON(newName);
 		return 0;
 	}

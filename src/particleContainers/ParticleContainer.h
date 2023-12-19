@@ -79,5 +79,7 @@ public:
 
 	void calcF(Particle &a, Particle &b);
 
+	virtual size_t getAmountOfParticles() const = 0;
+
 	~ParticleContainer();
 };
