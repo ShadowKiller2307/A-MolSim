@@ -77,7 +77,9 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     buildLookUp();
     // std::cout << "constructor end\n";
     // initialize the thermostat
-    //thermostat{initT, tempTarget, maxDiff};
+    //Thermostat temp {initT, tempTarget, maxDiff};
+   // thermostat = temp;
+  //  thermostat{initT, tempTarget, maxDiff};
     //thermostat{initT, tempTarget, maxDiff};
 
 }
@@ -132,9 +134,9 @@ void ParticleContainerLinCel::simulateParticles()
             }
         }
         // check whether the Thermostat should be applied
-       /* if (use(iteration_ % nThermostat) == 0) {
+        if (useThermostat && (iteration_ % nThermostat) == 0) {
             //apply thermostat
-        }*/
+        }
         // calculate new f
         calculateForces();
         // calculate new x

@@ -43,7 +43,7 @@ private:
     // isGradual ? gradual velocity scaling : direct temperature setting;
     bool isGradual;
     // the thermostat for this container
-  //  Thermostat thermostat;
+    //Thermostat thermostat;
     void buildLookUp();
 
 public:

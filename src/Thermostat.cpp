@@ -3,14 +3,13 @@
 #include "utils/ArrayUtils.h"
 #include "../src/logOutputManager/LogManager.h"
 
-
 Thermostat::Thermostat(double initT,double tempTarget, double maxDiff) {
 
-   /* initialTemperature = initT;
+    initialTemperature = initT;
     maxTemperatureDifference = maxDiff;
-    temperatureTarget = tempTarget;*/
+    temperatureTarget = tempTarget;
 }
-/*
+
 
 void Thermostat::scaleVelocity(std::vector<cell> &cells, double newTemp) {
     if(fabs(currentTemperature-newTemp)>maxTemperatureDifference){
@@ -84,4 +83,3 @@ void Thermostat::regulateTemperature(std::vector<cell> &cells, int nrParticles) 
     double kineticEnergy = calculateKinEnergy(cells);
     calculateCurrentTemperature(nrParticles,kineticEnergy);
 }
-*/
