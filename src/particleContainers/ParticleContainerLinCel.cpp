@@ -383,11 +383,13 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             ghostPos[direction] = position + (position - ghostPos[direction]);
             ghostParticle.setX(ghostPos);
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0/6)) {
+                //TODO: another check whether the force is really repulsing
                 calcF(p, ghostParticle);
             }
         }
 
     };
+    return lambda;
 }
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createOutflowLambdaHalo(){
@@ -399,11 +401,142 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 }
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position) {
-    return std::function<void(uint32_t x, uint32_t y, uint32_t z)>();
+    if (direction == 0) {
+        if (position == 0) {
+            auto lambda = [=]
+                    (uint32_t x, uint32_t y, uint32_t z)
+            {
+                /*  std::cout << "Direction after lambda: " << direction << std::endl;
+                  std::cout << "Position after lambda: " << position << std::endl;*/
+                unsigned int cellIndex= translate3DIndTo1D(x,y,z);
+                auto &cell = cells.at(cellIndex);
+                // the cells from the located in the opposite side have to be calculated
+                //std::unique_ptr<cell> upper;
+                /*std::unique_ptr<std::vector<Particle>> upper;
+                std::unique_ptr<std::vector<Particle>> middle_;
+                std::unique_ptr<std::vector<Particle>> lower;*/
+                /*if (x == 1) { // current cell is located on the left boundary
+                    auto rightUpper =
+                }
+                if (x == cellsX - 2) { // current cell is located on the right boundary
+
+                }
+                if (y == 1) { // current cell is located on the lower boundary
+
+                }
+                if (y == cellsY - 2) { // current cell is located on the upper boundary
+
+                }*/
+
+
+                for(auto &p:cell) {
+                    Particle ghostParticle = Particle();
+                    auto ghostPos = p.getX();
+                    ghostPos[direction] = position + (position - ghostPos[direction]);
+                    ghostParticle.setX(ghostPos);
+                    if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0/6)) {
+                        calcF(p, ghostParticle);
+                    }
+                }
+
+            };
+        }
+        else {
+
+        }
+    }
+    if (direction == 1) {
+        if (position == 0) {
+
+        }
+        else {
+
+        }
+    }
+
+    auto lambda = [=]
+            (uint32_t x, uint32_t y, uint32_t z)
+    {
+        /*  std::cout << "Direction after lambda: " << direction << std::endl;
+          std::cout << "Position after lambda: " << position << std::endl;*/
+        unsigned int cellIndex= translate3DIndTo1D(x,y,z);
+        auto &cell = cells.at(cellIndex);
+        // the cells from the located in the opposite side have to be calculated
+        //std::unique_ptr<cell> upper;
+        /*std::unique_ptr<std::vector<Particle>> upper;
+        std::unique_ptr<std::vector<Particle>> middle_;
+        std::unique_ptr<std::vector<Particle>> lower;*/
+        /*if (x == 1) { // current cell is located on the left boundary
+            auto rightUpper =
+        }
+        if (x == cellsX - 2) { // current cell is located on the right boundary
+
+        }
+        if (y == 1) { // current cell is located on the lower boundary
+
+        }
+        if (y == cellsY - 2) { // current cell is located on the upper boundary
+
+        }*/
+
+
+        for(auto &p:cell) {
+            Particle ghostParticle = Particle();
+            auto ghostPos = p.getX();
+            ghostPos[direction] = position + (position - ghostPos[direction]);
+            ghostParticle.setX(ghostPos);
+            if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0/6)) {
+                calcF(p, ghostParticle);
+            }
+        }
+
+    };
+    return lambda;
+
+
+    /*return std::function<void(uint32_t x, uint32_t y, uint32_t z)>();*/
+    //TODO this should apply the forces from the opposite boundary cells to the particles in the current cell
+
 }
 
 std::function<void(Particle &)> ParticleContainerLinCel::createPeriodicLambdaHalo(int direction, int position) {
     return std::function<void(Particle &)>();
+   /* if (direction_ == 0) { //
+        if (position_ == 0) { // in the halo cell next to the left domain boundary
+            double newX = a.getX().at(0) + domainSize_[0];
+            std::array<double, 3> newPos {newX,a.getX().at(1),a.getX().at(2)};
+            a.setX(newPos);
+        }
+        else { // in the halo cell next to the right domain boundary
+            double newX = a.getX().at(0) - domainSize_[0];
+            std::array<double, 3> newPos {newX,a.getX().at(1),a.getX().at(2)};
+            a.setX(newPos);
+        }
+    }
+    if (direction_ == 1) { //
+        if (position_ == 0) {  // in the halo cell below the lower domain boundary
+            double newY = a.getX().at(1) + domainSize_[1];
+            std::array<double, 3> newPos {a.getX().at(0), newY, a.getX().at(2)};
+            a.setX(newPos);
+        }
+        else { // in the halo cell over the top domain boundary
+            double newY = a.getX().at(1) - domainSize_[1];
+            std::array<double, 3> newPos {a.getX().at(0), newY, a.getX().at(2)};
+            a.setX(newPos);
+        }
+    }
+    if (direction_ == 2) { //
+        if (position_ == 0) {  // in the halo cell below the lower domain boundary
+            double newZ = a.getX().at(2) + domainSize_[2];
+            std::array<double, 3> newPos {a.getX().at(0), a.getX().at(1), newZ};
+            a.setX(newPos);
+        }
+        else { // in the halo cell over the top domain boundary
+            double newZ = a.getX().at(2) - domainSize_[2];
+            std::array<double, 3> newPos {a.getX().at(0), a.getX().at(1), newZ};
+            a.setX(newPos);
+        }
+    }*/
 }
 
 
