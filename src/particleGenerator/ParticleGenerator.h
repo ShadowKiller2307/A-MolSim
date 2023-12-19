@@ -44,7 +44,8 @@ public:
      * @return void
      */
 	static void instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
-								  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h, double m, int type);
+								  const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h,
+                                  double m, int type, double initT = 0.0);
 
     /**
      * @brief instantiates a sphere in the given ParticleContainer
@@ -59,7 +60,7 @@ public:
      * @return void
      */
     static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
-								  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type);
+								  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type, double initT = 0.0);
 
 	static void instantiateJSON(ParticleContainer **container, const std::string &path, Force &force, SimParams clArgs);
 

@@ -25,7 +25,8 @@ int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, in
 
 void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 										  const std::array<unsigned int, 3> &particlesPerDimension,
-										  std::array<double, 3> &particleVelocity, double h, double m, int type = -1)
+										  std::array<double, 3> &particleVelocity, double h, double m, int type = -1,
+                                          double initT)
 {
 	if (type < 0)
 	{
@@ -38,8 +39,19 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 			for (size_t k = 0; k < particlesPerDimension[2]; ++k)
 			{
 				// TODO (ASK): should the mbVelocity be calculated for every particle instead?
-				std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
-					meanVelocity_, 2); // TODO (ASK): Is the mean here the same as the average?
+                if (initT < 0.0) {
+                    fabs(initT);
+                }
+                std::array<double, 3> mbVelocity;
+                if (initT != 0.0) {
+                    double initTVelocity = std::sqrt((initT/m));
+                    mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
+                            initTVelocity, 2);
+                }
+                else {
+                    mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
+                            meanVelocity_, 2); // TODO (ASK): Is the mean here the same as the average?
+                }
 				std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
 				std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
 				(*container)->add(x_arg, v_arg, m,
@@ -51,7 +63,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 
 void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 										  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
-										  double h, double m, bool is2D, int type = -1)
+										  double h, double m, bool is2D, int type = -1, double initT)
 {
 	if (type < 0)
 	{
@@ -65,8 +77,16 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 			{
 				if (std::sqrt(i * i + j * j) <= sphereRadius)
 				{
-					std::array<double, 3> mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
-						meanVelocity_, 2); // TODO (ASK): Is the mean here the same as the average?
+                    std::array<double, 3> mbVelocity;
+                    if (initT != 0.0) {
+                        double initTVelocity = std::sqrt((initT/m));
+                        mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
+                                initTVelocity, 2);
+                    }
+                    else {
+                        mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
+                                meanVelocity_, 2); // TODO (ASK): Is the mean here the same as the average?
+                    }
 					std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], 0};
 					std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
 					(*container)->add(x_arg, v_arg, m, type);
