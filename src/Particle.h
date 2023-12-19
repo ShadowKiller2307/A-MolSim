@@ -6,10 +6,11 @@
  */
 
 #pragma once
-
+#include "nlohmann/json.hpp"
 #include <array>
 #include <string>
 
+using json = nlohmann::json;
 class Particle
 {
 
@@ -81,6 +82,8 @@ public:
   bool operator==(Particle &other);
 
   std::string toString() const;
+
+  json toJSON() const;
 };
 
 std::ostream &operator<<(std::ostream &stream, Particle &p);

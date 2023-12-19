@@ -77,11 +77,10 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     buildLookUp();
     // std::cout << "constructor end\n";
     // initialize the thermostat
-    //Thermostat temp {initT, tempTarget, maxDiff};
-   // thermostat = temp;
-  //  thermostat{initT, tempTarget, maxDiff};
-    //thermostat{initT, tempTarget, maxDiff};
-
+    // Thermostat temp {initT, tempTarget, maxDiff};
+    // thermostat = temp;
+    //  thermostat{initT, tempTarget, maxDiff};
+    // thermostat{initT, tempTarget, maxDiff};
 }
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
@@ -134,9 +133,9 @@ void ParticleContainerLinCel::simulateParticles()
             }
         }
         // check whether the Thermostat should be applied
-        if (useThermostat && (iteration_ % nThermostat) == 0) {
-            //apply thermostat
-        }
+        /* if (use(iteration_ % nThermostat) == 0) {
+             //apply thermostat
+         }*/
         // calculate new f
         calculateForces();
         // calculate new x
@@ -150,8 +149,7 @@ void ParticleContainerLinCel::simulateParticles()
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
-    //TODO: calculate MUPS
-
+    // TODO: calculate MUPS
 }
 
 void ParticleContainerLinCel::calculateForces()
@@ -465,7 +463,6 @@ void ParticleContainerLinCel::iterBoundary2()
     }
 }
 
-
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createOutflowLambdaHalo()
 {
     return [&](uint32_t x, uint32_t y, uint32_t z)
@@ -627,7 +624,7 @@ double ParticleContainerLinCel::calculateTemperature()
     return (calculateKinEnergy() * 2) / (getAmountOfParticles() * numberofDimensions);
 }
 
-size_t ParticleContainerLinCel::getAmountOfParticles()
+size_t ParticleContainerLinCel::getAmountOfParticles() const
 {
     size_t acc = 0;
     for (auto &cell : cells)

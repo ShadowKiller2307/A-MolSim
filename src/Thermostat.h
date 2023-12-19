@@ -5,10 +5,11 @@
 #include <limits>
 
 using cell = std::vector<Particle>;
-class Thermostat{
+class Thermostat
+{
 private:
     const int NR_DIMENSIONS = 2;
-    const double MAX_DOUBLE =std::numeric_limits<double>::max();
+    const double MAX_DOUBLE = std::numeric_limits<double>::max();
     double currentTemperature;
     double temperatureTarget;
     double maxTemperatureDifference;
@@ -16,13 +17,12 @@ private:
     double initialTemperature;
 
 public:
-    //Thermostat(double initT,double tempTarget, double maxDiff = MAX_DOUBLE);
-    Thermostat(double initT,double tempTarget, double maxDiff);
+    Thermostat(double initT, double tempTarget, double maxDiff);
     void initializeTemperature(std::vector<cell> &cells);
-    static void scaleVelocity(std::vector<cell> &cells, double newTemp);
-    static void gradualScaleVelocity(std::vector<cell> &cells, double tempToAdd);
+    void scaleVelocity(std::vector<cell> &cells, double newTemp);
+    void gradualScaleVelocity(std::vector<cell> &cells, double tempToAdd);
     void adjustTemperature();
-    static double calculateKinEnergy(std::vector<cell> &cells);
-    static  double calculateCurrentTemperature(int nrParticles, double kineticEnergy);
+    double calculateKinEnergy(std::vector<cell> &cells);
+    double calculateCurrentTemperature(int nrParticles, double kineticEnergy);
     void regulateTemperature(std::vector<cell> &cells, int nrParticles);
 };

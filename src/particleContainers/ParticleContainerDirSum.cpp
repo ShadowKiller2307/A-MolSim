@@ -38,6 +38,11 @@ void ParticleContainerDirSum::iterOverAllParticles(const std::function<void(std:
 	}
 }
 
+size_t ParticleContainerDirSum::getAmountOfParticles() const
+{
+	return particles_.size();
+}
+
 void ParticleContainerDirSum::calculateForces()
 {
 	for (auto &p : particles_)
