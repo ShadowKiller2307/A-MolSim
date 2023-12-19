@@ -12,7 +12,7 @@
 
 int main(int argc, char *const argv[])
 {
-    //std::cout << "bis hier ok1\n";
+	// std::cout << "bis hier ok1\n";
 	LogManager &logManager = LogManager::getInstance();
 	logManager.setLogLevel(spdlog::level::info); // standard default level
 
@@ -116,14 +116,15 @@ int main(int argc, char *const argv[])
 		container->writeJSON(newName);
 		return 0;
 	}
-    //std::cout << "bis hier ok2\n";
-    std::cout << "Container type: " << params.containerType << std::endl;
-    if (true) {
-        std::cout << "Linked Cells!\n";
-        ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);
-        lincelContainer->simulateParticles2();
-    }
-    //std::cout << "bis hier ok3\n";
+	// std::cout << "bis hier ok2\n";
+	std::cout << "Container type: " << params.containerType << std::endl;
+	if (true)
+	{
+		std::cout << "Linked Cells!\n";
+		ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);
+		lincelContainer->simulateParticles();
+	}
+	// std::cout << "bis hier ok3\n";
 	delete container;
 	return 0;
 }

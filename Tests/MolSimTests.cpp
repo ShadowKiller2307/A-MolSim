@@ -218,12 +218,13 @@ TEST_F(MolSimTest, testForcesLinkedCells)
 {
     std::cout << "Calculate the forces" << std::endl;
     linCel2.calculateForces();
-  //  EXPECT_EQ(linCel2.getAmountOfCells(), 16);
-  //  EXPECT_EQ(linCel2.getAmountOfParticles(), 3);
+    //  EXPECT_EQ(linCel2.getAmountOfCells(), 16);
+    //  EXPECT_EQ(linCel2.getAmountOfParticles(), 3);
     // check against hardcoded values
     // different values than the direct sum container as the distance between the particle on the left and the particle on the right
     // are bigger than the cutoff radius
-    for (int i = 0; i < linCel2.getCells().size(); ++i) {
+    for (int i = 0; i < linCel2.getCells().size(); ++i)
+    {
         auto current = linCel2.getCells().at(i);
         std::cout << "Cell at Index " << i << " size : " << current.size() << std::endl;
     }
@@ -401,42 +402,38 @@ TEST_F(MolSimTest, testSimpleSphereParameters)
     EXPECT_EQ(sphereConstructor1.getMass(), 1.0);
 }
 
-TEST_F(MolSimTest, testIterBoundary2Indices)
-{
-    linCel3.iterBoundary2();
-}
-
-
 TEST_F(MolSimTest, testCreateReflecting)
 {
     ParticleContainerLinCel linCelTest{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.5};
     linCelTest.add({0.5, 1.5, 0.0}, {0.0, 0.0, 0.0}, 1, 0);
     auto lambda = linCelTest.createReflectingLambdaBoundary(0, 0);
-    //auto lambda2 = linCelTest.createReflectingLambdaBoundary(1, 0);
+    // auto lambda2 = linCelTest.createReflectingLambdaBoundary(1, 0);
     lambda(1, 2, 1);
-    //lambda2(1, 2, 1);
+    // lambda2(1, 2, 1);
     EXPECT_EQ(1, 1);
 }
 
-TEST_F(MolSimTest, testReflectingOneParticleHorizontalMovement) {
+TEST_F(MolSimTest, testReflectingOneParticleHorizontalMovement)
+{
     ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.0};
     linCelTest.add({1.5, 1.5, 0.5}, {-0.1, 0.0, 0.0}, 1, 0);
-    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getAllParticles().at(0).getX());
-    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getAllParticles().at(0).getF());
+    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
+    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
     std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
-    //linCelTest.getCells().at()
-    linCelTest.simulateParticles2();
+    // linCelTest.getCells().at()
+    linCelTest.simulateParticles();
 }
 
-TEST_F(MolSimTest, testReflectingOneParticleVerticalMovement) {
+TEST_F(MolSimTest, testReflectingOneParticleVerticalMovement)
+{
     ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.0};
     linCelTest.add({1.5, 1.5, 0.5}, {0.0, -0.1, 0.0}, 1, 0);
-    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getAllParticles().at(0).getX());
-    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getAllParticles().at(0).getF());
-    //linCelTest.getCells().at()
-    linCelTest.simulateParticles2();
+    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
+    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
+    // linCelTest.getCells().at()
+    linCelTest.simulateParticles();
 }
 
-TEST_F(MolSimTest, testIterBoundaryIndex) {
-
+TEST_F(MolSimTest, testIterBoundaryIndex)
+{
 }

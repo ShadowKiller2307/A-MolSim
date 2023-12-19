@@ -15,11 +15,7 @@ class ParticleContainerLinCel : public ParticleContainer
 private:
     using cell = std::vector<Particle>;
     std::vector<cell> cells;
-    //std::vector<std::unique_ptr<BoundaryCondition>> conditions_;
     std::vector<BoundaryCondition> conditions;
-    bool upperModulo = false;
-    bool rightModulo = false;
-    bool depthModulo = false;
     uint32_t amountOfCells = 0;
     std::vector<std::vector<std::vector<int>>> lookup;
     /**
@@ -38,19 +34,10 @@ private:
      */
     double cutoffRadius_;
     // amount of Cells in each dimension can only be an unsigned integer
-    uint32_t cellsX = 0;
-    uint32_t cellsY = 0;
-    // only needed for the 3D case
-    uint32_t cellsZ = 0;
+    uint32_t cellsX, cellsY, cellsZ = 0;
     void buildLookUp();
-    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary(int direction, int position);
-    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createOutflowLambdaHalo();
-    std::function<void(Particle &)> createPeriodicLambdaHalo(int direction, int position);
 
 public:
-    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
-    bool cellPointerNeedUpdate;
-    void iterBoundary2();
     /**
      * @brief constructor
      *  If the domain size isn't a multiple of the cutoff radius
@@ -63,30 +50,11 @@ public:
      * @param cutoffRadius the cutoff radius according to the Linked Cell algorithm
      */
     ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, double cutoffRadius);
+
     /**
      * @brief destructor
      */
     ~ParticleContainerLinCel() = default;
-
-    // void recalculateParticlesinCells();
-
-    void simulateParticles2();
-
-    /**
-     * if a new cell is iterated over, only calculate the forces in the cell itself
-     * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
-     * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
-     * Calc       Calc   Calc
-     *      \    |     /
-     *       \   |   /
-     *        \ Cell -- > Calc
-     *
-     */
-    void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
-
-    // void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
-
-    void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     /**
      * @brief overriding the add method so that particles get added to the correct cell
@@ -98,28 +66,8 @@ public:
      */
     void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
 
-    /**
-     * @brief iterate over the particles which are currectly located in the boundary zone and
-     * apply the boundary condition, the cells at the corner will be iterated over twice
-     * @param None
-     * @return void
-     */
-    void iterBoundary();
-
-    /**
-     * @brief iterate over the particles which are currectly located in the halo zone and
-     * delete them
-     * @param None
-     * @return void
-     */
-    void iterHalo();
-
-    /**
-     * @brief overriding the position calculation, so that the particles and cells get updated
-     * @param None
-     * @return void
-     */
-    void calculatePosition() override;
+    /// @brief runs the simulation loop
+    void simulateParticles();
 
     /**
      * @brief overriding the force calculation for the demands of the LinCel container, including iterating over the
@@ -130,25 +78,48 @@ public:
     void calculateForces() override;
 
     /**
-     * @brief return the number of all particles in all the cells of the LinCel container
-     * @param None
-     * @return number of particles in the domain
-     */
-    size_t getAmountOfParticles();
-
-    /**
-     * @brief return of how many cells the current LinCel container consists
+     * @brief overriding the position calculation, so that the particles and cells get updated
      * @param None
      * @return void
      */
-    unsigned int getAmountOfCells() const;
+    void calculatePosition() override;
+
+    void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     /**
-     * @brief return a vector of the cells
+     * @brief if a new cell is iterated over, only calculate the forces in the cell itself
+     * and the forces between the particles in the current cell and the particles on the right hand side of the cell and
+     * over the current cell, also the upperLeft cell has to be checked (a check for the cutoffRadius has to be included)
+     * Calc       Calc   Calc
+     *      \    |     /
+     *       \   |   /
+     *        \ Cell -- > Calc
+     *
+     */
+    void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
+
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary(int direction, int position);
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
+    /**
+     * @brief iterate over the particles which are currectly located in the boundary zone and
+     * apply the boundary condition, the cells at the corner will be iterated over twice
      * @param None
      * @return void
      */
-    std::vector<std::vector<Particle>> getCells();
+    void iterBoundary();
+
+    void iterBoundary2();
+
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createOutflowLambdaHalo();
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaHalo(int direction, int position);
+
+    /**
+     * @brief iterate over the particles which are currectly located in the halo zone and
+     * delete them
+     * @param None
+     * @return void
+     */
+    void iterHalo();
 
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
@@ -167,17 +138,30 @@ public:
      */
     unsigned int translate3DPosTo1D(std::array<double, 3> position) const;
 
-    /**
-     *
-     */
-    std::array<int, 3> translate1DIndTo3DInd(int index) const;
-
     double calculateKinEnergy();
 
     double calculateTemperature();
 
-    std::vector<Particle> getAllParticles();
-    // std::vector<BoundaryCondition> getBounds();
-    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary2;
-    void createRefectingForce(uint32_t x, uint32_t y, uint32_t z, int direction, int position);
+    /**
+     * @brief return the number of all particles in all the cells of the LinCel container
+     * @param None
+     * @return number of particles in the domain
+     */
+    size_t getAmountOfParticles();
+
+    std::vector<Particle> getParticles();
+
+    /**
+     * @brief return of how many cells the current LinCel container consists
+     * @param None
+     * @return void
+     */
+    unsigned int getAmountOfCells() const;
+
+    /**
+     * @brief return a vector of the cells
+     * @param None
+     * @return void
+     */
+    std::vector<std::vector<Particle>> &getCells();
 };
