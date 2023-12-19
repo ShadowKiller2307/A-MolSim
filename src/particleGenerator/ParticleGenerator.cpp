@@ -114,9 +114,9 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		{
 			writeFrequency = params.writeFrequency;
 		}
-		else if (jsonContent.contains("writeFrequency"))
+		else if (JSONparams.contains("writeFrequency"))
 		{
-			writeFrequency = static_cast<double>(JSONparams["writeFrequency"]);
+			writeFrequency = static_cast<int>(JSONparams["writeFrequency"]);
 		}
 		else
 		{

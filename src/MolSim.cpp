@@ -1,14 +1,14 @@
+#include "particleContainers/ParticleContainerLinCel.h"
 #include "particleContainers/ParticleContainer.h"
 #include "particleGenerator/ParticleGenerator.h"
+#include "logOutputManager/LogManager.h"
 #include "forces/GravPot.h"
 #include "forces/LennJon.h"
 #include "MolSim.h"
+#include <getopt.h>
 #include <iostream>
 #include <fstream>
-#include <getopt.h>
 #include <chrono>
-#include "logOutputManager/LogManager.h"
-#include "particleContainers/ParticleContainerLinCel.h"
 
 int main(int argc, char *const argv[])
 {
@@ -136,6 +136,7 @@ void printHelp()
 		std::cout << file.rdbuf();
 	}
 }
+
 spdlog::level::level_enum mapIntToLevel(int programArgument)
 {
 	switch (programArgument)

@@ -1,6 +1,6 @@
-#include "logOutputManager/OutputManager.h"
-#include "particleContainers/ParticleContainer.h"
 #include "particleContainers/ParticleContainerLinCel.h"
+#include "particleContainers/ParticleContainer.h"
+#include "logOutputManager/OutputManager.h"
 #include "Particle.h"
 
 #include <nlohmann/json.hpp>

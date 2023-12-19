@@ -4,6 +4,7 @@
     "deltaT": 0.0002,
     "endTime": 15,
     "containerType": "LinCel",
+    "writeFrequency": 100,
     "boundaries": "rrrrrr",
     "cutoffRadius": 3.0,
     "domainSize": [120, 60, 1]
