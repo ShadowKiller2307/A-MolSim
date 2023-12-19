@@ -60,7 +60,7 @@ public:
     ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
                             const std::array<double, 3> &domainSize,
                             const std::string &bounds, double cutoffRadius,
-                            bool useThermostat=false, double nThermostat = 100,
+                            bool useThermostat = false, double nThermostat = 100,
                             bool isGradual = true, double initT = 0,
                             double tempTarget = 20,
                             double maxDiff = 0.5);
@@ -79,6 +79,8 @@ public:
      * @param type typenumber of the particle
      */
     void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
+
+    void addCompleteParticle(Particle &p) override;
 
     /// @brief runs the simulation loop
     void simulateParticles();
@@ -178,4 +180,10 @@ public:
      * @return void
      */
     std::vector<std::vector<Particle>> &getCells();
+
+    const std::vector<BoundaryCondition> &getConditions();
+
+    const std::array<double, 3> &getDomainSize();
+
+    const double getCutOffRadius();
 };

@@ -1,5 +1,6 @@
 #include "logOutputManager/OutputManager.h"
 #include "particleContainers/ParticleContainer.h"
+#include "particleContainers/ParticleContainerLinCel.h"
 #include "Particle.h"
 
 #include <nlohmann/json.hpp>
@@ -28,8 +29,40 @@ void OutputManager::plotParticles(const std::vector<Particle> &particles, const 
 
 void OutputManager::writeJSON(std::string &name, ParticleContainer *container)
 {
-	json output = {{"params", {{"numParticles", container->getAmountOfParticles()}, {"deltaT", container->getDeltaT()}, {"endTime", container->getEndTime()}}},
-				   {"particles", json::array()}};
+	std::string containerType;
+	if (dynamic_cast<ParticleContainerLinCel *>(container) != nullptr)
+	{
+		containerType = "LinCel";
+	}
+	else
+	{
+		containerType = "DirSum";
+	}
+	json output = {{"params", {{"numParticles", container->getAmountOfParticles()}, {"deltaT", container->getDeltaT()}, {"endTime", container->getEndTime()}, {"containerType", containerType}}}, {"particles", json::array()}};
+	if (containerType == "LinCel")
+	{
+		std::string conditionsString = "";
+		auto newPointer = dynamic_cast<ParticleContainerLinCel *>(container);
+		auto conditions = newPointer->getConditions();
+		for (auto &c : conditions)
+		{
+			switch (c)
+			{
+			case BoundaryCondition::Outflow:
+				conditionsString += "o";
+				break;
+			case BoundaryCondition::Reflecting:
+				conditionsString += "r";
+				break;
+			case BoundaryCondition::Periodic:
+				conditionsString += "p";
+				break;
+			}
+		}
+		output["params"]["boundaries"] = conditionsString;
+		output["params"]["domainSize"] = newPointer->getDomainSize();
+		output["params"]["cutoffRadius"] = newPointer->getCutOffRadius();
+	}
 	container->iterOverAllParticles([&](std::vector<Particle>::iterator it)
 									{ output["particles"].push_back(it->toJSON()); });
 	std::ofstream o(name);

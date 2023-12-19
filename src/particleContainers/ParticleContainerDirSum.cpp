@@ -11,6 +11,11 @@ void ParticleContainerDirSum::add(const std::array<double, 3> &x_arg, const std:
 	particles_.emplace_back(x_arg, v_arg, mass, type);
 }
 
+void ParticleContainerDirSum::addCompleteParticle(Particle &p)
+{
+	particles_.push_back(p);
+}
+
 void ParticleContainerDirSum::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
 {
 	for (size_t i = 0; i < particles_.size() - 1; ++i)

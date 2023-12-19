@@ -94,6 +94,17 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
     }
 }
 
+void ParticleContainerLinCel::addCompleteParticle(Particle &p)
+{
+    if (p.getX()[0] >= 0 && p.getX()[0] <= domainSize_[0] && // in x bounds
+        p.getX()[1] >= 0 && p.getX()[1] <= domainSize_[1] && // in y bounds
+        p.getX()[2] >= 0 && p.getX()[2] <= domainSize_[2])   // in z bounds
+    {
+        // compute the cell to which the particle will be added
+        cells.at(translate3DPosTo1D(p.getX())).push_back(p);
+    }
+}
+
 void ParticleContainerLinCel::simulateParticles()
 {
     auto begin = std::chrono::high_resolution_clock::now();
@@ -655,4 +666,19 @@ unsigned int ParticleContainerLinCel::getAmountOfCells() const
 std::vector<std::vector<Particle>> &ParticleContainerLinCel::getCells()
 {
     return cells;
+}
+
+const std::vector<BoundaryCondition> &ParticleContainerLinCel::getConditions()
+{
+    return conditions;
+}
+
+const std::array<double, 3> &ParticleContainerLinCel::getDomainSize()
+{
+    return domainSize_;
+}
+
+const double ParticleContainerLinCel::getCutOffRadius()
+{
+    return cutoffRadius_;
 }

@@ -127,7 +127,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		{
 			(*container) = new ParticleContainerDirSum(deltaT, endTime, writeFrequency);
 		}
-		else
+		else if (containerType == "LinCel")
 		{
 			std::string bounds =
 				params.boundaries != "" ? params.boundaries : static_cast<std::string>(JSONparams["boundaries"]);
@@ -139,17 +139,13 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 			}
 			double cutoffRadius =
 				params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
-
-			if (containerType == "LinCel")
-			{
-				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
-														   cutoffRadius);
-			}
-			else
-			{
-				LogManager::errorLog("Contianer type \"{}\" is unknown!", containerType);
-				exit(1);
-			}
+			(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+													   cutoffRadius);
+		}
+		else
+		{
+			LogManager::errorLog("Contianer type \"{}\" is unknown!", containerType);
+			exit(1);
 		}
 	}
 
@@ -171,6 +167,15 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		{
 			uint32_t radius = j["R"];
 			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type);
+		}
+		else if (j["shape"] == "particle")
+		{
+			auto particle = Particle(j["x"], j["v"], j["m"], j["type"]);
+			auto f = static_cast<std::array<double, 3>>(j["old_f"]);
+			particle.setOldF(f);
+			auto old_f = static_cast<std::array<double, 3>>(j["f"]);
+			particle.setF(old_f);
+			(*container)->addCompleteParticle(particle);
 		}
 		else
 		{
@@ -207,27 +212,25 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 	auto cuboidConst = xmlReader.getCuboidConstructors();
 	auto sphereConst = xmlReader.getSphereConstructors();
 
-    LogManager::warnLog("Now reading simulation parameters. Commandline arguments have a higher priority if they exist.\n");
+	LogManager::warnLog("Now reading simulation parameters. Commandline arguments have a higher priority if they exist.\n");
 
-    double delta_t = clArgs.deltaT>0?clArgs.deltaT:simConst.getDelta_t();
-    double t_end = clArgs.endTime>0?clArgs.endTime:simConst.getT_end();
-    std::string containerT = !clArgs.containerType.empty()?clArgs.containerType:simConst.getContainerType();
-    std::string boundaries = !clArgs.boundaries.empty()?clArgs.boundaries:simConst.getBoundaries();
-    int writeFrequency = clArgs.writeFrequency>0?clArgs.writeFrequency:simConst.getWriteFrequency();
-    double cutOffRadius = clArgs.cutoffRadius>0?clArgs.cutoffRadius:simConst.getCutOffRadius();
+	double delta_t = clArgs.deltaT > 0 ? clArgs.deltaT : simConst.getDelta_t();
+	double t_end = clArgs.endTime > 0 ? clArgs.endTime : simConst.getT_end();
+	std::string containerT = !clArgs.containerType.empty() ? clArgs.containerType : simConst.getContainerType();
+	std::string boundaries = !clArgs.boundaries.empty() ? clArgs.boundaries : simConst.getBoundaries();
+	int writeFrequency = clArgs.writeFrequency > 0 ? clArgs.writeFrequency : simConst.getWriteFrequency();
+	double cutOffRadius = clArgs.cutoffRadius > 0 ? clArgs.cutoffRadius : simConst.getCutOffRadius();
 
-    std::array<double, 3> domainSize{};
-    for (int i = 0; i < 3; i++)
-    {
-        domainSize[i] = clArgs.domainSize.at(i)>0?clArgs.domainSize.at(i):simConst.getDomainSize().at(i);
-    }
-
-
+	std::array<double, 3> domainSize{};
+	for (int i = 0; i < 3; i++)
+	{
+		domainSize[i] = clArgs.domainSize.at(i) > 0 ? clArgs.domainSize.at(i) : simConst.getDomainSize().at(i);
+	}
 
 	if (containerT == "LinCel")
 	{
-		(*container) = new ParticleContainerLinCel(delta_t,t_end,writeFrequency,domainSize,boundaries,
-                                                   cutOffRadius);
+		(*container) = new ParticleContainerLinCel(delta_t, t_end, writeFrequency, domainSize, boundaries,
+												   cutOffRadius);
 
 		for (auto &cuboid : cuboidConst)
 		{
@@ -235,19 +238,21 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
 							  cuboid.getH(), cuboid.getMass(), cuboid.getType());
-            LogManager::debugLog("Instantiated a cuboid from xml\n");
+			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
 		{
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
 							  sphere.getDistance(), sphere.getMass(), true);
-            LogManager::debugLog("Instantiated a sphere from xml\n");
+			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}
-    else if(containerT == "DirSum"){
-        (*container) = new ParticleContainerDirSum(delta_t,t_end,writeFrequency);
-    }
-    else{
-        LogManager::errorLog("Type {} is not a valid type!",containerT);
-    }
+	else if (containerT == "DirSum")
+	{
+		(*container) = new ParticleContainerDirSum(delta_t, t_end, writeFrequency);
+	}
+	else
+	{
+		LogManager::errorLog("Type {} is not a valid type!", containerT);
+	}
 }

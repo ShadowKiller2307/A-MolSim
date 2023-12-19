@@ -60,6 +60,8 @@ public:
 	 */
 	virtual void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) = 0;
 
+	virtual void addCompleteParticle(Particle &p) = 0;
+
 	/**
 	 * @brief runs the simulation
 	 * @param None
