@@ -60,10 +60,10 @@ public:
     ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
                             const std::array<double, 3> &domainSize,
                             const std::string &bounds, double cutoffRadius,
-                            bool useThermostat, double nThermostat,
-                            bool isGradual, double initT,
-                            double tempTarget,
-                            double maxDiff);
+                            bool useThermostat=false, double nThermostat = 100,
+                            bool isGradual = true, double initT = 0,
+                            double tempTarget = 20,
+                            double maxDiff = 0.5);
 
     /**
      * @brief destructor
