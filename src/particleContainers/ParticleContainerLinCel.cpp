@@ -9,7 +9,13 @@
  * "pppppp"
  */
 
-ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize, const std::string &bounds, double cutoffRadius) : ParticleContainer(deltaT, endTime, writeFrequency)
+ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
+                                                 const std::array<double, 3> &domainSize,
+                                                 const std::string &bounds, double cutoffRadius,
+                                                 bool useThermostat, double nThermostat,
+                                                 bool isGradual, double initT,
+                                                 double tempTarget,
+                                                 double maxDiff) : ParticleContainer(deltaT, endTime, writeFrequency)
 {
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
@@ -79,6 +85,10 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     }
     buildLookUp();
     // std::cout << "constructor end\n";
+    // initialize the thermostat
+    //thermostat{initT, tempTarget, maxDiff};
+    //thermostat{initT, tempTarget, maxDiff};
+
 }
 
 void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
@@ -130,6 +140,10 @@ void ParticleContainerLinCel::simulateParticles()
                 std::cout << "ETA: " << min << sec << std::flush;
             }
         }
+        // check whether the Thermostat should be applied
+       /* if (use(iteration_ % nThermostat) == 0) {
+            //apply thermostat
+        }*/
         // calculate new f
         calculateForces();
         // calculate new x
@@ -143,6 +157,8 @@ void ParticleContainerLinCel::simulateParticles()
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(iteration_ / diff) + " iter/ms" : std::to_string(diff / iteration_) + " ms/iter") + ") Terminating...\n";
+    //TODO: calculate MUPS
+
 }
 
 void ParticleContainerLinCel::calculateForces()
@@ -224,6 +240,7 @@ void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(Part
                         break;
                     }
                     f(it);
+                    it++;
                 }
             }
         }
@@ -584,8 +601,9 @@ double ParticleContainerLinCel::calculateKinEnergy()
 
 double ParticleContainerLinCel::calculateTemperature()
 {
-    auto numberofDimensions = 3;
-    return calculateKinEnergy() / getAmountOfParticles() * 2.0 / numberofDimensions;
+    // current simulations only in 2D
+    auto numberofDimensions = 2;
+    return (calculateKinEnergy() * 2) / (getAmountOfParticles() * numberofDimensions);
 }
 
 size_t ParticleContainerLinCel::getAmountOfParticles()

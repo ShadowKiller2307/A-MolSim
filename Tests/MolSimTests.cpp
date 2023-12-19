@@ -437,3 +437,15 @@ TEST_F(MolSimTest, testReflectingOneParticleVerticalMovement)
 TEST_F(MolSimTest, testIterBoundaryIndex)
 {
 }
+
+TEST_F(MolSimTest, testHeating) {
+
+}
+
+TEST_F(MolSimTest, testCooling) {
+
+}
+
+TEST_F(MolSimTest, testHoldingATemperature) {
+
+}
