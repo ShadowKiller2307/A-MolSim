@@ -226,9 +226,9 @@ void ParticleContainerLinCel::iterBoundary2()
             //std::cout << "Unten, Index: " << translate3DIndTo1D(x, 1, z) << std::endl;
             if (conditions[2] == BoundaryCondition::Reflecting) {
                // std::cout << "Passt!" << std::endl;
-                /*auto lambda = createReflectingLambdaBoundary(0,0);
-                lambda(x, 1, z);*/
-                createRefectingForce(x, 1, z, 1, 0);
+                auto lambda = createReflectingLambdaBoundary(1,0);
+                lambda(x, 1, z);
+              //  createRefectingForce(x, 1, z, 1, 0);
             }
             else {
                 auto lambda = createPeriodicLambdaBoundary(1,0);
@@ -243,12 +243,12 @@ void ParticleContainerLinCel::iterBoundary2()
         {
             //std::cout << "Rechts, Index: " << translate3DIndTo1D(cellsX - 2, y, z) << std::endl;
             if (conditions[1] == BoundaryCondition::Reflecting) {
-                /*auto lambda = createReflectingLambdaBoundary(1,0);
-                lambda(cellsX - 2, y, z);*/
-                createRefectingForce(cellsX - 2, y, z, 1, static_cast<int>(domainSize_[0]));
+                auto lambda = createReflectingLambdaBoundary(0, static_cast<int>(domainSize_[0]));
+                lambda(cellsX - 2, y, z);
+               // createRefectingForce(cellsX - 2, y, z, 1, static_cast<int>(domainSize_[0]));
             }
             else {
-                auto lambda = createPeriodicLambdaBoundary(1,0);
+                auto lambda = createPeriodicLambdaBoundary(0, static_cast<int>(domainSize_[0]));
                 lambda(cellsX - 2, y, z);
             }
         }
@@ -260,9 +260,9 @@ void ParticleContainerLinCel::iterBoundary2()
         {
             //std::cout <<"Oben, Index: " << translate3DIndTo1D(x, cellsY - 2, z) << std::endl;
             if (conditions[3] == BoundaryCondition::Reflecting) {
-                /*auto lambda = createReflectingLambdaBoundary(1,static_cast<int> (domainSize_[1]));
-                lambda(x, cellsY - 2, z);*/
-                createRefectingForce(x, cellsY - 2, z, 1, static_cast<int> (domainSize_[1]));
+                auto lambda = createReflectingLambdaBoundary(1,static_cast<int> (domainSize_[1]));
+                lambda(x, cellsY - 2, z);
+               // createRefectingForce(x, cellsY - 2, z, 1, static_cast<int> (domainSize_[1]));
             }
             else {
                 auto lambda = createPeriodicLambdaBoundary(1,static_cast<int> (domainSize_[1]));
@@ -277,9 +277,9 @@ void ParticleContainerLinCel::iterBoundary2()
         {
        //    std::cout << "Links, Index: " << translate3DIndTo1D(1, y, z) << std::endl;
             if (conditions[0] == BoundaryCondition::Reflecting) {
-              /*  auto lambda = createReflectingLambdaBoundary(0,static_cast<int> (domainSize_[0]));
-                lambda(1, y, z);*/
-                createRefectingForce(1, y, z, 0,0);
+                auto lambda = createReflectingLambdaBoundary(0,0);
+                lambda(1, y, z);
+               // createRefectingForce(1, y, z, 0,0);
             }
             else {
                 auto lambda = createPeriodicLambdaBoundary(0,0);
@@ -316,7 +316,6 @@ void ParticleContainerLinCel::createRefectingForce(uint32_t x, uint32_t y, uint3
 
 void ParticleContainerLinCel::iterBoundary()
 {
-    //std::cout << "iterBoundary begin\n";
     auto calculateBothPlanesInDirection = [&](uint32_t primaryDimension, uint32_t secondaryDimension1, uint32_t secondaryDimension2, int direction)
     {
         uint32_t i, j, k;
@@ -324,44 +323,50 @@ void ParticleContainerLinCel::iterBoundary()
         uint32_t &y = direction == 1 ? i : direction == 0 ? j
                                                           : k;
         uint32_t &z = direction == 2 ? i : k;
-       // std::cout << "i, j, k " << i << j << k <<std::endl;
-       // std::cout << "x, y, z " << i << j << k <<std::endl;
-        std::function<void(uint32_t x, uint32_t y, uint32_t z)> lambda;
+        std::function<void(uint32_t x , uint32_t y, uint32_t z)> lambda;
         for (i = 1; i < primaryDimension - 1; i += (primaryDimension - 3))
         {
             switch (conditions[direction + i == 1 ? 0 : 1])
             {
                 case BoundaryCondition::Outflow:
-                    lambda = [](uint32_t x, uint32_t y, uint32_t z) {};
+                    lambda = [](uint32_t x , uint32_t y, uint32_t z) {}; // do nothing
                     break;
                 case BoundaryCondition::Reflecting:
-                 //   std::cout << "test: " << (direction + i == 1 ? 0 : 1) << std::endl;
-                  //  std::cout << "domainSize[0]"<< domainSize_[0] << std::endl;
-                   // std::cout << "domainSize[1]"<< domainSize_[1] << std::endl;(0, 0);(0, 1);
-                    lambda = createReflectingLambdaBoundary(0, domainSize_.at(direction + i == 1 ? 0 : 1)); //[direction + i == 1 ? 0 : 1]);
+                    lambda = createReflectingLambdaBoundary(0, domainSize_[direction + i == 1 ? 0 : 1]);
                     break;
                 case BoundaryCondition::Periodic:
+                    lambda /*interact Lambda*/;
                     break;
             }
             for (j = 1; j < secondaryDimension1 - 1; ++j)
             {
                 for (k = 1; k < secondaryDimension2 - 1; ++k)
                 {
-                    //std::cout << "x: " << x << std::endl;
                     lambda(x, y, z);
+                   /* auto &c = cells.at(translate3DIndTo1D(x, y, z));
+                    for (auto &p : c)
+                    {
+                        lambda(p);
+                    }*/
                 }
             }
         }
     };
-   // std::cout << "iterBoundary0 end\n";
     calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
-   // std::cout << "iterBoundary1 end\n";
     calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
+   // calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
 }
 /*
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary2(int direction, int position) {
 
 }*/
+
+
+
+
+
+
+
 
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
