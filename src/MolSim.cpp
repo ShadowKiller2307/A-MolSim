@@ -116,11 +116,8 @@ int main(int argc, char *const argv[])
 		container->writeJSON(newName);
 		return 0;
 	}
-	// std::cout << "bis hier ok2\n";
-	std::cout << "Container type: " << params.containerType << std::endl;
 	if (true)
 	{
-		std::cout << "Linked Cells!\n";
 		ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);
 		lincelContainer->simulateParticles();
 	}

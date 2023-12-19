@@ -54,18 +54,9 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
      * calculate the amount of cells the domain will be consisting of
      * ceil is used for the case the domainSize isn't a multiple of the cutoffRadius
      */
-    if (domainSize_[0] < 0.0)
+    for (size_t i = 0; i < 3; i++)
     {
-        domainSize_[0] = -domainSize[0];
-    }
-    if (domainSize_[1] < 0.0)
-    {
-        domainSize_[1] = -domainSize_[1];
-    }
-
-    if (domainSize_[2] < 0.0)
-    {
-        domainSize_[2] = -domainSize_[2];
+        domainSize_[i] = fabs(domainSize[i]);
     }
 
     cellsX = static_cast<unsigned int>(ceil(domainSize_[0] / cutoffRadius_) + 2);
@@ -120,7 +111,7 @@ void ParticleContainerLinCel::simulateParticles()
                     allParticles.emplace_back(i);
                 }
             }
-            outManager_->plotParticles2(allParticles, iteration_);
+            outManager_->plotParticles(allParticles, iteration_);
             if (iteration_)
             {
                 auto end = std::chrono::high_resolution_clock::now();
@@ -217,6 +208,7 @@ void ParticleContainerLinCel::calculatePosition()
     {
         if ((translate3DPosTo1D(i.getX())) >= cells.size() || (i.getX() != i.getX()))
         {
+            LogManager::errorLog("Particle out of bounds or NaN values detected!");
             continue;
         }
         cells.at(translate3DPosTo1D(i.getX())).emplace_back(i);
@@ -224,7 +216,7 @@ void ParticleContainerLinCel::calculatePosition()
     iterHalo();
 }
 
-void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f)
+void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(std::vector<Particle>::iterator)> &f)
 {
     for (size_t x = 1; x < cellsX - 1; x++)
     {
@@ -397,10 +389,11 @@ void ParticleContainerLinCel::iterBoundary2()
     {
         for (uint32_t x = 1; x < cellsX - 1; ++x)
         {
-            //std::cout << "Unten, Index: " << translate3DIndTo1D(x, 1, z) << std::endl;
-            if (conditions[2] == BoundaryCondition::Reflecting) {
+            // std::cout << "Unten, Index: " << translate3DIndTo1D(x, 1, z) << std::endl;
+            if (conditions[2] == BoundaryCondition::Reflecting)
+            {
                 // std::cout << "Passt!" << std::endl;
-                auto lambda = createReflectingLambdaBoundary(1,0);
+                auto lambda = createReflectingLambdaBoundary(1, 0);
                 lambda(x, 1, z);
                 //  createRefectingForce(x, 1, z, 1, 0);
             }
@@ -416,8 +409,9 @@ void ParticleContainerLinCel::iterBoundary2()
     {
         for (uint32_t y = 1; y < cellsY - 1; ++y)
         {
-            //std::cout << "Rechts, Index: " << translate3DIndTo1D(cellsX - 2, y, z) << std::endl;
-            if (conditions[1] == BoundaryCondition::Reflecting) {
+            // std::cout << "Rechts, Index: " << translate3DIndTo1D(cellsX - 2, y, z) << std::endl;
+            if (conditions[1] == BoundaryCondition::Reflecting)
+            {
                 auto lambda = createReflectingLambdaBoundary(0, static_cast<int>(domainSize_[0]));
                 lambda(cellsX - 2, y, z);
                 // createRefectingForce(cellsX - 2, y, z, 1, static_cast<int>(domainSize_[0]));
@@ -434,9 +428,10 @@ void ParticleContainerLinCel::iterBoundary2()
         // from top right corner to top left corner
         for (uint32_t x = cellsX - 2; x > 0; --x)
         {
-            //std::cout <<"Oben, Index: " << translate3DIndTo1D(x, cellsY - 2, z) << std::endl;
-            if (conditions[3] == BoundaryCondition::Reflecting) {
-                auto lambda = createReflectingLambdaBoundary(1,static_cast<int> (domainSize_[1]));
+            // std::cout <<"Oben, Index: " << translate3DIndTo1D(x, cellsY - 2, z) << std::endl;
+            if (conditions[3] == BoundaryCondition::Reflecting)
+            {
+                auto lambda = createReflectingLambdaBoundary(1, static_cast<int>(domainSize_[1]));
                 lambda(x, cellsY - 2, z);
                 // createRefectingForce(x, cellsY - 2, z, 1, static_cast<int> (domainSize_[1]));
             }
@@ -453,8 +448,9 @@ void ParticleContainerLinCel::iterBoundary2()
         for (uint32_t y = cellsY - 2; y > 0; --y)
         {
             //    std::cout << "Links, Index: " << translate3DIndTo1D(1, y, z) << std::endl;
-            if (conditions[0] == BoundaryCondition::Reflecting) {
-                auto lambda = createReflectingLambdaBoundary(0,0);
+            if (conditions[0] == BoundaryCondition::Reflecting)
+            {
+                auto lambda = createReflectingLambdaBoundary(0, 0);
                 lambda(1, y, z);
                 // createRefectingForce(1, y, z, 0,0);
             }
@@ -472,15 +468,38 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 {
     return [&](uint32_t x, uint32_t y, uint32_t z)
     {
-        unsigned int _1DIndex = translate3DIndTo1D(x, y, z);
-        cells.at(_1DIndex).clear();
+        unsigned int index1D = translate3DIndTo1D(x, y, z);
+        cells.at(index1D).clear();
     };
 }
 
-std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaHalo(int direction, int position)
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaHalo()
 {
-    // TODO
-    return [](uint32_t x, uint32_t y, uint32_t z) {};
+    return [&](uint32_t x, uint32_t y, uint32_t z)
+    {
+        auto &cell = cells.at(translate3DIndTo1D(x, y, z));
+        std::array<uint32_t, 3> paramsByIndex = {x, y, z};
+        std::array<uint32_t, 3> cellCountByIndex = {cellsX, cellsY, cellsZ};
+        for (size_t i = 0; i < 3; ++i)
+        {
+            if (paramsByIndex[i] == 0 || paramsByIndex[i] == cellCountByIndex[i])
+            {
+                // 1: left/below/behind of the boundary towards negative, everything has to be added to be valid again
+                //-1: right/obove/infront of the boundary towards positive, everything has to be subtracted to be valid again
+                double multiplicator = (paramsByIndex[i] == 0 ? 1.0 : -1.0);
+                paramsByIndex[i] += (multiplicator * cellCountByIndex[i]) + -2 * multiplicator;
+                auto &newCell = cells.at(translate3DIndTo1D(paramsByIndex[0], paramsByIndex[1], paramsByIndex[2]));
+                for (auto &p : cell)
+                {
+                    auto pos = p.getX();
+                    pos[i] += multiplicator * domainSize_[i];
+                    p.setX(pos);
+                    newCell.emplace_back(p);
+                }
+                cell.clear();
+            }
+        }
+    };
 }
 
 void ParticleContainerLinCel::iterHalo()
@@ -505,7 +524,7 @@ void ParticleContainerLinCel::iterHalo()
                 lambda = [](uint32_t x, uint32_t y, uint32_t z) {}; // do nothing
                 break;
             case BoundaryCondition::Periodic:
-                lambda /*move Lambda*/;
+                lambda = createPeriodicLambdaHalo();
                 break;
             }
             for (j = 0; j < secondaryDimension1; ++j)
@@ -522,7 +541,7 @@ void ParticleContainerLinCel::iterHalo()
     // calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
 }
 
-unsigned int ParticleContainerLinCel::translate3DIndTo1D(unsigned int x, unsigned int y, unsigned int z) const
+unsigned int ParticleContainerLinCel::translate3DIndTo1D(uint32_t x, uint32_t y, uint32_t z) const
 {
     // return lookup.at(x).at(y).at(z);
     return (x + cellsX * y + cellsX * cellsY * z);
