@@ -22,6 +22,8 @@ protected:
 	ParticleContainer(double deltaT, double endTime, int writeFrequency);
 
 public:
+	virtual ~ParticleContainer() = 0;
+
 	/**
 	 * @brief iterate over every particle pair in the container and apply the lambda function
 	 * @param f the lambda function
@@ -82,6 +84,4 @@ public:
 	void calcF(Particle &a, Particle &b);
 
 	virtual size_t getAmountOfParticles() const = 0;
-
-	~ParticleContainer();
 };

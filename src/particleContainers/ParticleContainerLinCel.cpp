@@ -27,11 +27,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     for (int i = 0; i < 6; ++i)
     {
         const char c = bounds.at(i);
-        // 0, 120, 0, 50, 1, 0 for WS3
-        const double pos = i % 2 == 0 ? 0.0 : domainSize[i / 2];
-        const int dir = i / 2;
-        auto f = force_; // TODO: lennJon.innerPairs() at the moment, replace back with boundaryPairs later //.boundaryPairs();
-
         if (c == 'r')
         {
             conditions.push_back(BoundaryCondition::Reflecting);
@@ -113,7 +108,7 @@ void ParticleContainerLinCel::simulateParticles()
 
     while (startTime_ < endTime_)
     {
-        if (iteration_ % 100 == 0)
+        if (iteration_ % outputEveryNIterations_ == 0)
         {
             std::vector<Particle> allParticles;
             allParticles.clear();
@@ -154,9 +149,9 @@ void ParticleContainerLinCel::simulateParticles()
         calculatePosition();
         // calculate new v
         calculateVelocity();
-       /* std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
-        std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
-        std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
+        /* std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+         std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
+         std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
         startTime_ += deltaT_;
     }
@@ -181,7 +176,8 @@ void ParticleContainerLinCel::calculateForces()
     }
     iterOverInnerPairs(force_);
     iterBoundary2();
-    if (gGrav != 0) {
+    if (gGrav != 0)
+    {
         addGravitationalForce();
     }
 }
@@ -234,9 +230,12 @@ void ParticleContainerLinCel::calculatePosition()
     iterHalo();
 }
 
-void ParticleContainerLinCel::calculateVelocity() {
-    for (auto &cell : cells) {
-        for (auto &p : cell) {
+void ParticleContainerLinCel::calculateVelocity()
+{
+    for (auto &cell : cells)
+    {
+        for (auto &p : cell)
+        {
             double factor = deltaT_ / (2 * p.getM());
             std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
             sumOfForces = factor * sumOfForces;
@@ -347,17 +346,10 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
     }
 }
 
-std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position)
-{
-    // TODO this should apply the forces from the opposite boundary cells to the particles in the current cell
-    return [](uint32_t x, uint32_t y, uint32_t z) {
-    };
-}
-
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
 {
     // TODO: change to reference
-    auto lambda = [=](uint32_t x, uint32_t y, uint32_t z)
+    auto lambda = [&](uint32_t x, uint32_t y, uint32_t z)
     {
         unsigned int cellIndex = translate3DIndTo1D(x, y, z);
         auto &cell = cells.at(cellIndex);
@@ -369,19 +361,26 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             ghostParticle.setX(ghostPos);
             ghostParticle.setOmega(p.getOmega());
             ghostParticle.setEpsilon(p.getEpsilon());
-           /* std::cout << "Particle position: " << p.getX() << std::endl;
-            std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
+            /* std::cout << "Particle position: " << p.getX() << std::endl;
+             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
             {
                 // TODO: another check whether the force is really repulsing
-           //     std::cout << "Difference: " << (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX())) << std::endl;
+                //     std::cout << "Difference: " << (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX())) << std::endl;
                 calcF(p, ghostParticle);
-             /*   std::cout << "Particle velocity: " << p.getV() << std::endl;
-                std::cout << "Particle force: " << p.getF() << std::endl;*/
+                /*   std::cout << "Particle velocity: " << p.getV() << std::endl;
+                   std::cout << "Particle force: " << p.getF() << std::endl;*/
             }
         }
     };
     return lambda;
+}
+
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position)
+{
+    // TODO this should apply the forces from the opposite boundary cells to the particles in the current cell
+    return [](uint32_t x, uint32_t y, uint32_t z) {
+    };
 }
 
 void ParticleContainerLinCel::iterBoundary()
@@ -712,14 +711,16 @@ const double ParticleContainerLinCel::getCutOffRadius()
     return cutoffRadius_;
 }
 
-void ParticleContainerLinCel::addGravitationalForce() {
-    for (auto &current : cells) {
-        for (auto &p : current) {
+void ParticleContainerLinCel::addGravitationalForce()
+{
+    for (auto &current : cells)
+    {
+        for (auto &p : current)
+        {
             double gravitationalForce = p.getM() * gGrav;
             auto newForce = p.getF();
             newForce.at(1) += gravitationalForce; // the gravitational force only affects the y dimension
             p.setF(newForce);
         }
     }
-
 }
