@@ -19,10 +19,10 @@ public:
     //Thermostat(double initT,double tempTarget, double maxDiff = MAX_DOUBLE);
     Thermostat(double initT,double tempTarget, double maxDiff);
     void initializeTemperature(std::vector<cell> &cells);
-    static void scaleVelocity(std::vector<cell> &cells, double newTemp);
-    static void gradualScaleVelocity(std::vector<cell> &cells, double tempToAdd);
+    void scaleVelocity(std::vector<cell> &cells, double newTemp);
+    void gradualScaleVelocity(std::vector<cell> &cells, double tempToAdd);
     void adjustTemperature();
-    static double calculateKinEnergy(std::vector<cell> &cells);
-    static  double calculateCurrentTemperature(int nrParticles, double kineticEnergy);
+    double calculateKinEnergy(std::vector<cell> &cells);
+    double calculateCurrentTemperature(int nrParticles, double kineticEnergy);
     void regulateTemperature(std::vector<cell> &cells, int nrParticles);
 };
