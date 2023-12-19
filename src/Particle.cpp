@@ -18,7 +18,7 @@ Particle::Particle(int type_arg)
   old_f = {0., 0., 0.};
 }
 
-Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, int type_arg, int epsilon_arg, int omega_arg) : x(x_arg), v(v_arg), m(m_arg), type(type_arg), omega(omega_arg), epsilon(epsilon_arg)
+Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, int type_arg, int epsilon_arg, int sigma_arg) : x(x_arg), v(v_arg), m(m_arg), type(type_arg), sigma(sigma_arg), epsilon(epsilon_arg)
 {
   f = {0., 0., 0.};
   old_f = {0., 0., 0.};
@@ -34,8 +34,8 @@ const std::array<double, 3> &Particle::getF() const { return f; }
 
 const std::array<double, 3> &Particle::getOldF() const { return old_f; }
 
-double Particle::getOmega() {
-    return this->omega;
+double Particle::getSigma() {
+    return this->sigma;
 }
 
 double Particle::getEpsilon() {
@@ -67,8 +67,8 @@ void Particle::setOldF(std::array<double, 3> &force)
   old_f = force;
 }
 
-void Particle::setOmega(double omega_arg){
-    omega = omega_arg;
+void Particle::setSigma(double sigma_arg){
+    sigma = sigma_arg;
 }
 
 void Particle::setEpsilon(double epsilon_arg){

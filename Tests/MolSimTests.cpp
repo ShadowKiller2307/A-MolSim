@@ -464,7 +464,7 @@ TEST_F(MolSimTest, testHoldingATemperature) {
 TEST_F(MolSimTest, testParticleCreation) {
     Particle a{{1.5, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0};
     //check if the default initialization of epsilon and omega
-    EXPECT_EQ(a.getOmega(), 1);
+    EXPECT_EQ(a.getSigma(), 1);
     EXPECT_EQ(a.getEpsilon(), 5);
 }
 

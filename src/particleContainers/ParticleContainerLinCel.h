@@ -1,6 +1,7 @@
 #pragma once
 #include "particleContainers/ParticleContainer.h"
 #include "forces/Force.h"
+#include "Thermostat.h"
 
 enum class BoundaryCondition
 {
@@ -42,8 +43,11 @@ private:
     // isGradual ? gradual velocity scaling : direct temperature setting;
     bool isGradual;
     // the thermostat for this container
-    // Thermostat thermostat;
+   // Thermostat thermostat;
+    double tempTarget;
+    double maxDiff;
     void buildLookUp();
+    double initT = 0;
     double gGrav;
 
 public:

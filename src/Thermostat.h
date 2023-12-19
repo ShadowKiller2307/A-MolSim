@@ -8,8 +8,8 @@ using cell = std::vector<Particle>;
 class Thermostat
 {
 private:
-    const int NR_DIMENSIONS = 2;
-    const double MAX_DOUBLE = std::numeric_limits<double>::max();
+    int NR_DIMENSIONS = 2;
+    double MAX_DOUBLE = std::numeric_limits<double>::max();
     double currentTemperature;
     double temperatureTarget;
     double maxTemperatureDifference;

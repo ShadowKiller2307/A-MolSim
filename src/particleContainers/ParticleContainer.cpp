@@ -145,23 +145,23 @@ void ParticleContainer::setParticles(std::vector<Particle> &particles)
 void ParticleContainer::calcF(Particle &a, Particle &b)
 {
     //TODO: implement the Lorentz-Berthelot mixing rule
-    double omega_new;
+    double sigma_new;
     double epsilon_new;
    /* std::cout << "Particle a, omega: " << a.getOmega() << std::endl;
     std::cout << "Particle a, epsilon: " << a.getEpsilon() << std::endl;
     std::cout << "Particle b, omega: " << b.getOmega() << std::endl;
     std::cout << "Particle b, epsilon: " << b.getEpsilon() << std::endl;*/
-    if ((a.getOmega() != b.getOmega()) || (a.getEpsilon() != b.getEpsilon())) { //particles a and b are of different types
+    if ((a.getSigma() != b.getSigma()) || (a.getEpsilon() != b.getEpsilon())) { //particles a and b are of different types
         //apply the Lorentz-Berthelot mixing rule
        // std::cout << "Falscher if Zweig" << std::endl;
-        omega_new = (a.getOmega()+b.getOmega())/2.0;
+        sigma_new = (a.getSigma()+b.getSigma())/2.0;
         epsilon_new = std::sqrt((a.getEpsilon()*b.getEpsilon()));
       /*  std::cout << "Omega: " << omega_new << std::endl;
         std::cout << "Epsilon: " << epsilon_new << std::endl;*/
     }
     else { //particles a and b are of the same type
       //  std::cout << "Richtiger if Zweig" << std::endl;
-        omega_new = a.getOmega();
+        sigma_new = a.getSigma();
         epsilon_new = a.getEpsilon();
        /* std::cout << "Omega: " << omega_new << std::endl;
         std::cout << "Epsilon: " << epsilon_new << std::endl;*/
@@ -169,7 +169,7 @@ void ParticleContainer::calcF(Particle &a, Particle &b)
     auto diff = a.getX() - b.getX();
     double norm = ArrayUtils::L2Norm(diff);
     double first = (-24 * epsilon_new) / (norm * norm);
-    double frac = omega_new / norm;
+    double frac = sigma_new / norm;
     double pow6 = std::pow(frac, 6);
     double pow12 = 2 * std::pow(pow6, 2);
     double middle = (pow6 - pow12);

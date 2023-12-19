@@ -46,7 +46,7 @@ private:
    */
   int type;
 
-  double omega = 1;
+  double sigma = 1;
 
   double epsilon = 5;
 
@@ -69,7 +69,7 @@ public:
 
   const std::array<double, 3> &getOldF() const;
 
-  double getOmega();
+  double getSigma();
 
   double getEpsilon();
 
@@ -81,7 +81,7 @@ public:
 
   void setV(std::array<double, 3> &velocity);
 
-  void setOmega(double omega_arg);
+  void setSigma(double sigma_arg);
 
   void setEpsilon(double epsilon_arg);
 

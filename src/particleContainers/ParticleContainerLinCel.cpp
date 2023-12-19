@@ -80,7 +80,13 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     // initialize the thermostat
     // Thermostat temp {initT, tempTarget, maxDiff};
     // thermostat = temp;
-    //  thermostat{initT, tempTarget, maxDiff};
+    this->useThermostat = useThermostat;
+    this->nThermostat = nThermostat;
+    this->isGradual = isGradual;
+    this->initT = initT;
+    this->tempTarget = tempTarget;
+    this->maxDiff = maxDiff;
+   // this->thermostat = Thermostat{initT, tempTarget, maxDiff};
     // thermostat{initT, tempTarget, maxDiff};
 }
 
@@ -145,9 +151,9 @@ void ParticleContainerLinCel::simulateParticles()
             }
         }
         // check whether the Thermostat should be applied
-        /* if (use(iteration_ % nThermostat) == 0) {
+         if (useThermostat && ((iteration_ % nThermostat) == 0)) {
              //apply thermostat
-         }*/
+         }
         // calculate new f
         calculateForces();
         // calculate new x
@@ -367,7 +373,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             auto ghostPos = p.getX();
             ghostPos[direction] = position + (position - ghostPos[direction]);
             ghostParticle.setX(ghostPos);
-            ghostParticle.setOmega(p.getOmega());
+            ghostParticle.setSigma(p.getSigma());
             ghostParticle.setEpsilon(p.getEpsilon());
            /* std::cout << "Particle position: " << p.getX() << std::endl;
             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
