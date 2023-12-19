@@ -44,6 +44,7 @@ private:
     // the thermostat for this container
     // Thermostat thermostat;
     void buildLookUp();
+    double gGrav;
 
 public:
     /**
@@ -63,7 +64,8 @@ public:
                             bool useThermostat = false, double nThermostat = 100,
                             bool isGradual = true, double initT = 0,
                             double tempTarget = 20,
-                            double maxDiff = 0.5);
+                            double maxDiff = 0.5,
+                            double gGrav = 0);
 
     /**
      * @brief destructor
@@ -99,6 +101,8 @@ public:
      * @return void
      */
     void calculatePosition() override;
+
+    void calculateVelocity() override;
 
     void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
@@ -186,4 +190,6 @@ public:
     const std::array<double, 3> &getDomainSize();
 
     const double getCutOffRadius();
+
+    void addGravitationalForce();
 };

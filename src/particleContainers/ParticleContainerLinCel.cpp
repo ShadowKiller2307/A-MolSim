@@ -15,7 +15,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
                                                  bool useThermostat, double nThermostat,
                                                  bool isGradual, double initT,
                                                  double tempTarget,
-                                                 double maxDiff) : ParticleContainer(deltaT, endTime, writeFrequency)
+                                                 double maxDiff, double gGrav_arg) : ParticleContainer(deltaT, endTime, writeFrequency)
 {
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
@@ -75,6 +75,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         cells.emplace_back();
     }
     buildLookUp();
+    gGrav = gGrav_arg;
     // std::cout << "constructor end\n";
     // initialize the thermostat
     // Thermostat temp {initT, tempTarget, maxDiff};
@@ -153,6 +154,9 @@ void ParticleContainerLinCel::simulateParticles()
         calculatePosition();
         // calculate new v
         calculateVelocity();
+       /* std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+        std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
+        std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
         startTime_ += deltaT_;
     }
@@ -177,6 +181,9 @@ void ParticleContainerLinCel::calculateForces()
     }
     iterOverInnerPairs(force_);
     iterBoundary2();
+    if (gGrav != 0) {
+        addGravitationalForce();
+    }
 }
 
 void ParticleContainerLinCel::calculatePosition()
@@ -225,6 +232,21 @@ void ParticleContainerLinCel::calculatePosition()
         cells.at(translate3DPosTo1D(i.getX())).emplace_back(i);
     }
     iterHalo();
+}
+
+void ParticleContainerLinCel::calculateVelocity() {
+    for (auto &cell : cells) {
+        for (auto &p : cell) {
+            double factor = deltaT_ / (2 * p.getM());
+            std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
+            sumOfForces = factor * sumOfForces;
+            std::array<double, 3> newVelocity = p.getV() + sumOfForces;
+
+            // TODO (ADD): Log
+            // ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
+            p.setV(newVelocity);
+        }
+    }
 }
 
 void ParticleContainerLinCel::iterOverAllParticles(const std::function<void(std::vector<Particle>::iterator)> &f)
@@ -345,10 +367,17 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             auto ghostPos = p.getX();
             ghostPos[direction] = position + (position - ghostPos[direction]);
             ghostParticle.setX(ghostPos);
+            ghostParticle.setOmega(p.getOmega());
+            ghostParticle.setEpsilon(p.getEpsilon());
+           /* std::cout << "Particle position: " << p.getX() << std::endl;
+            std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
             {
                 // TODO: another check whether the force is really repulsing
+           //     std::cout << "Difference: " << (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX())) << std::endl;
                 calcF(p, ghostParticle);
+             /*   std::cout << "Particle velocity: " << p.getV() << std::endl;
+                std::cout << "Particle force: " << p.getF() << std::endl;*/
             }
         }
     };
@@ -681,4 +710,16 @@ const std::array<double, 3> &ParticleContainerLinCel::getDomainSize()
 const double ParticleContainerLinCel::getCutOffRadius()
 {
     return cutoffRadius_;
+}
+
+void ParticleContainerLinCel::addGravitationalForce() {
+    for (auto &current : cells) {
+        for (auto &p : current) {
+            double gravitationalForce = p.getM() * gGrav;
+            auto newForce = p.getF();
+            newForce.at(1) += gravitationalForce; // the gravitational force only affects the y dimension
+            p.setF(newForce);
+        }
+    }
+
 }

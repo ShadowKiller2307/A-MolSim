@@ -46,6 +46,10 @@ private:
    */
   int type;
 
+  double omega = 1;
+
+  double epsilon = 5;
+
 public:
   explicit Particle(int type = 0);
 
@@ -53,7 +57,7 @@ public:
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second
       std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
-      int type = 0);
+      int type = 0, int epsilon_arg=5, int omega_arg=1);
 
   virtual ~Particle();
 
@@ -65,6 +69,10 @@ public:
 
   const std::array<double, 3> &getOldF() const;
 
+  double getOmega();
+
+  double getEpsilon();
+
   void setF(std::array<double, 3> &force);
 
   void addF(std::array<double, 3> &force);
@@ -72,6 +80,10 @@ public:
   void setX(std::array<double, 3> &xPosition);
 
   void setV(std::array<double, 3> &velocity);
+
+  void setOmega(double omega_arg);
+
+  void setEpsilon(double epsilon_arg);
 
   void setOldF(std::array<double, 3> &force);
 

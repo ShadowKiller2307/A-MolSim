@@ -2,7 +2,7 @@
   "params":{
     "numParticles": 2,
     "deltaT": 0.0002,
-    "endTime": 5,
+    "endTime": 15,
     "containerType": "LinCel",
     "boundaries": "rrrrrr",
     "cutoffRadius": 3.0,
@@ -11,8 +11,8 @@
   "particles": [{
     "shape": "cuboid",
     "x": [
-      0.0,
-      0.0,
+      1.0,
+      1.0,
       0.0
     ],
     "v": [
