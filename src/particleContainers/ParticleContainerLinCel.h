@@ -108,6 +108,8 @@ public:
      */
     void iterBoundary();
 
+    void iterBoundary2();
+
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createOutflowLambdaHalo();
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaHalo(int direction, int position);
 
