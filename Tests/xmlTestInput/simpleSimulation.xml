@@ -7,8 +7,19 @@
     <logLevel>2</logLevel>
     <domainSize>120 50 1</domainSize>
     <containerType>LinCel</containerType>
-    <boundaries>Outflow</boundaries>
+    <boundaries>rororr</boundaries>
     <cutOffRadius>3</cutOffRadius>
+    <gGrav>10</gGrav>
+    <useThermostat>true</useThermostat>
+
+    <Thermostat>
+        <initialTemperature>40</initialTemperature>
+        <nThermostat>10</nThermostat>
+        <isGradual>true</isGradual>
+        <temperatureTarget>60</temperatureTarget>
+        <maxDifference>15</maxDifference>
+    </Thermostat>
+
 
 
 

@@ -367,8 +367,16 @@ TEST_F(MolSimTest, testSimpleSimulationParameters)
     EXPECT_EQ(simulationConstructor.getDomainSize().at(2), 1);
 
     EXPECT_EQ(simulationConstructor.getContainerType(), "LinCel");
-    EXPECT_EQ(simulationConstructor.getBoundaries(), "Outflow");
+    EXPECT_EQ(simulationConstructor.getBoundaries(), "rororr");
     EXPECT_EQ(simulationConstructor.getCutOffRadius(), 3);
+    EXPECT_EQ(simulationConstructor.getGrav(),10);
+    EXPECT_EQ(simulationConstructor.isUseThermostat(),true);
+    EXPECT_EQ(simulationConstructor.getIsGradual(),true);
+
+    EXPECT_EQ(simulationConstructor.getInitialTemp(),40);
+    EXPECT_EQ(simulationConstructor.getNThermostat(),10);
+    EXPECT_EQ(simulationConstructor.getTempTarget(),60);
+    EXPECT_EQ(simulationConstructor.getMaxDiff(),15);
 }
 /// This test checks if the parameters of two spheres are retrieved correctly
 TEST_F(MolSimTest, testSimpleSphereParameters)
@@ -533,6 +541,17 @@ TEST_F(MolSimTest, testHoldingATemperature) {
 
 
 //////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY BEGIN ///////////////////
+
+TEST_F(MolSimTest, testPeriodicBoundaryNew) {
+    ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
+    linCelTest.add({1.5, 1.5, 0.5}, {-0.1, 0.0, 0.0}, 1, 0);
+    linCelTest.add({2.8, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0);
+    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
+    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
+    std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
+    // linCelTest.getCells().at()
+    linCelTest.simulateParticles();
+}
 
 TEST_F(MolSimTest, testParticleCreation) {
     Particle a{{1.5, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0};

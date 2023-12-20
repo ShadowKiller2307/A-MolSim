@@ -23,6 +23,8 @@ private:
     /// The object containing all the extracted simulation parameters
     SimulationConstructor simulationConstructor;
 
+    bool thermostatPresent;
+
 public:
     /***
      * The use of explicit helps avoiding unexpected conversions
@@ -59,4 +61,6 @@ public:
     std::vector<CuboidConstructor> getCuboidConstructors();
     ///Getter for the vector of sphereConstructors
     std::vector<SphereConstructor> getSphereConstructors();
+    bool isThermostatPresent() const;
+
 };

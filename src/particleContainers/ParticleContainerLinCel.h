@@ -150,6 +150,8 @@ public:
      */
     void iterHalo();
 
+    void iterHalo2();
+
     /**
      * @brief translate a 3D cell index to a 1D cell index(for our cells vector)
      * first index (0,0,0) corresponds to the left front corner cell within the domain (so not halo cells)

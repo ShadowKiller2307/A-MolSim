@@ -229,7 +229,7 @@ void ParticleContainerLinCel::calculateForces()
         }
     }
     iterOverInnerPairs(force_);
-    iterBoundary2();
+   // iterBoundary2();
     if (gGrav != 0)
     {
         addGravitationalForce();
@@ -281,7 +281,7 @@ void ParticleContainerLinCel::calculatePosition()
         }
         cells.at(translate3DPosTo1D(i.getX())).emplace_back(i);
     }
-    iterHalo();
+    iterHalo2();
 }
 
 void ParticleContainerLinCel::calculateForcesWithIndices(std::array<uint32_t, 3> &myCoordinates, std::array<uint32_t, 3> &otherCoordinates)
@@ -468,7 +468,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary()
 {
     // returns a std::array<uint32_t, 3> containing the coordinates of the correct boundary cell if x2, y2, z2 is in the halo cells and we therefore should calculate the interactions
-    auto isBoundaryOnTheOtherSide = [&](std::array<uint32_t, 3> &myCoordinates, uint32_t x2, uint32_t y2, uint32_t z2)
+    auto isBoundaryOnTheOtherSide = [=](std::array<uint32_t, 3> &myCoordinates, uint32_t x2, uint32_t y2, uint32_t z2)
     {
         std::array<uint32_t, 3> coordinates = {x2, y2, z2};
         bool changed = false;
@@ -495,7 +495,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         return o;
     };
     // apply the forces from the opposite boundary cells to the particles in the current cell and vice versa
-    return [&](uint32_t x, uint32_t y, uint32_t z)
+    return [=](uint32_t x, uint32_t y, uint32_t z)
     {
         std::optional<std::array<uint32_t, 3>> opt;
         std::array<uint32_t, 3> myCoordinates = {x, y, z};
@@ -659,7 +659,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaHalo()
 {
-    return [&](uint32_t x, uint32_t y, uint32_t z)
+    return [=](uint32_t x, uint32_t y, uint32_t z)
     {
         auto &cell = cells.at(translate3DIndTo1D(x, y, z));
         std::array<uint32_t, 3> paramsByIndex = {x, y, z};
@@ -722,6 +722,36 @@ void ParticleContainerLinCel::iterHalo()
     calculateBothPlanesInDirection(cellsX, cellsY, cellsZ, 0);
     calculateBothPlanesInDirection(cellsY, cellsX, cellsZ, 1);
     // calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
+}
+
+
+void ParticleContainerLinCel::iterHalo2() {
+    int z = 1;
+    for (int x = 0; x <= cellsX - 1; ++x) {
+        if (conditions[2] == BoundaryCondition::Periodic) {
+            auto lambda = createPeriodicLambdaHalo();
+            lambda(x, 0, z);
+        }
+    }
+    for (int y = 0; y <= cellsY - 1; ++y) {
+        if (conditions[1] == BoundaryCondition::Periodic) {
+            auto lambda = createPeriodicLambdaHalo();
+            lambda(cellsX-1, y, z);
+        }
+    }
+    for (int x = cellsX-1; x >= 0; --x) {
+        if (conditions[3] == BoundaryCondition::Periodic) {
+            auto lambda = createPeriodicLambdaHalo();
+            lambda(x, cellsY-1, z);
+        }
+    }
+    for (int y = cellsY-1; y >= 0; --y) {
+        if (conditions[0] == BoundaryCondition::Periodic) {
+            auto lambda = createPeriodicLambdaHalo();
+            lambda(0, y, z);
+        }
+    }
+
 }
 
 unsigned int ParticleContainerLinCel::translate3DIndTo1D(uint32_t x, uint32_t y, uint32_t z) const

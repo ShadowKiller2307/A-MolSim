@@ -7,6 +7,7 @@ XMLReader::XMLReader(std::string &path) {
     try {
         this->simulation = Configuration(path, xml_schema::flags::dont_validate);
         simulationConstructor = SimulationConstructor();
+        thermostatPresent = false;
     }
     catch (xml_schema::exception &e) {
         throw std::invalid_argument(std::string(e.what()));
@@ -29,19 +30,37 @@ void XMLReader::extractSimulationParameters() {
     double gGrav = simulation->gGrav();
     bool useThermostat = simulation->useThermostat();
 
-    auto thermostat = simulation->Thermostat().get();
 
-    double initialTemp = thermostat.initialTemperature();
-    unsigned int nThermostat = thermostat.nThermostat();
-    double tempTarget = thermostat.temperatureTarget();
-    double maxDiff = thermostat.maxDifference();
+
+    if(!simulation->Thermostat().present()){
+
+        simulationConstructor.setAllSimulationParameters(t, delta, level,
+                                                         frequency, domainSize,
+                                                         containerType, name,boundaries,cutOffRadius,
+                                                         gGrav,false,false,
+                                                         -1,-1,
+                                                         -1,-1);
+        return;
+    }
+
+
+        thermostatPresent = true;
+        auto thermostat = simulation->Thermostat().get();
+
+        double initialTemp = thermostat.initialTemperature();
+        unsigned int nThermostat = thermostat.nThermostat();
+        double tempTarget = thermostat.temperatureTarget();
+        double maxDiff = thermostat.maxDifference();
+        bool isGradual = thermostat.isGradual();
+
 
 
 
     simulationConstructor.setAllSimulationParameters(t, delta, level,
                                                      frequency, domainSize,
                                                      containerType, name,boundaries,cutOffRadius,
-                                                     gGrav,useThermostat,initialTemp,nThermostat,
+                                                     gGrav,useThermostat,isGradual,
+                                                     initialTemp,nThermostat,
                                                      tempTarget,maxDiff);
 
 }
@@ -105,6 +124,11 @@ std::vector<CuboidConstructor> XMLReader::getCuboidConstructors() {
 std::vector<SphereConstructor> XMLReader::getSphereConstructors() {
     return this->sphereConstructors;
 }
+
+bool XMLReader::isThermostatPresent() const {
+    return thermostatPresent;
+}
+
 
 
 

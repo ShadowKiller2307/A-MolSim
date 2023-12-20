@@ -17,6 +17,7 @@ private:
 
     double gGrav = 10;
     bool useThermostat = false;
+    bool isGradual = true;
 
 
     double initialTemp;
@@ -30,7 +31,7 @@ public:
     void setAllSimulationParameters(double t_end, double delta_t, int logLevel, int writeFrequency,
                                     std::array<double,3>& domainSize,std::string& containerType,
                                     std::string& baseName,std::string& bound,double cutOffR,
-                                    double g_Grav, bool use_Thermostat, double initial_Temp, unsigned int
+                                    double g_Grav, bool use_Thermostat,bool is_Gradual, double initial_Temp, unsigned int
                                     n_Thermostat, double temp_Target, double max_Diff);
 
 
@@ -46,6 +47,10 @@ public:
     double getGrav() const;
     bool isUseThermostat() const;
     double getInitialTemp() const;
+    unsigned int getNThermostat() const;
+    double getTempTarget() const;
+    double getMaxDiff() const;
+    bool getIsGradual() const;
 
 };
 

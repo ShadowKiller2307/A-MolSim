@@ -7,7 +7,8 @@
 void SimulationConstructor::setAllSimulationParameters(double t, double delta, int level, int frequency,
                                                        std::array<double,3>& dSize,std::string& cType,
                                                        std::string& name,std::string& bound,double cutOffR,
-                                                       double g_Grav, bool use_Thermostat, double initial_Temp, unsigned int
+                                                       double g_Grav, bool use_Thermostat,bool is_Gradual,
+                                                       double initial_Temp, unsigned int
                                                        n_Thermostat, double temp_Target, double max_Diff) {
     this->t_end = t;
     this->delta_t = delta;
@@ -24,6 +25,7 @@ void SimulationConstructor::setAllSimulationParameters(double t, double delta, i
     this->nThermostat = n_Thermostat;
     this->tempTarget = temp_Target;
     this->maxDiff = max_Diff;
+    this->isGradual = is_Gradual;
 }
 
 
@@ -66,6 +68,34 @@ std::string SimulationConstructor::getBoundaries() const {
 
 double SimulationConstructor::getCutOffRadius() const {
     return cutOffRadius;
+}
+
+double SimulationConstructor::getGrav() const {
+    return gGrav;
+}
+
+bool SimulationConstructor::isUseThermostat() const {
+    return useThermostat;
+}
+
+double SimulationConstructor::getInitialTemp() const {
+    return initialTemp;
+}
+
+unsigned int SimulationConstructor::getNThermostat() const {
+    return nThermostat;
+}
+
+double SimulationConstructor::getTempTarget() const {
+    return tempTarget;
+}
+
+double SimulationConstructor::getMaxDiff() const {
+    return maxDiff;
+}
+
+bool SimulationConstructor::getIsGradual() const {
+    return isGradual;
 }
 
 
