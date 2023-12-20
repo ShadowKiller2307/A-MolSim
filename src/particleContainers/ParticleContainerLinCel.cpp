@@ -81,7 +81,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     this->initT = initT;
     this->tempTarget = tempTarget;
     this->maxDiff = maxDiff;
-   // this->thermostat = Thermostat{initT, tempTarget, maxDiff};
+    // this->thermostat = Thermostat{initT, tempTarget, maxDiff};
     // thermostat{initT, tempTarget, maxDiff};
 }
 
@@ -146,34 +146,42 @@ void ParticleContainerLinCel::simulateParticles()
             }
         }
         // check whether the Thermostat should be applied
-         if (useThermostat && ((iteration_ % nThermostat) == 0)) {
-             //apply thermostat
-             // 1. calculate the kinetic energy
-             double currentE = calculateKinEnergy();
-             // 2. calculate the current temperature
-             double currentTemp = calculateTemperature();
-             // 3. calculate the new desired temperature
-             double desiredTemp;
-             double currentDiff = tempTarget - currentTemp;
-             if (isGradual) {
-                 if (fabs(currentDiff) <= maxDiff) {
-                     desiredTemp += currentDiff;
-                     scaleVelocity(currentTemp, desiredTemp);
-                 }
-                 else {
-                     if (currentDiff >= 0) {
-                         desiredTemp += maxDiff;
-                     } else {
-                         desiredTemp -= maxDiff;
-                     }
-                     scaleVelocity(currentTemp, desiredTemp);
-                 }
-             }
-             else { // directly set the new temp
-                 desiredTemp += currentDiff;
-                 scaleVelocity(currentTemp, desiredTemp);
-             }
-         }
+        if (useThermostat && ((iteration_ % nThermostat) == 0))
+        {
+            // apply thermostat
+            //  1. calculate the kinetic energy
+            double currentE = calculateKinEnergy();
+            // 2. calculate the current temperature
+            double currentTemp = calculateTemperature();
+            // 3. calculate the new desired temperature
+            double desiredTemp;
+            double currentDiff = tempTarget - currentTemp;
+            if (isGradual)
+            {
+                if (fabs(currentDiff) <= maxDiff)
+                {
+                    desiredTemp += currentDiff;
+                    scaleVelocity(currentTemp, desiredTemp);
+                }
+                else
+                {
+                    if (currentDiff >= 0)
+                    {
+                        desiredTemp += maxDiff;
+                    }
+                    else
+                    {
+                        desiredTemp -= maxDiff;
+                    }
+                    scaleVelocity(currentTemp, desiredTemp);
+                }
+            }
+            else
+            { // directly set the new temp
+                desiredTemp += currentDiff;
+                scaleVelocity(currentTemp, desiredTemp);
+            }
+        }
         // calculate new f
         calculateForces();
         // calculate new x
@@ -379,7 +387,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
 {
-    // TODO: change to reference
     auto lambda = [&](uint32_t x, uint32_t y, uint32_t z)
     {
         unsigned int cellIndex = translate3DIndTo1D(x, y, z);
@@ -409,8 +416,15 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position)
 {
+    auto isBoundaryOnTheOtherSide = [](uint32_t x, uint32_t y, uint32_t z, uint32_t x2, uint32_t y2, uint32_t z2)
+    {
+        std::array<uint32_t, 3> coordinates;
+        return std::make_optional(coordinates);
+    };
     // TODO this should apply the forces from the opposite boundary cells to the particles in the current cell
-    return [](uint32_t x, uint32_t y, uint32_t z) {
+    return [](uint32_t x, uint32_t y, uint32_t z)
+    {
+        // right cell
     };
 }
 
@@ -740,7 +754,6 @@ void ParticleContainerLinCel::addGravitationalForce()
 
 ////////////////////////////////////////////////////////THERMOSTAT BEGIN////////////////////////////////////////////////
 
-
 double ParticleContainerLinCel::calculateKinEnergy()
 {
     double energy = 0.0;
@@ -759,16 +772,18 @@ double ParticleContainerLinCel::calculateTemperature()
     return (calculateKinEnergy() * 2) / (getAmountOfParticles() * numberofDimensions);
 }
 
-void ParticleContainerLinCel::scaleVelocity(double currentTemp, double newTemp) {
+void ParticleContainerLinCel::scaleVelocity(double currentTemp, double newTemp)
+{
     double div = currentTemp / newTemp;
     double beta = std::pow(div, 1 / 2.0);
-    for (auto &cell: cells) {
-        for (auto &p: cell) {
+    for (auto &cell : cells)
+    {
+        for (auto &p : cell)
+        {
             auto scaledVelocity = beta * p.getV();
             p.setV(scaledVelocity);
         }
     }
 }
-
 
 ///////////////////////////////////////////////////////THERMOSTAT END //////////////////////////////////////////////////

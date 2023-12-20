@@ -1,10 +1,6 @@
 #pragma once
 #include "spdlog/spdlog.h"
 
-
-
-
-
 /**
  * @brief print the usage of the program to stdout
  * @param None
