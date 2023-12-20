@@ -294,6 +294,13 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     EXPECT_EQ(containerDirSum.getParticles().at(2)->getF(), expectedValuesThree);
 }*/
 
+
+
+
+
+
+////////////////////////////////////////////////////// TESTS FOR THE XML INPUT BEGIN ///////////////////////////////////
+
 /// This test checks if the one number of cuboids in the xml file is retrieved correctly
 
 TEST_F(MolSimTest, testSimpleCuboid)
@@ -402,6 +409,11 @@ TEST_F(MolSimTest, testSimpleSphereParameters)
     EXPECT_EQ(sphereConstructor1.getMass(), 1.0);
 }
 
+//////////////////////////////////////////////// TESTS FOR THE XML INPUT END ///////////////////////////////////////////
+
+
+/////////////////////////////////////////////// TEST FOR THE BOUNDARY CONDITIONS BEGIN /////////////////////////////////
+
 TEST_F(MolSimTest, testCreateReflecting)
 {
     ParticleContainerLinCel linCelTest{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.5};
@@ -449,6 +461,15 @@ TEST_F(MolSimTest, testIterBoundaryIndex)
 {
 }
 
+///////////////////////////////////////////////////// TESTS FOR THE BOUNDARY CONDITIONS END ////////////////////////////
+
+
+///////////////////////////////////////////////////// TESTS FOR THE THERMOSTAT BEGIN ///////////////////////////////////
+
+TEST_F(MolSimTest, initializeTemperature) {
+    // first call the particle generator with the desired initial temperature
+}
+
 TEST_F(MolSimTest, testHeating) {
 
 }
@@ -460,6 +481,12 @@ TEST_F(MolSimTest, testCooling) {
 TEST_F(MolSimTest, testHoldingATemperature) {
 
 }
+
+//////////////////////////////////////////////////// TESTS FOR THE THERMOSTAT END //////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY BEGIN ///////////////////
 
 TEST_F(MolSimTest, testParticleCreation) {
     Particle a{{1.5, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0};
@@ -475,3 +502,5 @@ TEST_F(MolSimTest, testPeriodicBoundary) {
 TEST_F(MolSimTest, testRayleighTaylorInstability) {
 
 }
+
+//////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY END /////////////////////

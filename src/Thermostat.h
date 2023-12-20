@@ -3,7 +3,7 @@
 #include <vector>
 #include "Particle.h"
 #include <limits>
-
+/*
 using cell = std::vector<Particle>;
 class Thermostat
 {
@@ -25,4 +25,4 @@ public:
     double calculateKinEnergy(std::vector<cell> &cells);
     double calculateCurrentTemperature(int nrParticles, double kineticEnergy);
     void regulateTemperature(std::vector<cell> &cells, int nrParticles);
-};
+};*/

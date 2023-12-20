@@ -162,10 +162,6 @@ public:
      */
     unsigned int translate3DPosTo1D(std::array<double, 3> position) const;
 
-    double calculateKinEnergy();
-
-    double calculateTemperature();
-
     /**
      * @brief return the number of all particles in all the cells of the LinCel container
      * @param None
@@ -196,4 +192,14 @@ public:
     const double getCutOffRadius();
 
     void addGravitationalForce();
+
+    /////////////////////////////THERMOSTAT BEGIN //////////////////////////////////////////////////////////////////////
+
+    double calculateKinEnergy();
+
+    double calculateTemperature();
+
+    void scaleVelocity(double currentTemp, double newTemp);
+
+    //////////////////////////////THERMOSTAT END //////////////////////////////////////////////////////////////////////
 };

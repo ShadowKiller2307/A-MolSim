@@ -2,6 +2,7 @@
 #include "Thermostat.h"
 #include "utils/ArrayUtils.h"
 #include "../src/logOutputManager/LogManager.h"
+/*
 
 Thermostat::Thermostat(double initT,double tempTarget, double maxDiff) {
 
@@ -83,3 +84,4 @@ void Thermostat::regulateTemperature(std::vector<cell> &cells, int nrParticles) 
     double kineticEnergy = calculateKinEnergy(cells);
     calculateCurrentTemperature(nrParticles,kineticEnergy);
 }
+*/

@@ -148,6 +148,31 @@ void ParticleContainerLinCel::simulateParticles()
         // check whether the Thermostat should be applied
          if (useThermostat && ((iteration_ % nThermostat) == 0)) {
              //apply thermostat
+             // 1. calculate the kinetic energy
+             double currentE = calculateKinEnergy();
+             // 2. calculate the current temperature
+             double currentTemp = calculateTemperature();
+             // 3. calculate the new desired temperature
+             double desiredTemp;
+             double currentDiff = tempTarget - currentTemp;
+             if (isGradual) {
+                 if (fabs(currentDiff) <= maxDiff) {
+                     desiredTemp += currentDiff;
+                     scaleVelocity(currentTemp, desiredTemp);
+                 }
+                 else {
+                     if (currentDiff >= 0) {
+                         desiredTemp += maxDiff;
+                     } else {
+                         desiredTemp -= maxDiff;
+                     }
+                     scaleVelocity(currentTemp, desiredTemp);
+                 }
+             }
+             else { // directly set the new temp
+                 desiredTemp += currentDiff;
+                 scaleVelocity(currentTemp, desiredTemp);
+             }
          }
         // calculate new f
         calculateForces();
@@ -651,24 +676,6 @@ void ParticleContainerLinCel::buildLookUp()
     }
 }
 
-double ParticleContainerLinCel::calculateKinEnergy()
-{
-    double energy = 0.0;
-    auto energyLambda = [&energy](ParticleContainerLinCel::cell::iterator it)
-    {
-        energy += (*it).getM() * std::inner_product((*it).getV().begin(), (*it).getV().end(), (*it).getV().begin(), 0.0) / 2;
-    };
-    iterOverAllParticles(energyLambda);
-    return energy;
-}
-
-double ParticleContainerLinCel::calculateTemperature()
-{
-    // current simulations only in 2D
-    auto numberofDimensions = 2;
-    return (calculateKinEnergy() * 2) / (getAmountOfParticles() * numberofDimensions);
-}
-
 size_t ParticleContainerLinCel::getAmountOfParticles() const
 {
     size_t acc = 0;
@@ -730,3 +737,38 @@ void ParticleContainerLinCel::addGravitationalForce()
         }
     }
 }
+
+////////////////////////////////////////////////////////THERMOSTAT BEGIN////////////////////////////////////////////////
+
+
+double ParticleContainerLinCel::calculateKinEnergy()
+{
+    double energy = 0.0;
+    auto energyLambda = [&energy](ParticleContainerLinCel::cell::iterator it)
+    {
+        energy += (*it).getM() * std::inner_product((*it).getV().begin(), (*it).getV().end(), (*it).getV().begin(), 0.0) / 2;
+    };
+    iterOverAllParticles(energyLambda);
+    return energy;
+}
+
+double ParticleContainerLinCel::calculateTemperature()
+{
+    // current simulations only in 2D
+    auto numberofDimensions = 2;
+    return (calculateKinEnergy() * 2) / (getAmountOfParticles() * numberofDimensions);
+}
+
+void ParticleContainerLinCel::scaleVelocity(double currentTemp, double newTemp) {
+    double div = currentTemp / newTemp;
+    double beta = std::pow(div, 1 / 2.0);
+    for (auto &cell: cells) {
+        for (auto &p: cell) {
+            auto scaledVelocity = beta * p.getV();
+            p.setV(scaledVelocity);
+        }
+    }
+}
+
+
+///////////////////////////////////////////////////////THERMOSTAT END //////////////////////////////////////////////////
