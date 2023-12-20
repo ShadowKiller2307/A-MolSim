@@ -2,6 +2,7 @@
 #include "logOutputManager/LogManager.h"
 #include <iostream>
 #include <array>
+#include <optional>
 
 /**
  * "rrrrrr"
@@ -12,7 +13,7 @@
 ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
                                                  const std::array<double, 3> &domainSize,
                                                  const std::string &bounds, double cutoffRadius,
-                                                 bool useThermostat, double nThermostat,
+                                                 bool useThermostat, unsigned int nThermostat,
                                                  bool isGradual, double initT,
                                                  double tempTarget,
                                                  double maxDiff, double gGrav_arg) : ParticleContainer(deltaT, endTime, writeFrequency)
@@ -153,6 +154,7 @@ void ParticleContainerLinCel::simulateParticles()
             double currentE = calculateKinEnergy();
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
+        //    std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
             // 3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
@@ -160,18 +162,24 @@ void ParticleContainerLinCel::simulateParticles()
             {
                 if (fabs(currentDiff) <= maxDiff)
                 {
-                    desiredTemp += currentDiff;
+                    desiredTemp = currentTemp + currentDiff;
+               //     std::cout << "Hier 1" << std::endl;
+              //      std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     scaleVelocity(currentTemp, desiredTemp);
                 }
                 else
                 {
                     if (currentDiff >= 0)
                     {
-                        desiredTemp += maxDiff;
+                        desiredTemp = currentTemp + maxDiff;
+              //          std::cout << "Hier 2" << std::endl;
+              //          std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     }
                     else
                     {
-                        desiredTemp -= maxDiff;
+                        desiredTemp = currentTemp - maxDiff;
+             //           std::cout << "Hier 3" << std::endl;
+             //           std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     }
                     scaleVelocity(currentTemp, desiredTemp);
                 }
@@ -179,8 +187,12 @@ void ParticleContainerLinCel::simulateParticles()
             else
             { // directly set the new temp
                 desiredTemp += currentDiff;
+            //    std::cout << "Hier 4" << std::endl;
+             //   std::cout << "Desired Temp: " << desiredTemp << std::endl;
                 scaleVelocity(currentTemp, desiredTemp);
             }
+            double tempAfterThermostat = calculateTemperature();
+          //  std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
         // calculate new f
         calculateForces();
@@ -283,6 +295,7 @@ void ParticleContainerLinCel::calculateVelocity()
             // TODO (ADD): Log
             // ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
             p.setV(newVelocity);
+          //  std::cout << "particle velocity: " << p.getV() << std::endl;
         }
     }
 }
@@ -387,7 +400,7 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createReflectingLambdaBoundary(int direction, int position)
 {
-    auto lambda = [&](uint32_t x, uint32_t y, uint32_t z)
+    auto lambda = [=](uint32_t x, uint32_t y, uint32_t z)
     {
         unsigned int cellIndex = translate3DIndTo1D(x, y, z);
         auto &cell = cells.at(cellIndex);
@@ -399,8 +412,8 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             ghostParticle.setX(ghostPos);
             /*ghostParticle.setSigma(p.getSigma());
             ghostParticle.setEpsilon(p.getEpsilon());*/
-            /* std::cout << "Particle position: " << p.getX() << std::endl;
-             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
+             std::cout << "Particle position: " << p.getX() << std::endl;
+             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
             {
                 // TODO: another check whether the force is really repulsing
@@ -775,7 +788,7 @@ double ParticleContainerLinCel::calculateTemperature()
 void ParticleContainerLinCel::scaleVelocity(double currentTemp, double newTemp)
 {
     double div = currentTemp / newTemp;
-    double beta = std::pow(div, 1 / 2.0);
+    double beta = std::pow(div, 1.0 / 2.0);
     for (auto &cell : cells)
     {
         for (auto &p : cell)

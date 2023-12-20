@@ -332,6 +332,100 @@ mass (const mass_type& x)
 }
 
 
+// Thermostat
+// 
+
+const Thermostat::initialTemperature_type& Thermostat::
+initialTemperature () const
+{
+  return this->initialTemperature_.get ();
+}
+
+Thermostat::initialTemperature_type& Thermostat::
+initialTemperature ()
+{
+  return this->initialTemperature_.get ();
+}
+
+void Thermostat::
+initialTemperature (const initialTemperature_type& x)
+{
+  this->initialTemperature_.set (x);
+}
+
+const Thermostat::nThermostat_type& Thermostat::
+nThermostat () const
+{
+  return this->nThermostat_.get ();
+}
+
+Thermostat::nThermostat_type& Thermostat::
+nThermostat ()
+{
+  return this->nThermostat_.get ();
+}
+
+void Thermostat::
+nThermostat (const nThermostat_type& x)
+{
+  this->nThermostat_.set (x);
+}
+
+const Thermostat::isGradual_type& Thermostat::
+isGradual () const
+{
+  return this->isGradual_.get ();
+}
+
+Thermostat::isGradual_type& Thermostat::
+isGradual ()
+{
+  return this->isGradual_.get ();
+}
+
+void Thermostat::
+isGradual (const isGradual_type& x)
+{
+  this->isGradual_.set (x);
+}
+
+const Thermostat::temperatureTarget_type& Thermostat::
+temperatureTarget () const
+{
+  return this->temperatureTarget_.get ();
+}
+
+Thermostat::temperatureTarget_type& Thermostat::
+temperatureTarget ()
+{
+  return this->temperatureTarget_.get ();
+}
+
+void Thermostat::
+temperatureTarget (const temperatureTarget_type& x)
+{
+  this->temperatureTarget_.set (x);
+}
+
+const Thermostat::maxDifference_type& Thermostat::
+maxDifference () const
+{
+  return this->maxDifference_.get ();
+}
+
+Thermostat::maxDifference_type& Thermostat::
+maxDifference ()
+{
+  return this->maxDifference_.get ();
+}
+
+void Thermostat::
+maxDifference (const maxDifference_type& x)
+{
+  this->maxDifference_.set (x);
+}
+
+
 // simulationConfig
 // 
 
@@ -521,6 +615,42 @@ cutOffRadius (const cutOffRadius_type& x)
   this->cutOffRadius_.set (x);
 }
 
+const simulationConfig::gGrav_type& simulationConfig::
+gGrav () const
+{
+  return this->gGrav_.get ();
+}
+
+simulationConfig::gGrav_type& simulationConfig::
+gGrav ()
+{
+  return this->gGrav_.get ();
+}
+
+void simulationConfig::
+gGrav (const gGrav_type& x)
+{
+  this->gGrav_.set (x);
+}
+
+const simulationConfig::useThermostat_type& simulationConfig::
+useThermostat () const
+{
+  return this->useThermostat_.get ();
+}
+
+simulationConfig::useThermostat_type& simulationConfig::
+useThermostat ()
+{
+  return this->useThermostat_.get ();
+}
+
+void simulationConfig::
+useThermostat (const useThermostat_type& x)
+{
+  this->useThermostat_.set (x);
+}
+
 const simulationConfig::Cuboid_sequence& simulationConfig::
 Cuboid () const
 {
@@ -555,6 +685,36 @@ void simulationConfig::
 Sphere (const Sphere_sequence& s)
 {
   this->Sphere_ = s;
+}
+
+const simulationConfig::Thermostat_optional& simulationConfig::
+Thermostat () const
+{
+  return this->Thermostat_;
+}
+
+simulationConfig::Thermostat_optional& simulationConfig::
+Thermostat ()
+{
+  return this->Thermostat_;
+}
+
+void simulationConfig::
+Thermostat (const Thermostat_type& x)
+{
+  this->Thermostat_.set (x);
+}
+
+void simulationConfig::
+Thermostat (const Thermostat_optional& x)
+{
+  this->Thermostat_ = x;
+}
+
+void simulationConfig::
+Thermostat (::std::unique_ptr< Thermostat_type > x)
+{
+  this->Thermostat_.set (std::move (x));
 }
 
 
@@ -1166,6 +1326,187 @@ Sphere::
 {
 }
 
+// Thermostat
+//
+
+Thermostat::
+Thermostat (const initialTemperature_type& initialTemperature,
+            const nThermostat_type& nThermostat,
+            const isGradual_type& isGradual,
+            const temperatureTarget_type& temperatureTarget,
+            const maxDifference_type& maxDifference)
+: ::xml_schema::type (),
+  initialTemperature_ (initialTemperature, this),
+  nThermostat_ (nThermostat, this),
+  isGradual_ (isGradual, this),
+  temperatureTarget_ (temperatureTarget, this),
+  maxDifference_ (maxDifference, this)
+{
+}
+
+Thermostat::
+Thermostat (const Thermostat& x,
+            ::xml_schema::flags f,
+            ::xml_schema::container* c)
+: ::xml_schema::type (x, f, c),
+  initialTemperature_ (x.initialTemperature_, f, this),
+  nThermostat_ (x.nThermostat_, f, this),
+  isGradual_ (x.isGradual_, f, this),
+  temperatureTarget_ (x.temperatureTarget_, f, this),
+  maxDifference_ (x.maxDifference_, f, this)
+{
+}
+
+Thermostat::
+Thermostat (const ::xercesc::DOMElement& e,
+            ::xml_schema::flags f,
+            ::xml_schema::container* c)
+: ::xml_schema::type (e, f | ::xml_schema::flags::base, c),
+  initialTemperature_ (this),
+  nThermostat_ (this),
+  isGradual_ (this),
+  temperatureTarget_ (this),
+  maxDifference_ (this)
+{
+  if ((f & ::xml_schema::flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false, false);
+    this->parse (p, f);
+  }
+}
+
+void Thermostat::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::flags f)
+{
+  for (; p.more_content (); p.next_content (false))
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // initialTemperature
+    //
+    if (n.name () == "initialTemperature" && n.namespace_ ().empty ())
+    {
+      if (!initialTemperature_.present ())
+      {
+        this->initialTemperature_.set (initialTemperature_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // nThermostat
+    //
+    if (n.name () == "nThermostat" && n.namespace_ ().empty ())
+    {
+      if (!nThermostat_.present ())
+      {
+        this->nThermostat_.set (nThermostat_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // isGradual
+    //
+    if (n.name () == "isGradual" && n.namespace_ ().empty ())
+    {
+      if (!isGradual_.present ())
+      {
+        this->isGradual_.set (isGradual_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // temperatureTarget
+    //
+    if (n.name () == "temperatureTarget" && n.namespace_ ().empty ())
+    {
+      if (!temperatureTarget_.present ())
+      {
+        this->temperatureTarget_.set (temperatureTarget_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // maxDifference
+    //
+    if (n.name () == "maxDifference" && n.namespace_ ().empty ())
+    {
+      if (!maxDifference_.present ())
+      {
+        this->maxDifference_.set (maxDifference_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!initialTemperature_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "initialTemperature",
+      "");
+  }
+
+  if (!nThermostat_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "nThermostat",
+      "");
+  }
+
+  if (!isGradual_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "isGradual",
+      "");
+  }
+
+  if (!temperatureTarget_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "temperatureTarget",
+      "");
+  }
+
+  if (!maxDifference_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "maxDifference",
+      "");
+  }
+}
+
+Thermostat* Thermostat::
+_clone (::xml_schema::flags f,
+        ::xml_schema::container* c) const
+{
+  return new class Thermostat (*this, f, c);
+}
+
+Thermostat& Thermostat::
+operator= (const Thermostat& x)
+{
+  if (this != &x)
+  {
+    static_cast< ::xml_schema::type& > (*this) = x;
+    this->initialTemperature_ = x.initialTemperature_;
+    this->nThermostat_ = x.nThermostat_;
+    this->isGradual_ = x.isGradual_;
+    this->temperatureTarget_ = x.temperatureTarget_;
+    this->maxDifference_ = x.maxDifference_;
+  }
+
+  return *this;
+}
+
+Thermostat::
+~Thermostat ()
+{
+}
+
 // simulationConfig
 //
 
@@ -1178,7 +1519,9 @@ simulationConfig (const baseName_type& baseName,
                   const domainSize_type& domainSize,
                   const containerType_type& containerType,
                   const boundaries_type& boundaries,
-                  const cutOffRadius_type& cutOffRadius)
+                  const cutOffRadius_type& cutOffRadius,
+                  const gGrav_type& gGrav,
+                  const useThermostat_type& useThermostat)
 : ::xml_schema::type (),
   baseName_ (baseName, this),
   writeFrequency_ (writeFrequency, this),
@@ -1189,8 +1532,11 @@ simulationConfig (const baseName_type& baseName,
   containerType_ (containerType, this),
   boundaries_ (boundaries, this),
   cutOffRadius_ (cutOffRadius, this),
+  gGrav_ (gGrav, this),
+  useThermostat_ (useThermostat, this),
   Cuboid_ (this),
-  Sphere_ (this)
+  Sphere_ (this),
+  Thermostat_ (this)
 {
 }
 
@@ -1208,8 +1554,11 @@ simulationConfig (const simulationConfig& x,
   containerType_ (x.containerType_, f, this),
   boundaries_ (x.boundaries_, f, this),
   cutOffRadius_ (x.cutOffRadius_, f, this),
+  gGrav_ (x.gGrav_, f, this),
+  useThermostat_ (x.useThermostat_, f, this),
   Cuboid_ (x.Cuboid_, f, this),
-  Sphere_ (x.Sphere_, f, this)
+  Sphere_ (x.Sphere_, f, this),
+  Thermostat_ (x.Thermostat_, f, this)
 {
 }
 
@@ -1227,8 +1576,11 @@ simulationConfig (const ::xercesc::DOMElement& e,
   containerType_ (this),
   boundaries_ (this),
   cutOffRadius_ (this),
+  gGrav_ (this),
+  useThermostat_ (this),
   Cuboid_ (this),
-  Sphere_ (this)
+  Sphere_ (this),
+  Thermostat_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -1358,6 +1710,28 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // gGrav
+    //
+    if (n.name () == "gGrav" && n.namespace_ ().empty ())
+    {
+      if (!gGrav_.present ())
+      {
+        this->gGrav_.set (gGrav_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // useThermostat
+    //
+    if (n.name () == "useThermostat" && n.namespace_ ().empty ())
+    {
+      if (!useThermostat_.present ())
+      {
+        this->useThermostat_.set (useThermostat_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     // Cuboid
     //
     if (n.name () == "Cuboid" && n.namespace_ ().empty ())
@@ -1378,6 +1752,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
 
       this->Sphere_.push_back (::std::move (r));
       continue;
+    }
+
+    // Thermostat
+    //
+    if (n.name () == "Thermostat" && n.namespace_ ().empty ())
+    {
+      ::std::unique_ptr< Thermostat_type > r (
+        Thermostat_traits::create (i, f, this));
+
+      if (!this->Thermostat_)
+      {
+        this->Thermostat_.set (::std::move (r));
+        continue;
+      }
     }
 
     break;
@@ -1445,6 +1833,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "cutOffRadius",
       "");
   }
+
+  if (!gGrav_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "gGrav",
+      "");
+  }
+
+  if (!useThermostat_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "useThermostat",
+      "");
+  }
 }
 
 simulationConfig* simulationConfig::
@@ -1469,8 +1871,11 @@ operator= (const simulationConfig& x)
     this->containerType_ = x.containerType_;
     this->boundaries_ = x.boundaries_;
     this->cutOffRadius_ = x.cutOffRadius_;
+    this->gGrav_ = x.gGrav_;
+    this->useThermostat_ = x.useThermostat_;
     this->Cuboid_ = x.Cuboid_;
     this->Sphere_ = x.Sphere_;
+    this->Thermostat_ = x.Thermostat_;
   }
 
   return *this;

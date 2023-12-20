@@ -232,6 +232,7 @@ class arrayOfThreeDoubles;
 class arrayOfThreeUnsignedInts;
 class Cuboid;
 class Sphere;
+class Thermostat;
 class simulationConfig;
 
 #include <memory>    // ::std::unique_ptr
@@ -653,6 +654,120 @@ class Sphere: public ::xml_schema::type
   ::xsd::cxx::tree::one< mass_type > mass_;
 };
 
+class Thermostat: public ::xml_schema::type
+{
+  public:
+  // initialTemperature
+  //
+  typedef ::xml_schema::double_ initialTemperature_type;
+  typedef ::xsd::cxx::tree::traits< initialTemperature_type, char, ::xsd::cxx::tree::schema_type::double_ > initialTemperature_traits;
+
+  const initialTemperature_type&
+  initialTemperature () const;
+
+  initialTemperature_type&
+  initialTemperature ();
+
+  void
+  initialTemperature (const initialTemperature_type& x);
+
+  // nThermostat
+  //
+  typedef ::xml_schema::unsigned_int nThermostat_type;
+  typedef ::xsd::cxx::tree::traits< nThermostat_type, char > nThermostat_traits;
+
+  const nThermostat_type&
+  nThermostat () const;
+
+  nThermostat_type&
+  nThermostat ();
+
+  void
+  nThermostat (const nThermostat_type& x);
+
+  // isGradual
+  //
+  typedef ::xml_schema::boolean isGradual_type;
+  typedef ::xsd::cxx::tree::traits< isGradual_type, char > isGradual_traits;
+
+  const isGradual_type&
+  isGradual () const;
+
+  isGradual_type&
+  isGradual ();
+
+  void
+  isGradual (const isGradual_type& x);
+
+  // temperatureTarget
+  //
+  typedef ::xml_schema::double_ temperatureTarget_type;
+  typedef ::xsd::cxx::tree::traits< temperatureTarget_type, char, ::xsd::cxx::tree::schema_type::double_ > temperatureTarget_traits;
+
+  const temperatureTarget_type&
+  temperatureTarget () const;
+
+  temperatureTarget_type&
+  temperatureTarget ();
+
+  void
+  temperatureTarget (const temperatureTarget_type& x);
+
+  // maxDifference
+  //
+  typedef ::xml_schema::double_ maxDifference_type;
+  typedef ::xsd::cxx::tree::traits< maxDifference_type, char, ::xsd::cxx::tree::schema_type::double_ > maxDifference_traits;
+
+  const maxDifference_type&
+  maxDifference () const;
+
+  maxDifference_type&
+  maxDifference ();
+
+  void
+  maxDifference (const maxDifference_type& x);
+
+  // Constructors.
+  //
+  Thermostat (const initialTemperature_type&,
+              const nThermostat_type&,
+              const isGradual_type&,
+              const temperatureTarget_type&,
+              const maxDifference_type&);
+
+  Thermostat (const ::xercesc::DOMElement& e,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container* c = 0);
+
+  Thermostat (const Thermostat& x,
+              ::xml_schema::flags f = 0,
+              ::xml_schema::container* c = 0);
+
+  virtual Thermostat*
+  _clone (::xml_schema::flags f = 0,
+          ::xml_schema::container* c = 0) const;
+
+  Thermostat&
+  operator= (const Thermostat& x);
+
+  virtual 
+  ~Thermostat ();
+
+  // Implementation.
+  //
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::flags);
+
+  protected:
+  ::xsd::cxx::tree::one< initialTemperature_type > initialTemperature_;
+  ::xsd::cxx::tree::one< nThermostat_type > nThermostat_;
+  ::xsd::cxx::tree::one< isGradual_type > isGradual_;
+  ::xsd::cxx::tree::one< temperatureTarget_type > temperatureTarget_;
+  ::xsd::cxx::tree::one< maxDifference_type > maxDifference_;
+};
+
 class simulationConfig: public ::xml_schema::type
 {
   public:
@@ -794,6 +909,34 @@ class simulationConfig: public ::xml_schema::type
   void
   cutOffRadius (const cutOffRadius_type& x);
 
+  // gGrav
+  //
+  typedef ::xml_schema::double_ gGrav_type;
+  typedef ::xsd::cxx::tree::traits< gGrav_type, char, ::xsd::cxx::tree::schema_type::double_ > gGrav_traits;
+
+  const gGrav_type&
+  gGrav () const;
+
+  gGrav_type&
+  gGrav ();
+
+  void
+  gGrav (const gGrav_type& x);
+
+  // useThermostat
+  //
+  typedef ::xml_schema::boolean useThermostat_type;
+  typedef ::xsd::cxx::tree::traits< useThermostat_type, char > useThermostat_traits;
+
+  const useThermostat_type&
+  useThermostat () const;
+
+  useThermostat_type&
+  useThermostat ();
+
+  void
+  useThermostat (const useThermostat_type& x);
+
   // Cuboid
   //
   typedef ::Cuboid Cuboid_type;
@@ -828,6 +971,27 @@ class simulationConfig: public ::xml_schema::type
   void
   Sphere (const Sphere_sequence& s);
 
+  // Thermostat
+  //
+  typedef ::Thermostat Thermostat_type;
+  typedef ::xsd::cxx::tree::optional< Thermostat_type > Thermostat_optional;
+  typedef ::xsd::cxx::tree::traits< Thermostat_type, char > Thermostat_traits;
+
+  const Thermostat_optional&
+  Thermostat () const;
+
+  Thermostat_optional&
+  Thermostat ();
+
+  void
+  Thermostat (const Thermostat_type& x);
+
+  void
+  Thermostat (const Thermostat_optional& x);
+
+  void
+  Thermostat (::std::unique_ptr< Thermostat_type > p);
+
   // Constructors.
   //
   simulationConfig (const baseName_type&,
@@ -838,7 +1002,9 @@ class simulationConfig: public ::xml_schema::type
                     const domainSize_type&,
                     const containerType_type&,
                     const boundaries_type&,
-                    const cutOffRadius_type&);
+                    const cutOffRadius_type&,
+                    const gGrav_type&,
+                    const useThermostat_type&);
 
   simulationConfig (const ::xercesc::DOMElement& e,
                     ::xml_schema::flags f = 0,
@@ -875,8 +1041,11 @@ class simulationConfig: public ::xml_schema::type
   ::xsd::cxx::tree::one< containerType_type > containerType_;
   ::xsd::cxx::tree::one< boundaries_type > boundaries_;
   ::xsd::cxx::tree::one< cutOffRadius_type > cutOffRadius_;
+  ::xsd::cxx::tree::one< gGrav_type > gGrav_;
+  ::xsd::cxx::tree::one< useThermostat_type > useThermostat_;
   Cuboid_sequence Cuboid_;
   Sphere_sequence Sphere_;
+  Thermostat_optional Thermostat_;
 };
 
 #include <iosfwd>

@@ -26,11 +26,23 @@ void XMLReader::extractSimulationParameters() {
     std::string boundaries = simulation->boundaries();
     double cutOffRadius = simulation->cutOffRadius();
 
+    double gGrav = simulation->gGrav();
+    bool useThermostat = simulation->useThermostat();
+
+    auto thermostat = simulation->Thermostat().get();
+
+    double initialTemp = thermostat.initialTemperature();
+    unsigned int nThermostat = thermostat.nThermostat();
+    double tempTarget = thermostat.temperatureTarget();
+    double maxDiff = thermostat.maxDifference();
+
 
 
     simulationConstructor.setAllSimulationParameters(t, delta, level,
                                                      frequency, domainSize,
-                                                     containerType, name,boundaries,cutOffRadius);
+                                                     containerType, name,boundaries,cutOffRadius,
+                                                     gGrav,useThermostat,initialTemp,nThermostat,
+                                                     tempTarget,maxDiff);
 
 }
 

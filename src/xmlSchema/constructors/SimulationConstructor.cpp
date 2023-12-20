@@ -6,7 +6,9 @@
 
 void SimulationConstructor::setAllSimulationParameters(double t, double delta, int level, int frequency,
                                                        std::array<double,3>& dSize,std::string& cType,
-                                                       std::string& name,std::string& bound,double cutOffR) {
+                                                       std::string& name,std::string& bound,double cutOffR,
+                                                       double g_Grav, bool use_Thermostat, double initial_Temp, unsigned int
+                                                       n_Thermostat, double temp_Target, double max_Diff) {
     this->t_end = t;
     this->delta_t = delta;
     this->logLevel = level;
@@ -16,6 +18,12 @@ void SimulationConstructor::setAllSimulationParameters(double t, double delta, i
     this->baseName = name;
     this->boundaries = bound;
     this->cutOffRadius = cutOffR;
+    this->gGrav = g_Grav;
+    this->useThermostat = use_Thermostat;
+    this->initialTemp = initial_Temp;
+    this->nThermostat = n_Thermostat;
+    this->tempTarget = temp_Target;
+    this->maxDiff = max_Diff;
 }
 
 

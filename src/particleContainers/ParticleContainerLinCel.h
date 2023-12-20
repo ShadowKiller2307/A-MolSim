@@ -65,7 +65,7 @@ public:
     ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
                             const std::array<double, 3> &domainSize,
                             const std::string &bounds, double cutoffRadius,
-                            bool useThermostat = false, double nThermostat = 100,
+                            bool useThermostat = false, unsigned int nThermostat = 100,
                             bool isGradual = true, double initT = 0,
                             double tempTarget = 20,
                             double maxDiff = 0.5,

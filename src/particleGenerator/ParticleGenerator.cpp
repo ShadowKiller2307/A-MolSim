@@ -41,7 +41,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 				// TODO (ASK): should the mbVelocity be calculated for every particle instead?
 				initT = fabs(initT);
 				std::array<double, 3> mbVelocity;
-				if (initT <= 0.0001)
+				if (initT >= 0.0001)
 				{
 					double initTVelocity = std::sqrt((initT / m));
 					mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(
@@ -79,7 +79,7 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 				{
 					initT = fabs(initT);
 					std::array<double, 3> mbVelocity;
-					if (initT <= 0.0001)
+					if (initT >= 0.0001)
 					{
 						double initTVelocity = std::sqrt((initT / m));
 						mbVelocity = MaxwellBoltzmannDistribution::maxwellBoltzmannDistributedVelocity(

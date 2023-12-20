@@ -43,6 +43,16 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="Thermostat">
+        <xs:sequence>
+            <xs:element name="initialTemperature" type="xs:double"/>
+            <xs:element name="nThermostat" type="xs:unsignedInt"/>
+            <xs:element name="isGradual" type="xs:boolean"/>
+            <xs:element name="temperatureTarget" type="xs:double"/>
+            <xs:element name="maxDifference" type="xs:double"/>
+        </xs:sequence>
+    </xs:complexType>
+
 
     <xs:complexType name="simulationConfig">
         <xs:sequence>
@@ -55,8 +65,11 @@
             <xs:element name="containerType" type="xs:string"/>
             <xs:element name="boundaries" type="xs:string"/>
             <xs:element name="cutOffRadius" type="xs:double"/>
+            <xs:element name="gGrav" type="xs:double"/>
+            <xs:element name="useThermostat" type="xs:boolean"/>
             <xs:element name="Cuboid" type="Cuboid" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="Sphere" type="Sphere" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Thermostat" type="Thermostat" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
     
