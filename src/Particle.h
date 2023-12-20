@@ -83,6 +83,8 @@ public:
 
   void setV(std::array<double, 3> &velocity);
 
+  void setType(int type);
+
   void setSigma(double sigma_arg);
 
   void setEpsilon(double epsilon_arg);

@@ -69,6 +69,11 @@ void Particle::setV(std::array<double, 3> &velocity)
   v = velocity;
 }
 
+void Particle::setType(int t)
+{
+  type = t;
+}
+
 void Particle::setOldF(std::array<double, 3> &force)
 {
   old_f = force;

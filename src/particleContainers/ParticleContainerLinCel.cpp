@@ -118,7 +118,7 @@ void ParticleContainerLinCel::simulateParticles()
 
     while (startTime_ < endTime_)
     {
-        if (iteration_ % outputEveryNIterations_ == 0)
+        if (iteration_ % 100 == 0)
         {
             std::vector<Particle> allParticles;
             allParticles.clear();
@@ -229,7 +229,7 @@ void ParticleContainerLinCel::calculateForces()
         }
     }
     iterOverInnerPairs(force_);
-   // iterBoundary2();
+    // iterBoundary2();
     if (gGrav != 0)
     {
         addGravitationalForce();
@@ -663,14 +663,14 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     {
         auto &cell = cells.at(translate3DIndTo1D(x, y, z));
         std::array<uint32_t, 3> paramsByIndex = {x, y, z};
-        for (size_t i = 0; i < 3; ++i)
+        for (size_t i = 0; i < 2 /* TODO: make 3 for 3D */; ++i)
         {
-            if (paramsByIndex[i] == 0 || paramsByIndex[i] == cellCountByIndex[i])
+            if (paramsByIndex[i] == 0 || paramsByIndex[i] == (cellCountByIndex[i] - 1))
             {
                 // 1: left/below/behind of the boundary towards negative, everything has to be added to be valid again
                 //-1: right/obove/infront of the boundary towards positive, everything has to be subtracted to be valid again
                 double multiplicator = (paramsByIndex[i] == 0 ? 1.0 : -1.0);
-                paramsByIndex[i] += (multiplicator * cellCountByIndex[i]) + -2 * multiplicator;
+                paramsByIndex[i] += (multiplicator * (cellCountByIndex[i] - 1)) + -2 * multiplicator;
                 auto &newCell = cells.at(translate3DIndTo1D(paramsByIndex[0], paramsByIndex[1], paramsByIndex[2]));
                 for (auto &p : cell)
                 {
@@ -724,34 +724,41 @@ void ParticleContainerLinCel::iterHalo()
     // calculateBothPlanesInDirection(cellsZ, cellsX, cellsY, 2);
 }
 
-
-void ParticleContainerLinCel::iterHalo2() {
+void ParticleContainerLinCel::iterHalo2()
+{
     int z = 1;
-    for (int x = 0; x <= cellsX - 1; ++x) {
-        if (conditions[2] == BoundaryCondition::Periodic) {
+    for (int x = 0; x <= cellsX - 1; ++x)
+    {
+        if (conditions[2] == BoundaryCondition::Periodic)
+        {
             auto lambda = createPeriodicLambdaHalo();
             lambda(x, 0, z);
         }
     }
-    for (int y = 0; y <= cellsY - 1; ++y) {
-        if (conditions[1] == BoundaryCondition::Periodic) {
+    for (int y = 0; y <= cellsY - 1; ++y)
+    {
+        if (conditions[1] == BoundaryCondition::Periodic)
+        {
             auto lambda = createPeriodicLambdaHalo();
-            lambda(cellsX-1, y, z);
+            lambda(cellsX - 1, y, z);
         }
     }
-    for (int x = cellsX-1; x >= 0; --x) {
-        if (conditions[3] == BoundaryCondition::Periodic) {
+    for (int x = cellsX - 1; x >= 0; --x)
+    {
+        if (conditions[3] == BoundaryCondition::Periodic)
+        {
             auto lambda = createPeriodicLambdaHalo();
-            lambda(x, cellsY-1, z);
+            lambda(x, cellsY - 1, z);
         }
     }
-    for (int y = cellsY-1; y >= 0; --y) {
-        if (conditions[0] == BoundaryCondition::Periodic) {
+    for (int y = cellsY - 1; y >= 0; --y)
+    {
+        if (conditions[0] == BoundaryCondition::Periodic)
+        {
             auto lambda = createPeriodicLambdaHalo();
             lambda(0, y, z);
         }
     }
-
 }
 
 unsigned int ParticleContainerLinCel::translate3DIndTo1D(uint32_t x, uint32_t y, uint32_t z) const
