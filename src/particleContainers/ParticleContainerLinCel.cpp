@@ -1,6 +1,8 @@
 #include "particleContainers/ParticleContainerLinCel.h"
 #include "logOutputManager/LogManager.h"
+#include "utils/ArrayUtils.h"
 #include <iostream>
+#include <optional>
 #include <array>
 #include <optional>
 
@@ -58,6 +60,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     cellsX = static_cast<unsigned int>(ceil(domainSize_[0] / cutoffRadius_) + 2);
     cellsY = static_cast<unsigned int>(ceil(domainSize_[1] / cutoffRadius_) + 2);
     cellsZ = static_cast<unsigned int>(ceil(domainSize_[2] / cutoffRadius_) + 2);
+    cellCountByIndex = {cellsX, cellsY, cellsZ};
     // amountOfCells = cellsX * cellsY + 2 * (cellsX + 2) + 2 * cellsY;
     amountOfCells = cellsX * cellsY * cellsZ;
     /**
@@ -281,6 +284,41 @@ void ParticleContainerLinCel::calculatePosition()
     iterHalo();
 }
 
+void ParticleContainerLinCel::calculateForcesWithIndices(std::array<uint32_t, 3> &myCoordinates, std::array<uint32_t, 3> &otherCoordinates)
+{
+    // loop over particles in the current cell
+    for (auto &p : cells.at(translate3DIndTo1D(myCoordinates[0], myCoordinates[1], myCoordinates[2])))
+    {
+        // loop over particles in the other cell
+        for (auto &p2 : cells.at(translate3DIndTo1D(otherCoordinates[0], otherCoordinates[1], otherCoordinates[2])))
+        {
+            // calculate the vector to move p2 by
+            std::array<double, 3> moveVec = {0.0, 0.0, 0.0};
+            for (size_t i = 0; i < 3; ++i)
+            {
+                if (myCoordinates[i] == 1)
+                {
+                    moveVec[i] -= domainSize_[i];
+                }
+                else if (myCoordinates[i] == cellCountByIndex[i] - 2)
+                {
+                    moveVec[i] += domainSize_[i];
+                }
+            }
+
+            // move p2 over
+            p2.addX(moveVec);
+            if (ArrayUtils::L2Norm(p.getX() - p2.getX()) <= cutoffRadius_)
+            {
+                calcF(p, p2);
+            }
+            // move p2 back
+            moveVec = -1 * moveVec;
+            p2.addX(moveVec);
+        }
+    }
+}
+
 void ParticleContainerLinCel::calculateVelocity()
 {
     for (auto &cell : cells)
@@ -427,17 +465,65 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     return lambda;
 }
 
-std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary(int direction, int position)
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary()
 {
-    auto isBoundaryOnTheOtherSide = [](uint32_t x, uint32_t y, uint32_t z, uint32_t x2, uint32_t y2, uint32_t z2)
+    // returns a std::array<uint32_t, 3> containing the coordinates of the correct boundary cell if x2, y2, z2 is in the halo cells and we therefore should calculate the interactions
+    auto isBoundaryOnTheOtherSide = [&](std::array<uint32_t, 3> &myCoordinates, uint32_t x2, uint32_t y2, uint32_t z2)
     {
-        std::array<uint32_t, 3> coordinates;
-        return std::make_optional(coordinates);
+        std::array<uint32_t, 3> coordinates = {x2, y2, z2};
+        bool changed = false;
+
+        for (size_t i = 0; i < 3; ++i)
+        {
+            if (myCoordinates[i] == 1 && coordinates[i] == 0)
+            {
+                changed = true;
+                coordinates[i] += cellCountByIndex[i] - 2;
+            }
+            else if (myCoordinates[i] == cellCountByIndex[i] - 2 && coordinates[i] == cellCountByIndex[i] - 1)
+            {
+                changed = true;
+                coordinates[i] -= cellCountByIndex[i] - 2;
+            }
+        }
+
+        if (changed)
+        {
+            return std::make_optional(coordinates);
+        }
+        std::optional<std::array<uint32_t, 3>> o;
+        return o;
     };
-    // TODO this should apply the forces from the opposite boundary cells to the particles in the current cell
-    return [](uint32_t x, uint32_t y, uint32_t z)
+    // apply the forces from the opposite boundary cells to the particles in the current cell and vice versa
+    return [&](uint32_t x, uint32_t y, uint32_t z)
     {
+        std::optional<std::array<uint32_t, 3>> opt;
+        std::array<uint32_t, 3> myCoordinates = {x, y, z};
+
         // right cell
+        opt = isBoundaryOnTheOtherSide(myCoordinates, x + 1, y, z);
+        if (opt.has_value())
+        {
+            calculateForcesWithIndices(myCoordinates, opt.value());
+        }
+        // right upper cell
+        opt = isBoundaryOnTheOtherSide(myCoordinates, x + 1, y + 1, z);
+        if (opt.has_value())
+        {
+            calculateForcesWithIndices(myCoordinates, opt.value());
+        }
+        // upper cell
+        opt = isBoundaryOnTheOtherSide(myCoordinates, x, y + 1, z);
+        if (opt.has_value())
+        {
+            calculateForcesWithIndices(myCoordinates, opt.value());
+        }
+        // left upper cell
+        opt = isBoundaryOnTheOtherSide(myCoordinates, x - 1, y + 1, z);
+        if (opt.has_value())
+        {
+            calculateForcesWithIndices(myCoordinates, opt.value());
+        }
     };
 }
 
@@ -463,6 +549,7 @@ void ParticleContainerLinCel::iterBoundary()
                 lambda = createReflectingLambdaBoundary(direction, domainSize_.at(direction + (i == 1 ? 0 : 1)));
                 break;
             case BoundaryCondition::Periodic:
+                lambda = createPeriodicLambdaBoundary();
                 break;
             }
             for (j = 1; j < secondaryDimension1 - 1; ++j)
@@ -496,7 +583,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary(1, 0);
+                auto lambda = createPeriodicLambdaBoundary();
                 lambda(x, 1, z);
             }
         }
@@ -515,7 +602,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary(1, 0);
+                auto lambda = createPeriodicLambdaBoundary();
                 lambda(cellsX - 2, y, z);
             }
         }
@@ -534,7 +621,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary(1, static_cast<int>(domainSize_[1]));
+                auto lambda = createPeriodicLambdaBoundary();
                 lambda(x, cellsY - 2, z);
             }
         }
@@ -553,7 +640,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary(0, 0);
+                auto lambda = createPeriodicLambdaBoundary();
                 lambda(1, y, z);
             }
         }
@@ -575,7 +662,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     {
         auto &cell = cells.at(translate3DIndTo1D(x, y, z));
         std::array<uint32_t, 3> paramsByIndex = {x, y, z};
-        std::array<uint32_t, 3> cellCountByIndex = {cellsX, cellsY, cellsZ};
         for (size_t i = 0; i < 3; ++i)
         {
             if (paramsByIndex[i] == 0 || paramsByIndex[i] == cellCountByIndex[i])
