@@ -454,7 +454,9 @@ TEST_F(MolSimTest, testReflectingOneParticleVerticalMovement)
     std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
     std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
     // linCelTest.getCells().at()
-    linCelTest.simulateParticles();
+    linCelTest.simulateParticles();/*
+    std::cout << "Particles: " << linCelTest.getParticles().at(0) << std::endl;
+    std::cout << "Temperatur: " << linCelTest.calculateTemperature() << std::endl;*/
 }
 
 TEST_F(MolSimTest, testIterBoundaryIndex)
@@ -514,8 +516,8 @@ TEST_F(MolSimTest, testCooling) {
 TEST_F(MolSimTest, testHoldingATemperature) {
     double initialTemp = 40;
     double targetTemp = 40;
-    ParticleContainerLinCel linCelInitTemp{0.01, 1, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0}; //,
-                                          // true, 10, true, 40, 40, 1.0, 0}; // parameters for the thermostat
+    ParticleContainerLinCel linCelInitTemp{0.01, 1, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 10, true, 40, 40, 1.0, 0}; // parameters for the thermostat
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};

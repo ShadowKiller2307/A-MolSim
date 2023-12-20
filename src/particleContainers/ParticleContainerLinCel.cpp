@@ -412,8 +412,8 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             ghostParticle.setX(ghostPos);
             /*ghostParticle.setSigma(p.getSigma());
             ghostParticle.setEpsilon(p.getEpsilon());*/
-             std::cout << "Particle position: " << p.getX() << std::endl;
-             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;
+           /*  std::cout << "Particle position: " << p.getX() << std::endl;
+             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
             {
                 // TODO: another check whether the force is really repulsing
