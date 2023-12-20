@@ -2,6 +2,7 @@
 #include "particleContainers/ParticleContainer.h"
 #include "forces/Force.h"
 #include "Thermostat.h"
+#include <array>
 
 enum class BoundaryCondition
 {
@@ -36,6 +37,8 @@ private:
     double cutoffRadius_;
     // amount of Cells in each dimension can only be an unsigned integer
     uint32_t cellsX, cellsY, cellsZ = 0;
+    std::array<uint32_t, 3> cellCountByIndex;
+
     // specifies if you want to use a thermostat
     bool useThermostat;
     // after how many iterations should the thermostat be applied
@@ -43,7 +46,7 @@ private:
     // isGradual ? gradual velocity scaling : direct temperature setting;
     bool isGradual;
     // the thermostat for this container
-   // Thermostat thermostat;
+    // Thermostat thermostat;
     double tempTarget;
     double maxDiff;
     void buildLookUp();
@@ -99,6 +102,8 @@ public:
      */
     void calculateForces() override;
 
+    void calculateForcesWithIndices(std::array<uint32_t, 3> &myCoordinates, std::array<uint32_t, 3> &otherCoordinates);
+
     /**
      * @brief overriding the position calculation, so that the particles and cells get updated
      * @param None
@@ -122,8 +127,8 @@ public:
      */
     void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 
-    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary(int direction, int position);
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary();
     /**
      * @brief iterate over the particles which are currectly located in the boundary zone and
      * apply the boundary condition, the cells at the corner will be iterated over twice

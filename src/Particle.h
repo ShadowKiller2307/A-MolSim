@@ -57,7 +57,7 @@ public:
       // for visualization, we need always 3 coordinates
       // -> in case of 2d, we use only the first and the second
       std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg,
-      int type = 0, int epsilon_arg=5, int omega_arg=1);
+      int type = 0, int epsilon_arg = 5, int omega_arg = 1);
 
   virtual ~Particle();
 
@@ -78,6 +78,8 @@ public:
   void addF(std::array<double, 3> &force);
 
   void setX(std::array<double, 3> &xPosition);
+
+  void addX(std::array<double, 3> &xPosition);
 
   void setV(std::array<double, 3> &velocity);
 

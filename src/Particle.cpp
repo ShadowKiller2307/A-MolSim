@@ -34,12 +34,14 @@ const std::array<double, 3> &Particle::getF() const { return f; }
 
 const std::array<double, 3> &Particle::getOldF() const { return old_f; }
 
-double Particle::getSigma() {
-    return this->sigma;
+double Particle::getSigma()
+{
+  return this->sigma;
 }
 
-double Particle::getEpsilon() {
-    return this->epsilon;
+double Particle::getEpsilon()
+{
+  return this->epsilon;
 }
 
 void Particle::setF(std::array<double, 3> &force)
@@ -57,6 +59,11 @@ void Particle::setX(std::array<double, 3> &xPosition)
   x = xPosition;
 }
 
+void Particle::addX(std::array<double, 3> &xPosition)
+{
+  x = x + xPosition;
+}
+
 void Particle::setV(std::array<double, 3> &velocity)
 {
   v = velocity;
@@ -67,12 +74,14 @@ void Particle::setOldF(std::array<double, 3> &force)
   old_f = force;
 }
 
-void Particle::setSigma(double sigma_arg){
-    sigma = sigma_arg;
+void Particle::setSigma(double sigma_arg)
+{
+  sigma = sigma_arg;
 }
 
-void Particle::setEpsilon(double epsilon_arg){
-    epsilon = epsilon_arg;
+void Particle::setEpsilon(double epsilon_arg)
+{
+  epsilon = epsilon_arg;
 }
 
 double Particle::getM() const { return m; }
