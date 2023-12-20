@@ -157,7 +157,7 @@ void ParticleContainerLinCel::simulateParticles()
             double currentE = calculateKinEnergy();
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
-        //    std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
+            //    std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
             // 3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
@@ -166,8 +166,8 @@ void ParticleContainerLinCel::simulateParticles()
                 if (fabs(currentDiff) <= maxDiff)
                 {
                     desiredTemp = currentTemp + currentDiff;
-               //     std::cout << "Hier 1" << std::endl;
-              //      std::cout << "Desired Temp: " << desiredTemp << std::endl;
+                    //     std::cout << "Hier 1" << std::endl;
+                    //      std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     scaleVelocity(currentTemp, desiredTemp);
                 }
                 else
@@ -175,14 +175,14 @@ void ParticleContainerLinCel::simulateParticles()
                     if (currentDiff >= 0)
                     {
                         desiredTemp = currentTemp + maxDiff;
-              //          std::cout << "Hier 2" << std::endl;
-              //          std::cout << "Desired Temp: " << desiredTemp << std::endl;
+                        //          std::cout << "Hier 2" << std::endl;
+                        //          std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     }
                     else
                     {
                         desiredTemp = currentTemp - maxDiff;
-             //           std::cout << "Hier 3" << std::endl;
-             //           std::cout << "Desired Temp: " << desiredTemp << std::endl;
+                        //           std::cout << "Hier 3" << std::endl;
+                        //           std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     }
                     scaleVelocity(currentTemp, desiredTemp);
                 }
@@ -190,12 +190,12 @@ void ParticleContainerLinCel::simulateParticles()
             else
             { // directly set the new temp
                 desiredTemp += currentDiff;
-            //    std::cout << "Hier 4" << std::endl;
-             //   std::cout << "Desired Temp: " << desiredTemp << std::endl;
+                //    std::cout << "Hier 4" << std::endl;
+                //   std::cout << "Desired Temp: " << desiredTemp << std::endl;
                 scaleVelocity(currentTemp, desiredTemp);
             }
             double tempAfterThermostat = calculateTemperature();
-          //  std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
+            //  std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
         // calculate new f
         calculateForces();
@@ -333,7 +333,7 @@ void ParticleContainerLinCel::calculateVelocity()
             // TODO (ADD): Log
             // ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
             p.setV(newVelocity);
-          //  std::cout << "particle velocity: " << p.getV() << std::endl;
+            //  std::cout << "particle velocity: " << p.getV() << std::endl;
         }
     }
 }
@@ -450,8 +450,8 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             ghostParticle.setX(ghostPos);
             /*ghostParticle.setSigma(p.getSigma());
             ghostParticle.setEpsilon(p.getEpsilon());*/
-           /*  std::cout << "Particle position: " << p.getX() << std::endl;
-             std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
+            /*  std::cout << "Particle position: " << p.getX() << std::endl;
+              std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
             {
                 // TODO: another check whether the force is really repulsing
@@ -524,6 +524,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         {
             calculateForcesWithIndices(myCoordinates, opt.value());
         }
+        // TODO add 9 cells in z direction for 3D
     };
 }
 
