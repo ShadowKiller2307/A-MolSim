@@ -386,12 +386,12 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         auto &cell = cells.at(cellIndex);
         for (auto &p : cell)
         {
-            Particle ghostParticle = Particle();
+            Particle ghostParticle = p;
             auto ghostPos = p.getX();
             ghostPos[direction] = position + (position - ghostPos[direction]);
             ghostParticle.setX(ghostPos);
-            ghostParticle.setSigma(p.getSigma());
-            ghostParticle.setEpsilon(p.getEpsilon());
+            /*ghostParticle.setSigma(p.getSigma());
+            ghostParticle.setEpsilon(p.getEpsilon());*/
             /* std::cout << "Particle position: " << p.getX() << std::endl;
              std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
