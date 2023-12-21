@@ -244,13 +244,13 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 	int writeFrequency = clArgs.writeFrequency > 0 ? clArgs.writeFrequency : simConst.getWriteFrequency();
 	double cutOffRadius = clArgs.cutoffRadius > 0 ? clArgs.cutoffRadius : simConst.getCutOffRadius();
 
-    double gGrav = simConst.getGrav();
-    bool useThermostat = simConst.isUseThermostat();
-    double initT = simConst.getInitialTemp();
-    unsigned int nT = simConst.getNThermostat();
-    bool isGradual = simConst.getIsGradual();
-    double tempTarget = simConst.getTempTarget();
-    double maxDiff = simConst.getMaxDiff();
+	double gGrav = simConst.getGrav();
+	bool useThermostat = simConst.isUseThermostat();
+	double initT = simConst.getInitialTemp();
+	unsigned int nT = simConst.getNThermostat();
+	bool isGradual = simConst.getIsGradual();
+	double tempTarget = simConst.getTempTarget();
+	double maxDiff = simConst.getMaxDiff();
 
 	std::array<double, 3> domainSize{};
 	for (int i = 0; i < 3; i++)
@@ -260,22 +260,23 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 
 	if (containerT == "LinCel")
 	{
-        if(xmlReader.isThermostatPresent()) {
-            (*container) = new ParticleContainerLinCel(delta_t, t_end, writeFrequency, domainSize, boundaries,
-                                                       cutOffRadius, useThermostat, nT, isGradual, initT,
-                                                       tempTarget, maxDiff, gGrav);
-        }
-        else{
-            (*container) = new ParticleContainerLinCel(delta_t, t_end, writeFrequency, domainSize, boundaries,
-                                                       cutOffRadius);
-        }
+		if (xmlReader.isThermostatPresent())
+		{
+			(*container) = new ParticleContainerLinCel(delta_t, t_end, writeFrequency, domainSize, boundaries,
+													   cutOffRadius, useThermostat, nT, isGradual, initT,
+													   tempTarget, maxDiff, gGrav);
+		}
+		else
+		{
+			(*container) = new ParticleContainerLinCel(delta_t, t_end, writeFrequency, domainSize, boundaries,
+													   cutOffRadius);
+		}
 
 		for (auto &cuboid : cuboidConst)
 		{
-
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
-							  cuboid.getH(), cuboid.getMass(), cuboid.getType());
+							  h_, cuboid.getMass(), cuboid.getType());
 			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
