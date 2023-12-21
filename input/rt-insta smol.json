@@ -7,7 +7,7 @@
 		"writeFrequency": 100,
 		"boundaries": "rrrrrr",
 		"cutoffRadius": 2.5,
-		"domainSize": [63, 36, 1],
+		"domainSize": [65, 37.5, 1],
 		"tInit": 40,
 		"nThermo": 1000
 	  },
