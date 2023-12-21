@@ -215,7 +215,8 @@ void ParticleContainerLinCel::simulateParticles()
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" : std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
-    std::cout << "About " << mup / (diff / 1000) << " mups \n";
+    size_t mups = mup / (diff / 1000);
+    std::cout << "About " << (mups > 1000000) ? (mups / 1000) + " mmups\n" : mups + " mups\n";
 }
 
 void ParticleContainerLinCel::calculateForces()
