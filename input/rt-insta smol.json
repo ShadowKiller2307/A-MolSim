@@ -12,6 +12,7 @@
 		"nThermo": 1000
 	  },
 	  "particles": [{
+		"shape": "cuboid",
 		"m": 1.0,
 		"epsilon": 1.0,
 		"sigma": 1.0,
@@ -21,6 +22,7 @@
 		"h": 1.2
 	  },
 	  {
+		"shape": "cuboid",
 		"m": 2.0,
 		"epsilon": 1.0,
 		"sigma": 0.9412,

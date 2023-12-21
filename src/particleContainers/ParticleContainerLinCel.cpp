@@ -203,14 +203,13 @@ void ParticleContainerLinCel::simulateParticles()
             double tempAfterThermostat = calculateTemperature();
             // std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
-         //std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+        // std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
         /* std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
         mup += getAmountOfParticles();
         startTime_ += deltaT_;
     }
-    //  TODO (ADD): Log
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" : std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
@@ -466,17 +465,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             auto ghostPos = p.getX();
             ghostPos[direction] = position + (position - ghostPos[direction]);
             ghostParticle.setX(ghostPos);
-            /*ghostParticle.setSigma(p.getSigma());
-            ghostParticle.setEpsilon(p.getEpsilon());*/
-            /*  std::cout << "Particle position: " << p.getX() << std::endl;
-              std::cout << "Ghost particle position: " << ghostParticle.getX() << std::endl;*/
             if (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX()) <= std::pow(2, 1.0 / 6))
             {
                 // TODO: another check whether the force is really repulsing
-                //     std::cout << "Difference: " << (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX())) << std::endl;
                 calcF(p, ghostParticle);
-                /*   std::cout << "Particle velocity: " << p.getV() << std::endl;
-                   std::cout << "Particle force: " << p.getF() << std::endl;*/
             }
         }
     };
@@ -488,16 +480,22 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     // returns a std::array<uint32_t, 3> containing the coordinates of the correct boundary cell if x2, y2, z2 is in the halo cells and we therefore should calculate the interactions
     auto isBoundaryOnTheOtherSide = [=](std::array<uint32_t, 3> &myCoordinates, uint32_t x2, uint32_t y2, uint32_t z2)
     {
-        std::array<uint32_t, 3> coordinates = {x2, y2, z2};
+        std::array<uint32_t, 3> coordinates = {x2, y2, z2}; // to access them by index
         bool changed = false;
 
         for (size_t i = 0; i < 3; ++i)
         {
+            // we are right of a boundary and try to access a cell left from us -> access through the bound
+            // this is the same for the other dimensions for example y:
+            // we are above a boundary and try to access a cell below us -> access through the bound
             if (myCoordinates[i] == 1 && coordinates[i] == 0)
             {
                 changed = true;
                 coordinates[i] += cellCountByIndex[i] - 2;
             }
+            // we are left of a boundary and try to access a cell right from us -> access through the bound
+            // this is the same for the other dimensions for example y:
+            // we are below a boundary and try to access a cell above us -> access through the bound
             else if (myCoordinates[i] == cellCountByIndex[i] - 2 && coordinates[i] == cellCountByIndex[i] - 1)
             {
                 changed = true;
@@ -507,8 +505,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 
         if (changed)
         {
+            // return the coordinates of the cell to interact with as an optinal
             return std::make_optional(coordinates);
         }
+        // return an empty optional
         std::optional<std::array<uint32_t, 3>> o;
         return o;
     };

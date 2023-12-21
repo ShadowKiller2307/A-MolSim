@@ -1,7 +1,6 @@
 #pragma once
 #include "particleContainers/ParticleContainer.h"
 #include "forces/Force.h"
-#include "Thermostat.h"
 #include <array>
 
 enum class BoundaryCondition

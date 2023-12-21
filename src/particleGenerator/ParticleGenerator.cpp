@@ -160,19 +160,27 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 														 : static_cast<std::array<double, 3>>(JSONparams["domainSize"])[i];
 			}
 			double cutoffRadius = params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
-			int nThermostat = static_cast<int>(JSONparams["nThermo"]);
-			double tInit = static_cast<double>(JSONparams["tInit"]);
-			double tempTarget = JSONparams.contains("tempTarget") ? static_cast<double>(JSONparams["tempTarget"]) : tInit;
-
-			if (JSONparams.contains("gGrav"))
+			if (!JSONparams.contains("nThermo") || !JSONparams.contains("tInit"))
 			{
 				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
-														   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5, static_cast<double>(JSONparams["gGrav"]));
+														   cutoffRadius, false);
 			}
 			else
 			{
-				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
-														   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5);
+				int nThermostat = static_cast<int>(JSONparams["nThermo"]);
+				double tInit = static_cast<double>(JSONparams["tInit"]);
+				double tempTarget = JSONparams.contains("tempTarget") ? static_cast<double>(JSONparams["tempTarget"]) : tInit;
+
+				if (JSONparams.contains("gGrav"))
+				{
+					(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+															   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5, static_cast<double>(JSONparams["gGrav"]));
+				}
+				else
+				{
+					(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+															   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5);
+				}
 			}
 		}
 		else
@@ -190,7 +198,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		std::array<double, 3UL> particleVelocity = j["v"];
 		double h = j.contains("h") ? static_cast<double>(j["h"]) : h_;
 		double m = j.contains("m") ? static_cast<double>(j["m"]) : m_;
-		double type = j.contains("type") ? static_cast<double>(j["type"]) : generateNumber_++;
+		int type = j.contains("type") ? static_cast<int>(j["type"]) : generateNumber_++;
 		double sigm = j.contains("sigma") ? static_cast<double>(j["sigma"]) : 1;
 		double epsi = j.contains("epsilon") ? static_cast<double>(j["epsilon"]) : 5;
 		if (j["shape"] == "cuboid")
@@ -214,7 +222,14 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		}
 		else
 		{
-			LogManager::errorLog("Type {} is not a valid type!", j["type"]);
+			if (!j["type"])
+			{
+				LogManager::errorLog("You forgot to specifie a type!");
+			}
+			else
+			{
+				LogManager::errorLog("Type {} is not a valid type!", j["type"]);
+			}
 			continue;
 		}
 	}
