@@ -7,7 +7,7 @@ private:
 public:
 	ParticleContainerDirSum(double deltaT, double endTime, int writeFrequency);
 	~ParticleContainerDirSum() = default;
-	void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass ,int type, double epsilon=5, double sigma=1) override;
+	Particle *add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
 	void addCompleteParticle(Particle &p) override;
 	void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
 	void iterOverAllParticles(const std::function<void(std::vector<Particle>::iterator)> &f) override;

@@ -25,8 +25,7 @@ int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, in
 
 void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 										  const std::array<unsigned int, 3> &particlesPerDimension,
-										  std::array<double, 3> &particleVelocity, double h, double m, int type = -1,
-										  double initT)
+										  std::array<double, 3> &particleVelocity, double h, double m, int type, double epsilon, double sigma, double initT = 0.0)
 {
 	if (type < 0)
 	{
@@ -54,8 +53,12 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 				}
 				std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
 				std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-				(*container)->add(x_arg, v_arg, m,
-								  type); // using the add function in order to be able to add elements to all container implementations
+				auto p = (*container)->add(x_arg, v_arg, m, type);			// using the add function in order to be able to add elements to all container implementations
+				if (p)
+				{
+					p->setEpsilon(epsilon);
+					p->setEpsilon(sigma);
+				}
 			}
 		}
 	}
@@ -63,7 +66,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 
 void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 										  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
-										  double h, double m, bool is2D, int type = -1, double initT)
+										  double h, double m, bool is2D, int type, double epsilon, double sigma, double initT = 0.0)
 {
 	if (type < 0)
 	{
@@ -92,7 +95,12 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 					}
 					std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], 0};
 					std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-					(*container)->add(x_arg, v_arg, m, type);
+					auto p = (*container)->add(x_arg, v_arg, m, type);			// using the add function in order to be able to add elements to all container implementations
+					if (p)
+					{
+						p->setEpsilon(epsilon);
+						p->setEpsilon(sigma);
+					}
 				}
 			}
 		}
@@ -111,7 +119,12 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 							meanVelocity_, 3); // TODO (ASK): Is the mean here the same as the average?
 						std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], k * h + center[2]};
 						std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-						(*container)->add(x_arg, v_arg, m, type);
+						auto p = (*container)->add(x_arg, v_arg, m, type);			// using the add function in order to be able to add elements to all container implementations
+						if (p)
+						{
+							p->setEpsilon(epsilon);
+							p->setEpsilon(sigma);
+						}
 					}
 				}
 			}
@@ -127,11 +140,10 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	json JSONparams = jsonContent["params"];
 	if (!(*container))
 	{
-		auto test = force.innerPairs();
 		double deltaT = params.deltaT > 0 ? params.deltaT : static_cast<double>(JSONparams["deltaT"]);
 		double endTime = params.endTime > 0 ? params.endTime : static_cast<double>(JSONparams["endTime"]);
-		std::string containerType = params.containerType != "" ? params.containerType
-															   : static_cast<std::string>(JSONparams["containerType"]);
+		std::string containerType = params.containerType != "" ? params.containerType : static_cast<std::string>(JSONparams["containerType"]);
+
 		int writeFrequency;
 		if (params.writeFrequency > 0)
 		{
@@ -143,7 +155,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		}
 		else
 		{
-			writeFrequency = 10;
+			writeFrequency = 100;
 		}
 
 		if (containerType == "DirSum")
@@ -160,10 +172,29 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 				domainSize[i] = params.domainSize[i] > 0 ? params.domainSize[i]
 														 : static_cast<std::array<double, 3>>(JSONparams["domainSize"])[i];
 			}
-			double cutoffRadius =
-				params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
-			(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
-													   cutoffRadius);
+			double cutoffRadius = params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
+			if (!JSONparams.contains("nThermo") || !JSONparams.contains("tInit"))
+			{
+				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+														   cutoffRadius, false);
+			}
+			else
+			{
+				int nThermostat = static_cast<int>(JSONparams["nThermo"]);
+				double tInit = static_cast<double>(JSONparams["tInit"]);
+				double tempTarget = JSONparams.contains("tempTarget") ? static_cast<double>(JSONparams["tempTarget"]) : tInit;
+
+				if (JSONparams.contains("gGrav"))
+				{
+					(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+															   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5, static_cast<double>(JSONparams["gGrav"]));
+				}
+				else
+				{
+					(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+															   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5);
+				}
+			}
 		}
 		else
 		{
@@ -180,16 +211,18 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		std::array<double, 3UL> particleVelocity = j["v"];
 		double h = j.contains("h") ? static_cast<double>(j["h"]) : h_;
 		double m = j.contains("m") ? static_cast<double>(j["m"]) : m_;
-		double type = j.contains("type") ? static_cast<double>(j["type"]) : generateNumber_++;
+		int type = j.contains("type") ? static_cast<int>(j["type"]) : generateNumber_++;
+		double sigm = j.contains("sigma") ? static_cast<double>(j["sigma"]) : 1;
+		double epsi = j.contains("epsilon") ? static_cast<double>(j["epsilon"]) : 5;
 		if (j["shape"] == "cuboid")
 		{
 			std::array<unsigned int, 3UL> particlePerDimension = j["N"];
-			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, type);
+			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, type, epsi, sigm);
 		}
 		else if (j["shape"] == "sphere")
 		{
 			uint32_t radius = j["R"];
-			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type);
+			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type, epsi, sigm);
 		}
 		else if (j["shape"] == "particle")
 		{
@@ -198,11 +231,20 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 			particle.setOldF(f);
 			auto old_f = static_cast<std::array<double, 3>>(j["f"]);
 			particle.setF(old_f);
+			particle.setEpsilon(epsi);
+			particle.setSigma(sigm);
 			(*container)->addCompleteParticle(particle);
 		}
 		else
 		{
-			LogManager::errorLog("Type {} is not a valid type!", j["type"]);
+			if (!j["type"])
+			{
+				LogManager::errorLog("You forgot to specifie a type!");
+			}
+			else
+			{
+				LogManager::errorLog("Type {} is not a valid type!", j["type"]);
+			}
 			continue;
 		}
 	}
@@ -276,13 +318,13 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 		{
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
-							  h_, cuboid.getMass(), cuboid.getType());
+							  h_, cuboid.getMass(), cuboid.getType(), 5, 1 /*hier epsilon und Sigma einfügen*/);
 			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
 		{
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
-							  sphere.getDistance(), sphere.getMass(), true);
+							  sphere.getDistance(), sphere.getMass(), true, -1, 5, 1 /*hier epsilon und Sigma einfügen*/);
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}
