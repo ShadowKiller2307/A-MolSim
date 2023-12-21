@@ -127,11 +127,10 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	json JSONparams = jsonContent["params"];
 	if (!(*container))
 	{
-		auto test = force.innerPairs();
 		double deltaT = params.deltaT > 0 ? params.deltaT : static_cast<double>(JSONparams["deltaT"]);
 		double endTime = params.endTime > 0 ? params.endTime : static_cast<double>(JSONparams["endTime"]);
-		std::string containerType = params.containerType != "" ? params.containerType
-															   : static_cast<std::string>(JSONparams["containerType"]);
+		std::string containerType = params.containerType != "" ? params.containerType : static_cast<std::string>(JSONparams["containerType"]);
+
 		int writeFrequency;
 		if (params.writeFrequency > 0)
 		{
@@ -143,7 +142,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		}
 		else
 		{
-			writeFrequency = 10;
+			writeFrequency = 100;
 		}
 
 		if (containerType == "DirSum")
@@ -160,10 +159,21 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 				domainSize[i] = params.domainSize[i] > 0 ? params.domainSize[i]
 														 : static_cast<std::array<double, 3>>(JSONparams["domainSize"])[i];
 			}
-			double cutoffRadius =
-				params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
-			(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
-													   cutoffRadius);
+			double cutoffRadius = params.cutoffRadius > 0 ? params.cutoffRadius : static_cast<double>(JSONparams["cutoffRadius"]);
+			int nThermostat = static_cast<int>(JSONparams["nThermo"]);
+			double tInit = static_cast<double>(JSONparams["tInit"]);
+			double tempTarget = JSONparams.contains("tempTarget") ? static_cast<double>(JSONparams["tempTarget"]) : tInit;
+
+			if (JSONparams.contains("gGrav"))
+			{
+				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+														   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5, static_cast<double>(JSONparams["gGrav"]));
+			}
+			else
+			{
+				(*container) = new ParticleContainerLinCel(deltaT, endTime, writeFrequency, domainSize, bounds,
+														   cutoffRadius, true, nThermostat, true, tInit, tempTarget, 0.5);
+			}
 		}
 		else
 		{
@@ -181,6 +191,8 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		double h = j.contains("h") ? static_cast<double>(j["h"]) : h_;
 		double m = j.contains("m") ? static_cast<double>(j["m"]) : m_;
 		double type = j.contains("type") ? static_cast<double>(j["type"]) : generateNumber_++;
+		double sigm = j.contains("sigma") ? static_cast<double>(j["sigma"]) : 1;
+		double epsi = j.contains("epsilon") ? static_cast<double>(j["epsilon"]) : 5;
 		if (j["shape"] == "cuboid")
 		{
 			std::array<unsigned int, 3UL> particlePerDimension = j["N"];
