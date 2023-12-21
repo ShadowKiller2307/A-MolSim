@@ -565,12 +565,23 @@ TEST_F(MolSimTest, testScaleVelocity) {
 }
 
 
-TEST_F(MolSimTest, testPeriodicBoundaryNew) {
-    ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
-    linCelTest.add({1.5, 1.5, 0.5}, {-0.1, 0.0, 0.0}, 1, 0);
-    linCelTest.add({2.8, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0);
-    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
-    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
+TEST(MolSimTests, testPeriodicBoundaryToTheLeft) {
+    ParticleContainerLinCel linCelTest{0.1, 100, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
+    linCelTest.add({0.01, 1.5, 0.5}, {-0.1, 0.0, 0.0}, 1, 0);
+   // linCelTest.add({2.8, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0);
+ //   std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
+ //   std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
+    std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
+    // linCelTest.getCells().at()
+    linCelTest.simulateParticles();
+}
+
+TEST(MolSimTests, testPeriodicBoundaryToTheBottom) {
+    ParticleContainerLinCel linCelTest{0.1, 100, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
+    linCelTest.add({0.5, 0.01, 0.5}, {0.0, -0.1, 0.0}, 1, 0);
+    // linCelTest.add({2.8, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0);
+    //   std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
+    //   std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
     std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
     // linCelTest.getCells().at()
     linCelTest.simulateParticles();
