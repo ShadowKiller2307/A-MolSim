@@ -23,7 +23,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     mUpdates = 0;
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
-    if (bounds.length() < 6)
+    if (bounds.length() != 6)
     {
         LogManager::errorLog("Exactly six bounds have to be specified");
         exit(1);
@@ -41,7 +41,11 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         }
         else if (c == 'p')
         {
-            conditions.push_back(BoundaryCondition::Periodic);
+            if ((bounds.at(i) + (i % 2 == 0) ? 1 : -1) != 'p')
+            {
+                LogManager::errorLog("Periodic bounds must be symmetrical");
+                exit(1);
+            }
         }
         else
         {
@@ -62,7 +66,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     cellsY = static_cast<unsigned int>(ceil(domainSize_[1] / cutoffRadius_) + 2);
     cellsZ = static_cast<unsigned int>(ceil(domainSize_[2] / cutoffRadius_) + 2);
     cellCountByIndex = {cellsX, cellsY, cellsZ};
-    // amountOfCells = cellsX * cellsY + 2 * (cellsX + 2) + 2 * cellsY;
     amountOfCells = cellsX * cellsY * cellsZ;
     /**
      *  If the domain size isn't a multiple of the cutoff radius
@@ -180,7 +183,6 @@ void ParticleContainerLinCel::simulateParticles()
                     //     std::cout << "Hier 1" << std::endl;
                     //      std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     scaleVelocity(currentTemp, desiredTemp);
-                    mUpdates++;
                 }
                 else
                 {
@@ -841,7 +843,7 @@ void ParticleContainerLinCel::iterHalo()
 void ParticleContainerLinCel::iterHalo2()
 {
     int z = 1;
-    for (int x = 0; x <= cellsX - 1; ++x)
+    for (uint32_t x = 0; x <= cellsX - 1; ++x)
     {
         if (conditions[2] == BoundaryCondition::Periodic)
         {
@@ -849,7 +851,7 @@ void ParticleContainerLinCel::iterHalo2()
             lambda(x, 0, z);
         }
     }
-    for (int y = 0; y <= cellsY - 1; ++y)
+    for (uint32_t y = 0; y <= cellsY - 1; ++y)
     {
         if (conditions[1] == BoundaryCondition::Periodic)
         {
@@ -857,20 +859,28 @@ void ParticleContainerLinCel::iterHalo2()
             lambda(cellsX - 1, y, z);
         }
     }
-    for (int x = cellsX - 1; x >= 0; --x)
+    for (uint32_t x = cellsX - 1; x >= 0; --x)
     {
         if (conditions[3] == BoundaryCondition::Periodic)
         {
             auto lambda = createPeriodicLambdaHalo2();
             lambda(x, cellsY - 1, z);
         }
+        if (x == 0)
+        {
+            break;
+        }
     }
-    for (int y = cellsY - 1; y >= 0; --y)
+    for (uint32_t y = cellsY - 1; y >= 0; --y)
     {
         if (conditions[0] == BoundaryCondition::Periodic)
         {
             auto lambda = createPeriodicLambdaHalo2();
             lambda(0, y, z);
+        }
+        if (y == 0)
+        {
+            break;
         }
     }
 }
@@ -892,7 +902,10 @@ unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> p
         {
             xIndex = cellsX - 1;
         }
-        xIndex = static_cast<unsigned int>(floor(position[0] / cutoffRadius_)) + 1;
+        else
+        {
+            xIndex = static_cast<unsigned int>(floor(position[0] / cutoffRadius_)) + 1;
+        }
     }
     else
     {
@@ -904,7 +917,10 @@ unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> p
         {
             yIndex = cellsY - 1;
         }
-        yIndex = static_cast<unsigned int>(floor(position[1] / cutoffRadius_)) + 1;
+        else
+        {
+            yIndex = static_cast<unsigned int>(floor(position[1] / cutoffRadius_)) + 1;
+        }
     }
     else
     {
@@ -916,7 +932,10 @@ unsigned int ParticleContainerLinCel::translate3DPosTo1D(std::array<double, 3> p
         {
             zIndex = cellsZ - 1;
         }
-        zIndex = static_cast<unsigned int>(floor(position[2] / cutoffRadius_)) + 1;
+        else
+        {
+            zIndex = static_cast<unsigned int>(floor(position[2] / cutoffRadius_)) + 1;
+        }
     }
     else
     {
@@ -964,7 +983,7 @@ std::vector<Particle> ParticleContainerLinCel::getParticles()
     return returnVector;
 }
 
-unsigned int ParticleContainerLinCel::getAmountOfCells() const
+uint32_t ParticleContainerLinCel::getAmountOfCells() const
 {
     return amountOfCells;
 }
