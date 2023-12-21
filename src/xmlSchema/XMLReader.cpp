@@ -44,14 +44,14 @@ void XMLReader::extractSimulationParameters() {
     }
 
 
-        thermostatPresent = true;
-        auto thermostat = simulation->Thermostat().get();
+    thermostatPresent = true;
+    auto thermostat = simulation->Thermostat().get();
 
-        double initialTemp = thermostat.initialTemperature();
-        unsigned int nThermostat = thermostat.nThermostat();
-        double tempTarget = thermostat.temperatureTarget();
-        double maxDiff = thermostat.maxDifference();
-        bool isGradual = thermostat.isGradual();
+    double initialTemp = thermostat.initialTemperature();
+    unsigned int nThermostat = thermostat.nThermostat();
+    double tempTarget = thermostat.temperatureTarget();
+    double maxDiff = thermostat.maxDifference();
+    bool isGradual = thermostat.isGradual();
 
 
 
@@ -72,11 +72,23 @@ void XMLReader::extractCuboid() {
         auto particlesPerDimension =
                 createUnsignedIntArray(cuboid.particlePerDimension());
         auto velocity = createDoubleArray(cuboid.particleVelocity());
-        double h = cuboid.h();
+        double h = -1;
+        if(cuboid.h().present()){
+            h = cuboid.h().get();
+        }
         double mass = cuboid.mass();
         int type = cuboid.generateNumber();
+        double sigma = -1;
+        double epsilon = -1;
+        if(cuboid.sigma().present()){
+            sigma = cuboid.sigma().get();
+        }
+        if(cuboid.epsilon().present()){
+            epsilon = cuboid.epsilon().get();
+        }
 
-        CuboidConstructor cuboidConstructor(llfc, particlesPerDimension, velocity, h, mass, type);
+        CuboidConstructor cuboidConstructor(llfc, particlesPerDimension, velocity, h,
+                                            mass, type,sigma,epsilon);
         cuboidConstructors.push_back(cuboidConstructor);
 
     }
@@ -89,10 +101,23 @@ void XMLReader::extractSphere() {
         std::array<double, 3> cCoord = createDoubleArray(sphere.centerCoordinates());
         std::array<double, 3> iVel = createDoubleArray(sphere.initialVelocity());
         int radius = sphere.radius();
-        double distance = sphere.distance();
+        double distance = -1;
+        if(sphere.distance().present()){
+            distance = sphere.distance().get();
+        }
         double mass = sphere.mass();
+        double sigma = -1;
+        double epsilon = -1;
 
-        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass);
+        if(sphere.sigma().present()){
+            sigma = sphere.sigma().get();
+        }
+        if(sphere.epsilon().present()){
+            epsilon = sphere.epsilon().get();
+        }
+        int type = sphere.type();
+
+        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass,sigma,epsilon,type);
         sphereConstructors.push_back(sphereConstructor);
     }
 }
@@ -128,8 +153,3 @@ std::vector<SphereConstructor> XMLReader::getSphereConstructors() {
 bool XMLReader::isThermostatPresent() const {
     return thermostatPresent;
 }
-
-
-
-
-

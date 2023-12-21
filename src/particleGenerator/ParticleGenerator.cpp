@@ -316,15 +316,40 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 
 		for (auto &cuboid : cuboidConst)
 		{
+            double h = h_;
+            if(cuboid.getH()!=-1){
+                h = cuboid.getH();
+            }
+            double epsilon = 5;
+            double sigma = 1;
+            if(cuboid.getSigma()!=-1){
+                sigma = cuboid.getSigma();
+            }
+            if(cuboid.getEpsilon()!=-1){
+                epsilon = cuboid.getEpsilon();
+            }
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
-							  h_, cuboid.getMass(), cuboid.getType(), 5, 1 /*hier epsilon und Sigma einfügen*/);
+							  h, cuboid.getMass(), cuboid.getType(), epsilon, sigma);
 			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
 		{
+            double h = h_;
+            if(sphere.getDistance()!=-1){
+                h = sphere.getDistance();
+            }
+            double epsilon = 5;
+            double sigma = 1;
+            if(sphere.getSigma()!=-1){
+                sigma = sphere.getSigma();
+            }
+            if(sphere.getEpsilon()!=-1){
+                epsilon = sphere.getEpsilon();
+            }
+            int type = sphere.getType();
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
-							  sphere.getDistance(), sphere.getMass(), true, -1, 5, 1 /*hier epsilon und Sigma einfügen*/);
+							  h, sphere.getMass(), true, type, epsilon, sigma);
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}

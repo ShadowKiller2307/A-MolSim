@@ -11,20 +11,25 @@ private:
     int radius;
     double distance;
     double mass;
+    double sigma;
+    double epsilon;
+    int type;
 
 public:
     SphereConstructor(std::array<double, 3> &cCoordinates, std::array<double, 3> &iVelocity,
-                      int radius, double distance, double mass);
+                      int radius, double distance, double mass,double sigma,double epsilon,int type);
 
-    const std::array<double, 3> getCenterCoordinates() const;
+    std::array<double, 3> getCenterCoordinates() const;
 
-    const std::array<double, 3> getInitialVelocity() const;
+    std::array<double, 3> getInitialVelocity() const;
 
-    const int getRadius() const;
+    int getRadius() const;
 
-    const double getDistance() const;
+    double getDistance() const;
 
-    const double getMass() const;
-
+    double getMass() const;
+    double getSigma() const;
+    double getEpsilon() const;
+    int getType() const;
 
 };
