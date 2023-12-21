@@ -25,8 +25,8 @@ int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, in
 
 void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 										  const std::array<unsigned int, 3> &particlesPerDimension,
-										  std::array<double, 3> &particleVelocity, double h, double m, int type = -1,
-										  double epsilon, double sigma, double initT)
+										  std::array<double, 3> &particleVelocity, double h, double m,
+										  double epsilon, double sigma, int type = -1, double initT = 0.0)
 {
 	if (type < 0)
 	{
@@ -62,7 +62,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 
 void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 										  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
-										  double h, double m, bool is2D, int type = -1, double epsilon, double sigma, double initT)
+										  double h, double m, bool is2D, double epsilon, double sigma, int type = -1, double initT = 0.0)
 {
 	if (type < 0)
 	{
@@ -185,12 +185,12 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		if (j["shape"] == "cuboid")
 		{
 			std::array<unsigned int, 3UL> particlePerDimension = j["N"];
-			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, type, sigm, epsi);
+			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, sigm, epsi, type);
 		}
 		else if (j["shape"] == "sphere")
 		{
 			uint32_t radius = j["R"];
-			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type, sigm, epsi);
+			instantiateSphere(container, pos, radius, particleVelocity, h, m, true,  sigm, epsi, type);
 		}
 		else if (j["shape"] == "particle")
 		{
@@ -294,7 +294,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
-							  h, cuboid.getMass(), cuboid.getType(),epsilon,sigma);
+							  h, cuboid.getMass(), epsilon,sigma, cuboid.getType());
 			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
@@ -313,7 +313,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
                 epsilon = sphere.getEpsilon();
             }
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
-							  h, sphere.getMass(), true,epsilon,sigma);
+							  h, sphere.getMass(), true, epsilon,sigma, 0);
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}

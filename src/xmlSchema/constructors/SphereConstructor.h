@@ -13,6 +13,7 @@ private:
     double mass;
     double sigma;
     double epsilon;
+    int type;
 
 public:
     SphereConstructor(std::array<double, 3> &cCoordinates, std::array<double, 3> &iVelocity,

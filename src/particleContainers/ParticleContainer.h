@@ -60,7 +60,7 @@ public:
 	 *	@param mass mass of the particle
 	 *	@param type typenumber of the particle
 	 */
-	virtual void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type, double epsilon, double sigma) = 0;
+	virtual void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type, double epsilon=5, double sigma=1) = 0;
 
 	virtual void addCompleteParticle(Particle &p) = 0;
 
