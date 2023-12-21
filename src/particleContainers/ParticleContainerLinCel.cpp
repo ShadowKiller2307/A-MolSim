@@ -221,18 +221,15 @@ void ParticleContainerLinCel::simulateParticles()
     }
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-    std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" : std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
-    size_t mups = mup / (diff / 1000);
-    std::string unit = "mups";
-    if (mups > 1000)
-    {
-        if (mups > 1000000)
-        {
+    std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " +
+                (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" :
+                std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
+    double mups = static_cast<double>(mup) / (diff / 1000.0);        std::string unit = "mups";
+    if (mups > 1000) {
+        if (mups > 1000000) {
             mups /= 1000000;
             unit = "m" + unit;
-        }
-        else
-        {
+        } else {
             mups /= 1000;
             unit = "k" + unit;
         }

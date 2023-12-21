@@ -44,7 +44,7 @@ protected:
     GravPot gravPot1{};
     ParticleContainerDirSum containerDirSum{0.5, 1, 1};
     ParticleContainerDirSum containerDirSum2{0.5, 1, 1};
-    ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrro", 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
+    ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrrr", 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
     ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "oooooo", 1.5};
     ParticleContainerLinCel linCel3{0.5, 1, 1, {5.0, 5.0, 5.0}, "oooooo", 1.0};
     GravPot gravPot{};
@@ -70,12 +70,23 @@ ParticleContainerLinCel linCelInitTemp{0.001, 10, 1, {120.0, 120.0, 1.0}, "rrrrr
                                        true, 10, true, 40, 40, 1.0, 0}; // parameters for the thermostat
 */
 
-/*TEST_F(MolSimTest, testGenerateParticlesGenerator)
+/*
+void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
+                                          const std::array<unsigned int, 3> &particlesPerDimension,
+                                          std::array<double, 3> &particleVelocity, double h, double m, int type, double epsilon, double sigma, double initT = 0.0)
+*/
+
+
+/*void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
+                                          const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
+                                          double h, double m, bool is2D, int type, double epsilon, double sigma, double initT = 0.0)
+{*/
+TEST_F(MolSimTest, testGenerateParticlesGenerator)
 {
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    particleGenerator::instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0, );
-    particleGenerator::instantiateSphere(&containerCuboid, {5.0, 5.0, 0.0}, 2, startV, 1.0, 1, true, 1);
+    particleGenerator::instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0, 5, 1, 40);
+    particleGenerator::instantiateSphere(&containerCuboid, {5.0, 5.0, 0.0}, 2, startV, 1.0, 1, true, 1, 5, 1, 40);
     // Now check if the cuboid was instantiated with the particle positions as we expect
     EXPECT_EQ(17, containerCuboid->getParticles().size());
     std::array<double, 3> test{0.0, 0.0, 0.0};
@@ -116,7 +127,7 @@ ParticleContainerLinCel linCelInitTemp{0.001, 10, 1, {120.0, 120.0, 1.0}, "rrrrr
     // Check for two random particles(one of the sphere and one of the cuboid) if the mass was set correctly
     EXPECT_EQ(1.0, containerCuboid->getParticles().at(4).getM());
     EXPECT_EQ(1.0, containerCuboid->getParticles().at(16).getM());
-}*/
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -141,48 +152,38 @@ TEST_F(MolSimTest, test3DIndexTo1DIndexTranslation)
  * @brief: Generate a cuboid and a sphere for the linked cells
  */
 
-/*TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
+/*
+void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
+                                          const std::array<unsigned int, 3> &particlesPerDimension,
+                                          std::array<double, 3> &particleVelocity, double h, double m, int type, double epsilon, double sigma, double initT = 0.0)
+*/
+TEST_F(MolSimTest, testGenerateParticlesLinCelContainer)
 {
     ParticleContainer *cuboidLinkedCel = &containerLinCel;
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 1}, startV, 1.0, 1, 0);
-    for(int i = 0; i < 4; ++i) {
-        std::cout << containerLinCel.getParticles().at(i) << std::endl;
-    }
+    particleGenerator::instantiateCuboid(&cuboidLinkedCel, {0.5, 0.5, 0.0}, {2, 2, 1}, startV, 1.0, 1, 0, 5, 1, 40);
     std::cout << containerLinCel.getCells().size() << std::endl;
     EXPECT_EQ(containerLinCel.getAmountOfCells(), 75);
     std::array<double, 3> test{0.5, 0.5, 0.0};
-
-    for (int i = 0; i < containerLinCel.getAmountOfCells(); ++i) {
-        if (!containerLinCel.getCells().at(i).empty()) {
-            auto currentCell = containerLinCel.getCells().at(i);
-            for (auto & j : currentCell) {
-                std::cout << containerLinCel.getParticles().at(j) << std::endl;
-            }
-        }
-    }
-
-   */
-/* EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0)->getX());
-test = {0.5, 1.5, 0.0};
-EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0)->getX());
-test = {1.5, 0.5, 0.0};
-EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0)->getX());
-test = {1.5, 1.5, 0.0};
-EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0)->getX());*/
-/*
-}*/
+    EXPECT_EQ(test, containerLinCel.getCells().at(31).at(0).getX());
+    test = {0.5, 1.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(36).at(0).getX());
+    test = {1.5, 0.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(32).at(0).getX());
+    test = {1.5, 1.5, 0.0};
+    EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0).getX());
+}
 
 /**
  * @brief: check if a single Particle in a Boundary Cell, that moves towards the border of the domain,
  * stays within the domain when the Boundary is set to Reflecting
  */
-/*TEST_F(MolSimTest, testReflectingBoundary)
+TEST_F(MolSimTest, testReflectingBoundary)
 {
     // left domain border should have the BoundaryCondition Reflecting
     containerLinCel.add({0.5, 1.5, 0.0}, {-1.0, 0.0, 0.0}, 1, 0);
-    EXPECT_EQ(containerLinCel.affectsForce(0), true);
-    EXPECT_EQ(containerLinCel.affectsForce(5), false);
+    /*EXPECT_EQ(containerLinCel.affectsForce(0), true);
+    EXPECT_EQ(containerLinCel.affectsForce(5), false);*/
     for (int i = 0; i < 10; ++i)
     {
         // check whether the particle leaves the domain and gets deleted
@@ -194,22 +195,7 @@ EXPECT_EQ(test, containerLinCel.getCells().at(37).at(0)->getX());*/
         containerLinCel.calculateVelocity();
         EXPECT_EQ(containerLinCel.getAmountOfParticles(), 1);
     }
-}*/
-
-/*TEST_F(MolSimTest, testSetBoundary) {
-    LennJon lennJon{5, 1};
-    //ParticleContainerLinCel linCel2{0.5, 1, 1, {3.0, 3.0, 1.0}, "rrrrrr", lennJon, 1.5};
-    ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "rooooo", lennJon, 1.0};
-    for (int i = 0; i < 6; ++i) {
-        std::cout << test_1.getBounds().at(i)->affectsForce() << std::endl;
-    }
-
-    EXPECT_EQ(test_1.getBounds().at(0)->affectsForce(), true);
-    */
-/*ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oroooo", lennJon, 1.0};
-ParticleContainerLinCel test_1{0.5, 1, 1, {3.0, 3.0, 1.0}, "oorooo", lennJon, 1.0};*/
-/*
-}*/
+}
 
 /**
  * @brief: check force calculation for Lennard Jones for the Linked cells
@@ -223,11 +209,6 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     // check against hardcoded values
     // different values than the direct sum container as the distance between the particle on the left and the particle on the right
     // are bigger than the cutoff radius
-    for (int i = 0; i < linCel2.getCells().size(); ++i)
-    {
-        auto current = linCel2.getCells().at(i);
-        std::cout << "Cell at Index " << i << " size : " << current.size() << std::endl;
-    }
     std::array<double, 3> expectedValuesOne{-120, 0.0, 0.0};
     std::array<double, 3> expectedValuesTwo{0.0, 0.0, 0.0};
     std::array<double, 3> expectedValuesThree{120, 0.0, 0.0};
@@ -434,6 +415,8 @@ TEST_F(MolSimTest, testCreateReflecting)
     EXPECT_EQ(1, 1);
 }
 
+// we used the following tests to debug our reflecting boundaries
+/*
 TEST_F(MolSimTest, testReflectingOneParticleHorizontalMovement)
 {
     ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.0};
@@ -444,8 +427,10 @@ TEST_F(MolSimTest, testReflectingOneParticleHorizontalMovement)
     // linCelTest.getCells().at()
     linCelTest.simulateParticles();
 }
+*/
 
-TEST_F(MolSimTest, testReflectingOneParticleHorizontalMovementRightVoundary)
+/*
+TEST_F(MolSimTest, testReflectingOneParticleHorizontalMovementRightBoundary)
 {
     ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "rrrrrr", 1.0};
     linCelTest.add({1.5, 1.5, 0.5}, {0.1, 0.0, 0.0}, 1, 0);
@@ -466,11 +451,7 @@ TEST_F(MolSimTest, testReflectingOneParticleVerticalMovement)
     linCelTest.simulateParticles();
     std::cout << "Particles: " << linCelTest.getParticles().at(0) << std::endl;
     std::cout << "Temperatur: " << linCelTest.calculateTemperature() << std::endl;
-}
-
-TEST_F(MolSimTest, testIterBoundaryIndex)
-{
-}
+}*/
 
 ///////////////////////////////////////////////////// TESTS FOR THE BOUNDARY CONDITIONS END ////////////////////////////
 
