@@ -2,33 +2,34 @@
 	"params":{
 		"numParticles": 2,
 		"deltaT": 0.0005,
-		"endTime": 25,
+		"endTime": 50,
 		"containerType": "LinCel",
 		"writeFrequency": 100,
 		"boundaries": "rrrrrr",
 		"cutoffRadius": 2.5,
-		"domainSize": [65, 37.5, 1],
+		"domainSize": [300, 54, 1],
 		"tInit": 40,
-		"nThermo": 1000
+		"nThermo": 1000,
+		"gGrav": -12.44
 	  },
 	  "particles": [{
 		"shape": "cuboid",
 		"m": 1.0,
 		"epsilon": 1.0,
-		"sigma": 1.0,
+		"sigma": 1.2,
 		"x": [0.6, 2.0, 0.5],
 		"v": [0.0, 0.0, 0.0],
-		"N": [50, 14, 1],
+		"N": [250, 20, 1],
 		"h": 1.2
 	  },
 	  {
 		"shape": "cuboid",
 		"m": 2.0,
 		"epsilon": 1.0,
-		"sigma": 0.9412,
-		"x": [0.6, 19, 0.5],
+		"sigma": 1.1,
+		"x": [0.6, 27, 0.5],
 		"v": [0.0, 0.0, 0.0],
-		"N": [50, 14, 1],
+		"N": [250, 20, 1],
 		"h": 1.2
 	  }]
 }
