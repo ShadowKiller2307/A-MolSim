@@ -207,7 +207,7 @@ void ParticleContainerLinCel::simulateParticles()
             double tempAfterThermostat = calculateTemperature();
             // std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
-         std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+         //std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
         /* std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
@@ -234,7 +234,7 @@ void ParticleContainerLinCel::calculateForces()
         }
     }
     iterOverInnerPairs(force_); // TODO: force_ parameter can be deleted, isn't used at the moment
-    // iterBoundary2();
+    iterBoundary2();
     if (gGrav != 0.0)
     {
         // the gravitational force will be added to every particle
