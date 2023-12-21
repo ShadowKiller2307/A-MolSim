@@ -26,7 +26,7 @@ int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, in
 void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 										  const std::array<unsigned int, 3> &particlesPerDimension,
 										  std::array<double, 3> &particleVelocity, double h, double m, int type = -1,
-										  double epsilon, double sigma_, double initT)
+										  double epsilon, double sigma, double initT)
 {
 	if (type < 0)
 	{
@@ -54,8 +54,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 				}
 				std::array<double, 3> x_arg{i * h + llfc[0], j * h + llfc[1], k * h + llfc[2]};
 				std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-				(*container)->add(x_arg, v_arg, m,
-								  type); // using the add function in order to be able to add elements to all container implementations
+				(*container)->add(x_arg, v_arg, m, type, epsilon, sigma);	// using the add function in order to be able to add elements to all container implementations
 			}
 		}
 	}
@@ -63,7 +62,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 
 void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 										  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
-										  double h, double m, bool is2D, int type = -1, double epsilon, double sigma_, double initT)
+										  double h, double m, bool is2D, int type = -1, double epsilon, double sigma, double initT)
 {
 	if (type < 0)
 	{
@@ -92,7 +91,7 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 					}
 					std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], 0};
 					std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-					(*container)->add(x_arg, v_arg, m, type);
+					(*container)->add(x_arg, v_arg, m, type, epsilon, sigma);
 				}
 			}
 		}
@@ -111,7 +110,7 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 							meanVelocity_, 3); // TODO (ASK): Is the mean here the same as the average?
 						std::array<double, 3> x_arg{i * h + center[0], j * h + center[1], k * h + center[2]};
 						std::array<double, 3> v_arg{particleVelocity + mbVelocity}; // Calculate via the Brownian motion
-						(*container)->add(x_arg, v_arg, m, type);
+						(*container)->add(x_arg, v_arg, m, type, epsilon, sigma);
 					}
 				}
 			}
@@ -181,7 +180,6 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		double h = j.contains("h") ? static_cast<double>(j["h"]) : h_;
 		double m = j.contains("m") ? static_cast<double>(j["m"]) : m_;
 		double type = j.contains("type") ? static_cast<double>(j["type"]) : generateNumber_++;
-		// TODO:
 		double sigm = j.contains("sigma") ? static_cast<double>(j["sigma"]) : sigma_;
 		double epsi = j.contains("epsilon") ? static_cast<double>(j["epsilon"]) : epsilon_;
 		if (j["shape"] == "cuboid")
