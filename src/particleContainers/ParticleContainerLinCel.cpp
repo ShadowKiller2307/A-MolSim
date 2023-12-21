@@ -98,6 +98,8 @@ void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std:
         x_arg[2] >= 0 && x_arg[2] <= domainSize_[2])   // in z bounds
     {
         // compute the cell to which the particle will be added
+        std::cout << "Epsilon: " << epsilon << std::endl;
+        std ::cout << "Sigma: " << sigma << std::endl;
         cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type, epsilon, sigma);
     }
 }
@@ -158,6 +160,7 @@ void ParticleContainerLinCel::simulateParticles()
         calculateForces();
         // calculate new v
         calculateVelocity();
+
         // check whether the Thermostat should be applied
         if (useThermostat && ((iteration_ % nThermostat) == 0))
         {
@@ -205,8 +208,8 @@ void ParticleContainerLinCel::simulateParticles()
             double tempAfterThermostat = calculateTemperature();
         }
         std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
-        /* std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
-         std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
+        std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
+        std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;
         iteration_++;
         mup += getAmountOfParticles();
         startTime_ += deltaT_;
@@ -284,7 +287,7 @@ void ParticleContainerLinCel::calculatePosition()
         }
         cells.at(translate3DPosTo1D(i.getX())).emplace_back(i);
     }
-    iterHalo2();
+  //  iterHalo2();
 }
 
 void ParticleContainerLinCel::calculateForcesWithIndices(std::array<uint32_t, 3> &myCoordinates, std::array<uint32_t, 3> &otherCoordinates)
@@ -461,6 +464,8 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 // TODO: another check whether the force is really repulsing
                 //     std::cout << "Difference: " << (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX())) << std::endl;
                 calcF(p, ghostParticle);
+                std::cout << "Particle: " << p << std::endl;
+                std::cout << "ghost particle: " << ghostParticle << std::endl;
                 /*   std::cout << "Particle velocity: " << p.getV() << std::endl;
                    std::cout << "Particle force: " << p.getF() << std::endl;*/
             }
@@ -582,7 +587,6 @@ void ParticleContainerLinCel::iterBoundary2()
             {
                 auto lambda = createReflectingLambdaBoundary(1, 0);
                 lambda(x, 1, z);
-                //  createRefectingForce(x, 1, z, 1, 0);
             }
             else
             {
@@ -600,7 +604,6 @@ void ParticleContainerLinCel::iterBoundary2()
             {
                 auto lambda = createReflectingLambdaBoundary(0, static_cast<int>(domainSize_[0]));
                 lambda(cellsX - 2, y, z);
-                // createRefectingForce(cellsX - 2, y, z, 1, static_cast<int>(domainSize_[0]));
             }
             else
             {
@@ -618,7 +621,6 @@ void ParticleContainerLinCel::iterBoundary2()
             {
                 auto lambda = createReflectingLambdaBoundary(1, static_cast<int>(domainSize_[1]));
                 lambda(x, cellsY - 2, z);
-                // createRefectingForce(x, cellsY - 2, z, 1, static_cast<int> (domainSize_[1]));
             }
             else
             {
@@ -637,7 +639,6 @@ void ParticleContainerLinCel::iterBoundary2()
             {
                 auto lambda = createReflectingLambdaBoundary(0, 0);
                 lambda(1, y, z);
-                // createRefectingForce(1, y, z, 0,0);
             }
             else
             {
