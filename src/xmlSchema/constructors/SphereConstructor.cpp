@@ -3,7 +3,7 @@
 
 
 SphereConstructor::SphereConstructor(std::array<double,3>& cCoordinates, std::array<double,3>& iVelocity,
-int radius,double distance,double mass,double sigma,double epsilon){
+int radius,double distance,double mass,double sigma,double epsilon,int type){
     this->centerCoordinates = cCoordinates;
     this->initialVelocity = iVelocity;
     this->radius = radius;
@@ -11,6 +11,7 @@ int radius,double distance,double mass,double sigma,double epsilon){
     this->mass = mass;
     this->sigma = sigma;
     this->epsilon = epsilon;
+    this->type = type;
 }
 
 
@@ -37,4 +38,7 @@ double SphereConstructor::getSigma() const {
 }
 double SphereConstructor::getEpsilon() const {
     return epsilon;
+}
+int SphereConstructor::getType() const {
+    return type;
 }

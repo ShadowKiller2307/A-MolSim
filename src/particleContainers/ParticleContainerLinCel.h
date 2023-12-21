@@ -102,7 +102,7 @@ public:
      * @param mass mass of the particle
      * @param type typenumber of the particle
      */
-    void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type, double epsilon, double sigma) override;
+    void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type, double epsilon = 5.0, double sigma = 1.0) override;
 
     /**
      * @brief adds a fully constructed particle to the container

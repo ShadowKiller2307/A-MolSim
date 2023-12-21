@@ -694,12 +694,27 @@ class Sphere: public ::xml_schema::type
   void
   epsilon (const epsilon_optional& x);
 
+  // type
+  //
+  typedef ::xml_schema::int_ type_type;
+  typedef ::xsd::cxx::tree::traits< type_type, char > type_traits;
+
+  const type_type&
+  type () const;
+
+  type_type&
+  type ();
+
+  void
+  type (const type_type& x);
+
   // Constructors.
   //
   Sphere (const centerCoordinates_type&,
           const initialVelocity_type&,
           const radius_type&,
-          const mass_type&);
+          const mass_type&,
+          const type_type&);
 
   Sphere (const ::xercesc::DOMElement& e,
           ::xml_schema::flags f = 0,
@@ -734,6 +749,7 @@ class Sphere: public ::xml_schema::type
   ::xsd::cxx::tree::one< mass_type > mass_;
   sigma_optional sigma_;
   epsilon_optional epsilon_;
+  ::xsd::cxx::tree::one< type_type > type_;
 };
 
 class Thermostat: public ::xml_schema::type

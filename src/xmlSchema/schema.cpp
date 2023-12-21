@@ -439,6 +439,24 @@ epsilon (const epsilon_optional& x)
   this->epsilon_ = x;
 }
 
+const Sphere::type_type& Sphere::
+type () const
+{
+  return this->type_.get ();
+}
+
+Sphere::type_type& Sphere::
+type ()
+{
+  return this->type_.get ();
+}
+
+void Sphere::
+type (const type_type& x)
+{
+  this->type_.set (x);
+}
+
 
 // Thermostat
 // 
@@ -1276,7 +1294,8 @@ Sphere::
 Sphere (const centerCoordinates_type& centerCoordinates,
         const initialVelocity_type& initialVelocity,
         const radius_type& radius,
-        const mass_type& mass)
+        const mass_type& mass,
+        const type_type& type)
 : ::xml_schema::type (),
   centerCoordinates_ (centerCoordinates, this),
   initialVelocity_ (initialVelocity, this),
@@ -1284,7 +1303,8 @@ Sphere (const centerCoordinates_type& centerCoordinates,
   distance_ (this),
   mass_ (mass, this),
   sigma_ (this),
-  epsilon_ (this)
+  epsilon_ (this),
+  type_ (type, this)
 {
 }
 
@@ -1299,7 +1319,8 @@ Sphere (const Sphere& x,
   distance_ (x.distance_, f, this),
   mass_ (x.mass_, f, this),
   sigma_ (x.sigma_, f, this),
-  epsilon_ (x.epsilon_, f, this)
+  epsilon_ (x.epsilon_, f, this),
+  type_ (x.type_, f, this)
 {
 }
 
@@ -1314,7 +1335,8 @@ Sphere (const ::xercesc::DOMElement& e,
   distance_ (this),
   mass_ (this),
   sigma_ (this),
-  epsilon_ (this)
+  epsilon_ (this),
+  type_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -1416,6 +1438,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (type_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -1446,6 +1479,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "mass",
       "");
   }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
 }
 
 Sphere* Sphere::
@@ -1468,6 +1508,7 @@ operator= (const Sphere& x)
     this->mass_ = x.mass_;
     this->sigma_ = x.sigma_;
     this->epsilon_ = x.epsilon_;
+    this->type_ = x.type_;
   }
 
   return *this;

@@ -115,8 +115,9 @@ void XMLReader::extractSphere() {
         if(sphere.epsilon().present()){
             epsilon = sphere.epsilon().get();
         }
+        int type = sphere.type();
 
-        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass,sigma,epsilon);
+        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass,sigma,epsilon,type);
         sphereConstructors.push_back(sphereConstructor);
     }
 }

@@ -19,6 +19,8 @@
         <h>1.89</h>
         <mass>4.0</mass>
         <generateNumber>1</generateNumber>
+        <sigma>1</sigma>
+        <epsilon>5</epsilon>
     </Cuboid>
 
 

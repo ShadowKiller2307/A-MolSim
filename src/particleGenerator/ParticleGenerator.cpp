@@ -313,7 +313,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
                 epsilon = sphere.getEpsilon();
             }
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
-							  h, sphere.getMass(), true, epsilon,sigma, 0);
+							  h, sphere.getMass(), true, epsilon,sigma, sphere.getType());
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}
