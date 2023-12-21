@@ -6,9 +6,9 @@ ParticleContainerDirSum::ParticleContainerDirSum(double deltaT, double endTime, 
 {
 }
 
-void ParticleContainerDirSum::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type, double epsilon, double sigma)
+Particle *ParticleContainerDirSum::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
 {
-	particles_.emplace_back(x_arg, v_arg, mass, type);
+	return &particles_.emplace_back(x_arg, v_arg, mass, type);
 }
 
 void ParticleContainerDirSum::addCompleteParticle(Particle &p)
