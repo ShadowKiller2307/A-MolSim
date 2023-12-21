@@ -171,22 +171,28 @@ particleVelocity (::std::unique_ptr< particleVelocity_type > x)
   this->particleVelocity_.set (std::move (x));
 }
 
-const Cuboid::h_type& Cuboid::
+const Cuboid::h_optional& Cuboid::
 h () const
 {
-  return this->h_.get ();
+  return this->h_;
 }
 
-Cuboid::h_type& Cuboid::
+Cuboid::h_optional& Cuboid::
 h ()
 {
-  return this->h_.get ();
+  return this->h_;
 }
 
 void Cuboid::
 h (const h_type& x)
 {
   this->h_.set (x);
+}
+
+void Cuboid::
+h (const h_optional& x)
+{
+  this->h_ = x;
 }
 
 const Cuboid::mass_type& Cuboid::
@@ -223,6 +229,54 @@ void Cuboid::
 generateNumber (const generateNumber_type& x)
 {
   this->generateNumber_.set (x);
+}
+
+const Cuboid::sigma_optional& Cuboid::
+sigma () const
+{
+  return this->sigma_;
+}
+
+Cuboid::sigma_optional& Cuboid::
+sigma ()
+{
+  return this->sigma_;
+}
+
+void Cuboid::
+sigma (const sigma_type& x)
+{
+  this->sigma_.set (x);
+}
+
+void Cuboid::
+sigma (const sigma_optional& x)
+{
+  this->sigma_ = x;
+}
+
+const Cuboid::epsilon_optional& Cuboid::
+epsilon () const
+{
+  return this->epsilon_;
+}
+
+Cuboid::epsilon_optional& Cuboid::
+epsilon ()
+{
+  return this->epsilon_;
+}
+
+void Cuboid::
+epsilon (const epsilon_type& x)
+{
+  this->epsilon_.set (x);
+}
+
+void Cuboid::
+epsilon (const epsilon_optional& x)
+{
+  this->epsilon_ = x;
 }
 
 
@@ -295,22 +349,28 @@ radius (const radius_type& x)
   this->radius_.set (x);
 }
 
-const Sphere::distance_type& Sphere::
+const Sphere::distance_optional& Sphere::
 distance () const
 {
-  return this->distance_.get ();
+  return this->distance_;
 }
 
-Sphere::distance_type& Sphere::
+Sphere::distance_optional& Sphere::
 distance ()
 {
-  return this->distance_.get ();
+  return this->distance_;
 }
 
 void Sphere::
 distance (const distance_type& x)
 {
   this->distance_.set (x);
+}
+
+void Sphere::
+distance (const distance_optional& x)
+{
+  this->distance_ = x;
 }
 
 const Sphere::mass_type& Sphere::
@@ -329,6 +389,72 @@ void Sphere::
 mass (const mass_type& x)
 {
   this->mass_.set (x);
+}
+
+const Sphere::sigma_optional& Sphere::
+sigma () const
+{
+  return this->sigma_;
+}
+
+Sphere::sigma_optional& Sphere::
+sigma ()
+{
+  return this->sigma_;
+}
+
+void Sphere::
+sigma (const sigma_type& x)
+{
+  this->sigma_.set (x);
+}
+
+void Sphere::
+sigma (const sigma_optional& x)
+{
+  this->sigma_ = x;
+}
+
+const Sphere::epsilon_optional& Sphere::
+epsilon () const
+{
+  return this->epsilon_;
+}
+
+Sphere::epsilon_optional& Sphere::
+epsilon ()
+{
+  return this->epsilon_;
+}
+
+void Sphere::
+epsilon (const epsilon_type& x)
+{
+  this->epsilon_.set (x);
+}
+
+void Sphere::
+epsilon (const epsilon_optional& x)
+{
+  this->epsilon_ = x;
+}
+
+const Sphere::type_type& Sphere::
+type () const
+{
+  return this->type_.get ();
+}
+
+Sphere::type_type& Sphere::
+type ()
+{
+  return this->type_.get ();
+}
+
+void Sphere::
+type (const type_type& x)
+{
+  this->type_.set (x);
 }
 
 
@@ -933,16 +1059,17 @@ Cuboid::
 Cuboid (const llfc_type& llfc,
         const particlePerDimension_type& particlePerDimension,
         const particleVelocity_type& particleVelocity,
-        const h_type& h,
         const mass_type& mass,
         const generateNumber_type& generateNumber)
 : ::xml_schema::type (),
   llfc_ (llfc, this),
   particlePerDimension_ (particlePerDimension, this),
   particleVelocity_ (particleVelocity, this),
-  h_ (h, this),
+  h_ (this),
   mass_ (mass, this),
-  generateNumber_ (generateNumber, this)
+  generateNumber_ (generateNumber, this),
+  sigma_ (this),
+  epsilon_ (this)
 {
 }
 
@@ -956,7 +1083,9 @@ Cuboid (const Cuboid& x,
   particleVelocity_ (x.particleVelocity_, f, this),
   h_ (x.h_, f, this),
   mass_ (x.mass_, f, this),
-  generateNumber_ (x.generateNumber_, f, this)
+  generateNumber_ (x.generateNumber_, f, this),
+  sigma_ (x.sigma_, f, this),
+  epsilon_ (x.epsilon_, f, this)
 {
 }
 
@@ -970,7 +1099,9 @@ Cuboid (const ::xercesc::DOMElement& e,
   particleVelocity_ (this),
   h_ (this),
   mass_ (this),
-  generateNumber_ (this)
+  generateNumber_ (this),
+  sigma_ (this),
+  epsilon_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -1035,7 +1166,7 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     //
     if (n.name () == "h" && n.namespace_ ().empty ())
     {
-      if (!h_.present ())
+      if (!this->h_)
       {
         this->h_.set (h_traits::create (i, f, this));
         continue;
@@ -1064,6 +1195,28 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // sigma
+    //
+    if (n.name () == "sigma" && n.namespace_ ().empty ())
+    {
+      if (!this->sigma_)
+      {
+        this->sigma_.set (sigma_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // epsilon
+    //
+    if (n.name () == "epsilon" && n.namespace_ ().empty ())
+    {
+      if (!this->epsilon_)
+      {
+        this->epsilon_.set (epsilon_traits::create (i, f, this));
+        continue;
+      }
+    }
+
     break;
   }
 
@@ -1085,13 +1238,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "particleVelocity",
-      "");
-  }
-
-  if (!h_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "h",
       "");
   }
 
@@ -1129,6 +1275,8 @@ operator= (const Cuboid& x)
     this->h_ = x.h_;
     this->mass_ = x.mass_;
     this->generateNumber_ = x.generateNumber_;
+    this->sigma_ = x.sigma_;
+    this->epsilon_ = x.epsilon_;
   }
 
   return *this;
@@ -1146,14 +1294,17 @@ Sphere::
 Sphere (const centerCoordinates_type& centerCoordinates,
         const initialVelocity_type& initialVelocity,
         const radius_type& radius,
-        const distance_type& distance,
-        const mass_type& mass)
+        const mass_type& mass,
+        const type_type& type)
 : ::xml_schema::type (),
   centerCoordinates_ (centerCoordinates, this),
   initialVelocity_ (initialVelocity, this),
   radius_ (radius, this),
-  distance_ (distance, this),
-  mass_ (mass, this)
+  distance_ (this),
+  mass_ (mass, this),
+  sigma_ (this),
+  epsilon_ (this),
+  type_ (type, this)
 {
 }
 
@@ -1166,7 +1317,10 @@ Sphere (const Sphere& x,
   initialVelocity_ (x.initialVelocity_, f, this),
   radius_ (x.radius_, f, this),
   distance_ (x.distance_, f, this),
-  mass_ (x.mass_, f, this)
+  mass_ (x.mass_, f, this),
+  sigma_ (x.sigma_, f, this),
+  epsilon_ (x.epsilon_, f, this),
+  type_ (x.type_, f, this)
 {
 }
 
@@ -1179,7 +1333,10 @@ Sphere (const ::xercesc::DOMElement& e,
   initialVelocity_ (this),
   radius_ (this),
   distance_ (this),
-  mass_ (this)
+  mass_ (this),
+  sigma_ (this),
+  epsilon_ (this),
+  type_ (this)
 {
   if ((f & ::xml_schema::flags::base) == 0)
   {
@@ -1241,7 +1398,7 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     //
     if (n.name () == "distance" && n.namespace_ ().empty ())
     {
-      if (!distance_.present ())
+      if (!this->distance_)
       {
         this->distance_.set (distance_traits::create (i, f, this));
         continue;
@@ -1255,6 +1412,39 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!mass_.present ())
       {
         this->mass_.set (mass_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // sigma
+    //
+    if (n.name () == "sigma" && n.namespace_ ().empty ())
+    {
+      if (!this->sigma_)
+      {
+        this->sigma_.set (sigma_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // epsilon
+    //
+    if (n.name () == "epsilon" && n.namespace_ ().empty ())
+    {
+      if (!this->epsilon_)
+      {
+        this->epsilon_.set (epsilon_traits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (type_traits::create (i, f, this));
         continue;
       }
     }
@@ -1283,17 +1473,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
-  if (!distance_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "distance",
-      "");
-  }
-
   if (!mass_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "mass",
+      "");
+  }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
       "");
   }
 }
@@ -1316,6 +1506,9 @@ operator= (const Sphere& x)
     this->radius_ = x.radius_;
     this->distance_ = x.distance_;
     this->mass_ = x.mass_;
+    this->sigma_ = x.sigma_;
+    this->epsilon_ = x.epsilon_;
+    this->type_ = x.type_;
   }
 
   return *this;

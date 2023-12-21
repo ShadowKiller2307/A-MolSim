@@ -318,6 +318,8 @@ TEST_F(MolSimTest, testSimpleCuboidParameters)
     double h = cuboidConstructor.getH();
     double mass = cuboidConstructor.getMass();
     int type = cuboidConstructor.getType();
+    double sigma = cuboidConstructor.getSigma();
+    double epsilon = cuboidConstructor.getEpsilon();
 
     EXPECT_EQ(llfc.at(0), 1.3);
     EXPECT_EQ(llfc.at(1), 2.0);
@@ -334,6 +336,8 @@ TEST_F(MolSimTest, testSimpleCuboidParameters)
     EXPECT_EQ(h, 1.89);
     EXPECT_EQ(mass, 4.0);
     EXPECT_EQ(type, 1);
+    EXPECT_EQ(sigma,1);
+    EXPECT_EQ(epsilon,5);
 }
 /// This test checks if the simulation parameters are extracted correctly
 TEST_F(MolSimTest, testSimpleSimulationParameters)
@@ -393,6 +397,7 @@ TEST_F(MolSimTest, testSimpleSphereParameters)
     EXPECT_EQ(sphereConstructor.getRadius(), 15);
     EXPECT_EQ(sphereConstructor.getDistance(), 1.1225);
     EXPECT_EQ(sphereConstructor.getMass(), 1.0);
+    EXPECT_EQ(sphereConstructor.getType(),0);
 
     EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(0), 90);
     EXPECT_EQ(sphereConstructor1.getCenterCoordinates().at(1), 20);
@@ -405,6 +410,7 @@ TEST_F(MolSimTest, testSimpleSphereParameters)
     EXPECT_EQ(sphereConstructor1.getRadius(), 19);
     EXPECT_EQ(sphereConstructor1.getDistance(), 1.1226);
     EXPECT_EQ(sphereConstructor1.getMass(), 1.0);
+    EXPECT_EQ(sphereConstructor1.getType(),1);
 }
 
 //////////////////////////////////////////////// TESTS FOR THE XML INPUT END ///////////////////////////////////////////
