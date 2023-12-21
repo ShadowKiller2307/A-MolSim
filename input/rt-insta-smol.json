@@ -9,7 +9,8 @@
 		"cutoffRadius": 2.5,
 		"domainSize": [65, 37.5, 1],
 		"tInit": 40,
-		"nThermo": 1000
+		"nThermo": 1000,
+		"gGrav": -12.44
 	  },
 	  "particles": [{
 		"shape": "cuboid",
