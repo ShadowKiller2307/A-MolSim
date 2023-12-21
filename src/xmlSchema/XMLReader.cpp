@@ -72,7 +72,10 @@ void XMLReader::extractCuboid() {
         auto particlesPerDimension =
                 createUnsignedIntArray(cuboid.particlePerDimension());
         auto velocity = createDoubleArray(cuboid.particleVelocity());
-        double h = cuboid.h();
+        double h = -1;
+        if(cuboid.h().present()){
+            h = cuboid.h().get();
+        }
         double mass = cuboid.mass();
         int type = cuboid.generateNumber();
 
@@ -89,7 +92,10 @@ void XMLReader::extractSphere() {
         std::array<double, 3> cCoord = createDoubleArray(sphere.centerCoordinates());
         std::array<double, 3> iVel = createDoubleArray(sphere.initialVelocity());
         int radius = sphere.radius();
-        double distance = sphere.distance();
+        double distance = -1;
+        if(sphere.distance().present()){
+            distance = sphere.distance().get();
+        }
         double mass = sphere.mass();
 
         SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass);

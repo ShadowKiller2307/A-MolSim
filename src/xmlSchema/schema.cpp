@@ -171,22 +171,28 @@ particleVelocity (::std::unique_ptr< particleVelocity_type > x)
   this->particleVelocity_.set (std::move (x));
 }
 
-const Cuboid::h_type& Cuboid::
+const Cuboid::h_optional& Cuboid::
 h () const
 {
-  return this->h_.get ();
+  return this->h_;
 }
 
-Cuboid::h_type& Cuboid::
+Cuboid::h_optional& Cuboid::
 h ()
 {
-  return this->h_.get ();
+  return this->h_;
 }
 
 void Cuboid::
 h (const h_type& x)
 {
   this->h_.set (x);
+}
+
+void Cuboid::
+h (const h_optional& x)
+{
+  this->h_ = x;
 }
 
 const Cuboid::mass_type& Cuboid::
@@ -295,22 +301,28 @@ radius (const radius_type& x)
   this->radius_.set (x);
 }
 
-const Sphere::distance_type& Sphere::
+const Sphere::distance_optional& Sphere::
 distance () const
 {
-  return this->distance_.get ();
+  return this->distance_;
 }
 
-Sphere::distance_type& Sphere::
+Sphere::distance_optional& Sphere::
 distance ()
 {
-  return this->distance_.get ();
+  return this->distance_;
 }
 
 void Sphere::
 distance (const distance_type& x)
 {
   this->distance_.set (x);
+}
+
+void Sphere::
+distance (const distance_optional& x)
+{
+  this->distance_ = x;
 }
 
 const Sphere::mass_type& Sphere::
@@ -933,14 +945,13 @@ Cuboid::
 Cuboid (const llfc_type& llfc,
         const particlePerDimension_type& particlePerDimension,
         const particleVelocity_type& particleVelocity,
-        const h_type& h,
         const mass_type& mass,
         const generateNumber_type& generateNumber)
 : ::xml_schema::type (),
   llfc_ (llfc, this),
   particlePerDimension_ (particlePerDimension, this),
   particleVelocity_ (particleVelocity, this),
-  h_ (h, this),
+  h_ (this),
   mass_ (mass, this),
   generateNumber_ (generateNumber, this)
 {
@@ -1035,7 +1046,7 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     //
     if (n.name () == "h" && n.namespace_ ().empty ())
     {
-      if (!h_.present ())
+      if (!this->h_)
       {
         this->h_.set (h_traits::create (i, f, this));
         continue;
@@ -1085,13 +1096,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "particleVelocity",
-      "");
-  }
-
-  if (!h_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "h",
       "");
   }
 
@@ -1146,13 +1150,12 @@ Sphere::
 Sphere (const centerCoordinates_type& centerCoordinates,
         const initialVelocity_type& initialVelocity,
         const radius_type& radius,
-        const distance_type& distance,
         const mass_type& mass)
 : ::xml_schema::type (),
   centerCoordinates_ (centerCoordinates, this),
   initialVelocity_ (initialVelocity, this),
   radius_ (radius, this),
-  distance_ (distance, this),
+  distance_ (this),
   mass_ (mass, this)
 {
 }
@@ -1241,7 +1244,7 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     //
     if (n.name () == "distance" && n.namespace_ ().empty ())
     {
-      if (!distance_.present ())
+      if (!this->distance_)
       {
         this->distance_.set (distance_traits::create (i, f, this));
         continue;
@@ -1280,13 +1283,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "radius",
-      "");
-  }
-
-  if (!distance_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_element< char > (
-      "distance",
       "");
   }
 

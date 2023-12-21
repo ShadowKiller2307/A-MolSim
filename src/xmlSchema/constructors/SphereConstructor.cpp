@@ -12,21 +12,21 @@ int radius,double distance,double mass){
 }
 
 
-const std::array<double,3> SphereConstructor::getCenterCoordinates() const {
+std::array<double,3> SphereConstructor::getCenterCoordinates() const {
     return centerCoordinates;
 }
-const std::array<double,3> SphereConstructor::getInitialVelocity() const{
+std::array<double,3> SphereConstructor::getInitialVelocity() const{
     return initialVelocity;
 }
 
-const int SphereConstructor::getRadius() const {
+int SphereConstructor::getRadius() const {
     return radius;
 }
 
-const double SphereConstructor::getDistance() const {
+double SphereConstructor::getDistance() const {
     return distance;
 }
 
-const double SphereConstructor::getMass() const {
+double SphereConstructor::getMass() const {
     return mass;
 }

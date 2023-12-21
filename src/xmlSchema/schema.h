@@ -452,16 +452,20 @@ class Cuboid: public ::xml_schema::type
   // h
   //
   typedef ::xml_schema::double_ h_type;
+  typedef ::xsd::cxx::tree::optional< h_type > h_optional;
   typedef ::xsd::cxx::tree::traits< h_type, char, ::xsd::cxx::tree::schema_type::double_ > h_traits;
 
-  const h_type&
+  const h_optional&
   h () const;
 
-  h_type&
+  h_optional&
   h ();
 
   void
   h (const h_type& x);
+
+  void
+  h (const h_optional& x);
 
   // mass
   //
@@ -496,7 +500,6 @@ class Cuboid: public ::xml_schema::type
   Cuboid (const llfc_type&,
           const particlePerDimension_type&,
           const particleVelocity_type&,
-          const h_type&,
           const mass_type&,
           const generateNumber_type&);
 
@@ -529,7 +532,7 @@ class Cuboid: public ::xml_schema::type
   ::xsd::cxx::tree::one< llfc_type > llfc_;
   ::xsd::cxx::tree::one< particlePerDimension_type > particlePerDimension_;
   ::xsd::cxx::tree::one< particleVelocity_type > particleVelocity_;
-  ::xsd::cxx::tree::one< h_type > h_;
+  h_optional h_;
   ::xsd::cxx::tree::one< mass_type > mass_;
   ::xsd::cxx::tree::one< generateNumber_type > generateNumber_;
 };
@@ -588,16 +591,20 @@ class Sphere: public ::xml_schema::type
   // distance
   //
   typedef ::xml_schema::double_ distance_type;
+  typedef ::xsd::cxx::tree::optional< distance_type > distance_optional;
   typedef ::xsd::cxx::tree::traits< distance_type, char, ::xsd::cxx::tree::schema_type::double_ > distance_traits;
 
-  const distance_type&
+  const distance_optional&
   distance () const;
 
-  distance_type&
+  distance_optional&
   distance ();
 
   void
   distance (const distance_type& x);
+
+  void
+  distance (const distance_optional& x);
 
   // mass
   //
@@ -618,7 +625,6 @@ class Sphere: public ::xml_schema::type
   Sphere (const centerCoordinates_type&,
           const initialVelocity_type&,
           const radius_type&,
-          const distance_type&,
           const mass_type&);
 
   Sphere (const ::xercesc::DOMElement& e,
@@ -650,7 +656,7 @@ class Sphere: public ::xml_schema::type
   ::xsd::cxx::tree::one< centerCoordinates_type > centerCoordinates_;
   ::xsd::cxx::tree::one< initialVelocity_type > initialVelocity_;
   ::xsd::cxx::tree::one< radius_type > radius_;
-  ::xsd::cxx::tree::one< distance_type > distance_;
+  distance_optional distance_;
   ::xsd::cxx::tree::one< mass_type > mass_;
 };
 

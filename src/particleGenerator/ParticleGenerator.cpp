@@ -274,15 +274,23 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 
 		for (auto &cuboid : cuboidConst)
 		{
+            double h = h_;
+            if(cuboid.getH()!=-1){
+                h = cuboid.getH();
+            }
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
-							  h_, cuboid.getMass(), cuboid.getType());
+							  h, cuboid.getMass(), cuboid.getType());
 			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
 		{
+            double h = h_;
+            if(sphere.getDistance()!=-1){
+                h = sphere.getDistance();
+            }
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
-							  sphere.getDistance(), sphere.getMass(), true);
+							  h, sphere.getMass(), true);
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}

@@ -16,15 +16,15 @@ public:
     SphereConstructor(std::array<double, 3> &cCoordinates, std::array<double, 3> &iVelocity,
                       int radius, double distance, double mass);
 
-    const std::array<double, 3> getCenterCoordinates() const;
+    std::array<double, 3> getCenterCoordinates() const;
 
-    const std::array<double, 3> getInitialVelocity() const;
+    std::array<double, 3> getInitialVelocity() const;
 
-    const int getRadius() const;
+    int getRadius() const;
 
-    const double getDistance() const;
+    double getDistance() const;
 
-    const double getMass() const;
+    double getMass() const;
 
 
 };

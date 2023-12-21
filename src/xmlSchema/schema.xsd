@@ -26,7 +26,7 @@
             <xs:element name="llfc" type="arrayOfThreeDoubles"/>
             <xs:element name="particlePerDimension" type="arrayOfThreeUnsignedInts"/>
             <xs:element name="particleVelocity" type="arrayOfThreeDoubles"/>
-            <xs:element name="h" type="xs:double"/>
+            <xs:element name="h" type="xs:double" minOccurs="0"/>
             <xs:element name="mass" type="xs:double"/>
             <xs:element name="generateNumber" type="xs:int"/>
         </xs:sequence>
@@ -38,7 +38,7 @@
             <xs:element name="centerCoordinates" type="arrayOfThreeDoubles"/>
             <xs:element name="initialVelocity" type="arrayOfThreeDoubles"/>
             <xs:element name ="radius" type="xs:int"/>
-            <xs:element name="distance" type="xs:double"/>
+            <xs:element name="distance" type="xs:double" minOccurs="0"/>
             <xs:element name="mass" type="xs:double"/>
         </xs:sequence>
     </xs:complexType>

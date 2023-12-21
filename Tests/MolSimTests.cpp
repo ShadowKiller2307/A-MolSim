@@ -584,7 +584,14 @@ TEST_F(MolSimTest, testParticleCreation) {
 }
 
 TEST_F(MolSimTest, testPeriodicBoundary) {
-
+    ParticleContainerLinCel linCelTest{0.01, 50, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
+    linCelTest.add({1.5, 1.5, 0.5}, {0.0, -0.1, 0.0}, 1, 0);
+    std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
+    std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
+    // linCelTest.getCells().at()
+    linCelTest.simulateParticles();
+    std::cout << "Particles: " << linCelTest.getParticles().at(0) << std::endl;
+    std::cout << "Temperatur: " << linCelTest.calculateTemperature() << std::endl;
 }
 
 TEST_F(MolSimTest, testRayleighTaylorInstability) {
