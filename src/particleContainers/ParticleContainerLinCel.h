@@ -92,7 +92,7 @@ public:
     void addCompleteParticle(Particle &p) override;
 
     /// @brief runs the simulation loop
-    void simulateParticles();
+    void simulateParticles() override;
 
     /**
      * @brief overriding the force calculation for the demands of the LinCel container, including iterating over the

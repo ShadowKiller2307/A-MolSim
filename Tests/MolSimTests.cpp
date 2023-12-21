@@ -462,9 +462,9 @@ TEST_F(MolSimTest, testReflectingOneParticleVerticalMovement)
     std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
     std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
     // linCelTest.getCells().at()
-    linCelTest.simulateParticles();/*
+    linCelTest.simulateParticles();
     std::cout << "Particles: " << linCelTest.getParticles().at(0) << std::endl;
-    std::cout << "Temperatur: " << linCelTest.calculateTemperature() << std::endl;*/
+    std::cout << "Temperatur: " << linCelTest.calculateTemperature() << std::endl;
 }
 
 TEST_F(MolSimTest, testIterBoundaryIndex)
@@ -476,8 +476,8 @@ TEST_F(MolSimTest, testIterBoundaryIndex)
 
 ///////////////////////////////////////////////////// TESTS FOR THE THERMOSTAT BEGIN ///////////////////////////////////
 
-/***
- * This test checks if the system keeps the initial temperature with a max error of 5.0
+/**
+ * @brief: In this test we check whether initializing a system with an initial temperature works
  */
 TEST_F(MolSimTest, initializeTemperature) {
     // first call the particle generator with the desired initial temperature
@@ -494,46 +494,64 @@ TEST_F(MolSimTest, initializeTemperature) {
     EXPECT_NEAR(initTemp, initialTemp, 5.0);
 }
 
+/**
+ * @brief This tests checks whether after initializing the system with a temperature around 40 degrees,
+ * the heating process of the system works with the thermostat
+ * Therefore it should be heated up to around 60 degrees
+ */
 TEST_F(MolSimTest, testHeating) {
     double initialTemp = 40;
     double targetTemp = 60;
-    ParticleContainerLinCel linCelInitTemp{0.01, 50, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0};
+    ParticleContainerLinCel linCelInitTemp{0.001, 100, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 1000, true, 40, 60, 1.0, 0}; // parameters for the thermostat
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};
     particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
                                          {10, 10, 1}, vel, 1, 1.0, 0, initialTemp);
+    EXPECT_NEAR(linCelInitTemp.calculateTemperature(), initialTemp, 5.0);
     linCelInitTemp.simulateParticles();
+    EXPECT_NEAR(linCelInitTemp.calculateTemperature(), targetTemp, 5.0);
 }
 
+/**
+ * @brief This tests checks whether after initializing the systen with a temperature around 40 degrees,
+ * the cooling process of the system works with the thermostat
+ * Therefore it should be cooled down to around 20 degrees
+ */
 TEST_F(MolSimTest, testCooling) {
-
+    double initialTemp = 40;
+    double targetTemp = 20;
+    ParticleContainerLinCel linCelInitTemp{0.001, 100, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 1000, true, 40, 20, 1.0, 0}; // parameters for the thermostat
+    ParticleContainer *ptr = &linCelInitTemp;
+    ParticleContainer **ptrptr = &ptr;
+    std::array<double, 3> vel = {0.0, 0.0, 0.0};
+    particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
+                                         {10, 10, 1}, vel, 1, 1.0, 0, initialTemp);
+    EXPECT_NEAR(linCelInitTemp.calculateTemperature(), initialTemp, 5.0);
+    linCelInitTemp.simulateParticles();
+    EXPECT_NEAR(linCelInitTemp.calculateTemperature(), targetTemp, 5.0);
 }
 
-
-
-/*
- * ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
-                                                 const std::array<double, 3> &domainSize,
-                                                 const std::string &bounds, double cutoffRadius,
-                                                 bool useThermostat, double nThermostat,
-                                                 bool isGradual, double initT,
-                                                 double tempTarget,
-                                                 double maxDiff, double gGrav_arg) : ParticleContainer(deltaT, endTime, writeFrequency)
+/**
+ * @brief: This test checks if the system keeps the initial temperature with a max error of 5.0
  */
 TEST_F(MolSimTest, testHoldingATemperature) {
     double initialTemp = 40;
     double targetTemp = 40;
-    ParticleContainerLinCel linCelInitTemp{0.01, 1, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
-                                           true, 10, true, 40, 40, 1.0, 0}; // parameters for the thermostat
+    ParticleContainerLinCel linCelInitTemp{0.001, 100, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 1000, true, 40, 40, 1.0, 0}; // parameters for the thermostat
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};
+    // initialize a cuboid with an initial temperature of 40
     particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
-                                         {10, 10, 1}, vel, 1, 1.0, 0, initialTemp);
+                                         {10, 10, 1}, vel, 1.2, 1.0, 0, initialTemp);
+    EXPECT_NEAR(linCelInitTemp.calculateTemperature(), initialTemp, 5.0);
     linCelInitTemp.simulateParticles();
-    std::cout<<linCelInitTemp.calculateTemperature()<<"\n";
-   // EXPECT_DOUBLE_EQ(targetTemp,linCelInitTemp.calculateTemperature());
+    // after the simulation loop, the system should still have a temperature around 40 degrees
+    EXPECT_NEAR(linCelInitTemp.calculateTemperature(), targetTemp, 5.0);
 }
 
 //////////////////////////////////////////////////// TESTS FOR THE THERMOSTAT END //////////////////////////////////////
@@ -541,6 +559,11 @@ TEST_F(MolSimTest, testHoldingATemperature) {
 
 
 //////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY BEGIN ///////////////////
+
+TEST_F(MolSimTest, testScaleVelocity) {
+    
+}
+
 
 TEST_F(MolSimTest, testPeriodicBoundaryNew) {
     ParticleContainerLinCel linCelTest{0.1, 50, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
@@ -565,6 +588,11 @@ TEST_F(MolSimTest, testPeriodicBoundary) {
 }
 
 TEST_F(MolSimTest, testRayleighTaylorInstability) {
+    double gGrav = -12.44;
+    double deltaT = 0.0005;
+    double t_end = 100;
+
+
 
 }
 

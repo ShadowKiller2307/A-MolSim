@@ -18,7 +18,7 @@ Particle::Particle(int type_arg)
   old_f = {0., 0., 0.};
 }
 
-Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, int type_arg, int epsilon_arg, int sigma_arg) : x(x_arg), v(v_arg), m(m_arg), type(type_arg), sigma(sigma_arg), epsilon(epsilon_arg)
+Particle::Particle(std::array<double, 3> x_arg, std::array<double, 3> v_arg, double m_arg, int type_arg, int epsilon_arg, int sigma_arg) : x(x_arg), v(v_arg), m(m_arg), type(type_arg), epsilon(epsilon_arg), sigma(sigma_arg)
 {
   f = {0., 0., 0.};
   old_f = {0., 0., 0.};

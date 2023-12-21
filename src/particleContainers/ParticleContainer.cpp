@@ -167,13 +167,16 @@ void ParticleContainer::calcF(Particle &a, Particle &b)
         std::cout << "Epsilon: " << epsilon_new << std::endl;*/
     }
     auto diff = a.getX() - b.getX();
+  //  std::cout << "Diff: " << diff << std::endl;
     double norm = ArrayUtils::L2Norm(diff);
+  //  std::cout << "Norm: " << norm << std::endl;
     double first = (-24 * epsilon_new) / (norm * norm);
     double frac = sigma_new / norm;
     double pow6 = std::pow(frac, 6);
     double pow12 = 2 * std::pow(pow6, 2);
     double middle = (pow6 - pow12);
     auto force = (first * middle) * diff;
+  //  std::cout << "Calculated force: " << force << std::endl;
     a.addF(force);
     force = -1 * force;
     b.addF(force);

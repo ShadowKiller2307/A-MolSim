@@ -157,7 +157,7 @@ void ParticleContainerLinCel::simulateParticles()
             double currentE = calculateKinEnergy();
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
-            //    std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
+            //std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
             // 3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
@@ -189,13 +189,13 @@ void ParticleContainerLinCel::simulateParticles()
             }
             else
             { // directly set the new temp
-                desiredTemp += currentDiff;
+                desiredTemp = currentTemp + currentDiff;
                 //    std::cout << "Hier 4" << std::endl;
                 //   std::cout << "Desired Temp: " << desiredTemp << std::endl;
                 scaleVelocity(currentTemp, desiredTemp);
             }
             double tempAfterThermostat = calculateTemperature();
-            //  std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
+            //std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
         // calculate new f
         calculateForces();
@@ -209,6 +209,17 @@ void ParticleContainerLinCel::simulateParticles()
         iteration_++;
         startTime_ += deltaT_;
     }
+    //printing the velocities of all particles after all iterations:
+   /* for (auto &current : cells) {
+        for (auto &p : current) {
+            std::cout << "Velocity: " << p.getV() << std::endl;
+        }
+    }*/
+
+
+
+
+
     //  TODO (ADD): Log
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
@@ -228,10 +239,11 @@ void ParticleContainerLinCel::calculateForces()
             p.setOldF(oldForce);
         }
     }
-    iterOverInnerPairs(force_);
-    // iterBoundary2();
-    if (gGrav != 0)
+    iterOverInnerPairs(force_);  //TODO: force_ parameter can be deleted, isn't used at the moment
+    //iterBoundary2();
+    if (gGrav != 0.0)
     {
+        //the gravitational force will be added to every particle
         addGravitationalForce();
     }
 }
@@ -250,7 +262,7 @@ void ParticleContainerLinCel::calculatePosition()
                 for (unsigned int i = 0; i < currentCell.size(); ++i)
                 {
                     Particle &particle = currentCell.at(i);
-                    std::array<double, 3> force = particle.getF();
+                    std::array<double, 3> force = particle.getF(); //TODO: maybe replace with old_F
                     double factor = std::pow(deltaT_, 2) / (2 * particle.getM());
                     force = factor * force;
                     std::array<double, 3> newPosition = (particle.getX()) + deltaT_ * (particle.getV()) + force; // calculate position
@@ -265,7 +277,7 @@ void ParticleContainerLinCel::calculatePosition()
                         particle.setX(newPosition);
                         addBack.emplace_back(particle);
                         currentCell.erase(currentCell.begin() + i);
-                        --i;
+                        i = i-1;
                     }
                 }
             }
@@ -328,6 +340,7 @@ void ParticleContainerLinCel::calculateVelocity()
             double factor = deltaT_ / (2 * p.getM());
             std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
             sumOfForces = factor * sumOfForces;
+          //  std::cout << "Sum of forces: " << sumOfForces << std::endl;
             std::array<double, 3> newVelocity = p.getV() + sumOfForces;
 
             // TODO (ADD): Log
@@ -894,12 +907,19 @@ void ParticleContainerLinCel::addGravitationalForce()
 double ParticleContainerLinCel::calculateKinEnergy()
 {
     double energy = 0.0;
-    auto energyLambda = [&energy](ParticleContainerLinCel::cell::iterator it)
+    for (auto &current : cells) {
+        for (auto &p : current) {
+            double velocityProduct = p.getV()[0]*p.getV()[0] + p.getV()[1]*p.getV()[1] + p.getV()[2]*p.getV()[2];
+            energy += (velocityProduct*p.getM())/2;
+        }
+    }
+    return energy;
+    /*auto energyLambda = [&energy](ParticleContainerLinCel::cell::iterator it)
     {
         energy += (*it).getM() * std::inner_product((*it).getV().begin(), (*it).getV().end(), (*it).getV().begin(), 0.0) / 2;
     };
     iterOverAllParticles(energyLambda);
-    return energy;
+    return energy;*/
 }
 
 double ParticleContainerLinCel::calculateTemperature()
@@ -911,7 +931,7 @@ double ParticleContainerLinCel::calculateTemperature()
 
 void ParticleContainerLinCel::scaleVelocity(double currentTemp, double newTemp)
 {
-    double div = currentTemp / newTemp;
+    double div = newTemp / currentTemp;
     double beta = std::pow(div, 1.0 / 2.0);
     for (auto &cell : cells)
     {
@@ -923,4 +943,4 @@ void ParticleContainerLinCel::scaleVelocity(double currentTemp, double newTemp)
     }
 }
 
-///////////////////////////////////////////////////////THERMOSTAT END //////////////////////////////////////////////////
+///////////////////////////////////////////////////////THERMOSTAT END///////////////////////////////////////////////////
