@@ -109,20 +109,20 @@ int main(int argc, char *const argv[])
 		auto force = GravPot();
 		particleGenerator::instantiateTxt(&container, argv[optind], force, SimParams{.deltaT = 0.014, .endTime = 1000, .containerType = "DirSum"});
 	}
-	if (writeToJSON)
-	{
-		int slash = str.find_last_of("/");
-		auto path = str.substr(0, slash + 1);
-		auto newName = path + "generated_" + str.substr(slash + 1, str.size() - slash - 6) + ".json";
-		container->writeJSON(newName);
-		std::cout << "sucessfully written particles to file " + newName << std::endl;
-		return 0;
-	}
 	if (true)
 	{
 		ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);
 		lincelContainer->simulateParticles();
 	}
+    if (writeToJSON)
+    {
+        int slash = str.find_last_of("/");
+        auto path = str.substr(0, slash + 1);
+        auto newName = path + "generated_" + str.substr(slash + 1, str.size() - slash - 6) + ".json";
+        container->writeJSON(newName);
+        std::cout << "sucessfully written particles to file " + newName << std::endl;
+        return 0;
+    }
 	// std::cout << "bis hier ok3\n";
 	delete container;
 	return 0;

@@ -65,11 +65,16 @@ TEST_F(MolSimTest, testGetParticles)
  * @brief: Check the position values of the particles in the particleContainer after the instantiateCuboid method was
  * called
  */
+/*
+ParticleContainerLinCel linCelInitTemp{0.001, 10, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                       true, 10, true, 40, 40, 1.0, 0}; // parameters for the thermostat
+*/
+
 /*TEST_F(MolSimTest, testGenerateParticlesGenerator)
 {
     // Instantiate a generator and container for the instantiateCuboid function
     std::array<double, 3> startV{0.0, 0.0, 0.0};
-    particleGenerator::instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0);
+    particleGenerator::instantiateCuboid(&containerCuboid, {0.0, 0.0, 0.0}, {2, 2, 2}, startV, 1.0, 1, 0, );
     particleGenerator::instantiateSphere(&containerCuboid, {5.0, 5.0, 0.0}, 2, startV, 1.0, 1, true, 1);
     // Now check if the cuboid was instantiated with the particle positions as we expect
     EXPECT_EQ(17, containerCuboid->getParticles().size());
@@ -556,11 +561,13 @@ TEST_F(MolSimTest, testHoldingATemperature) {
 
 //////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY BEGIN ///////////////////
 
+//TODO: implement
 TEST_F(MolSimTest, testScaleVelocity) {
     
 }
 
-
+// We used the following two tests for print debugging
+/*
 TEST(MolSimTests, testPeriodicBoundaryToTheLeft) {
     ParticleContainerLinCel linCelTest{0.1, 100, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
     linCelTest.add({0.01, 1.5, 0.5}, {-0.1, 0.0, 0.0}, 1, 0);
@@ -575,7 +582,7 @@ TEST(MolSimTests, testPeriodicBoundaryToTheBottom) {
     std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
     // linCelTest.getCells().at()
     linCelTest.simulateParticles();
-}
+}*/
 
 TEST_F(MolSimTest, testParticleCreation) {
     Particle a{{1.5, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0};
