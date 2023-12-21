@@ -12,7 +12,6 @@
 
 int main(int argc, char *const argv[])
 {
-	// std::cout << "bis hier ok1\n";
 	LogManager &logManager = LogManager::getInstance();
 	logManager.setLogLevel(spdlog::level::info); // standard default level
 
@@ -123,7 +122,6 @@ int main(int argc, char *const argv[])
 		ParticleContainerLinCel *lincelContainer = dynamic_cast<ParticleContainerLinCel *>(container);
 		lincelContainer->simulateParticles();
 	}
-	// std::cout << "bis hier ok3\n";
 	delete container;
 	return 0;
 }
