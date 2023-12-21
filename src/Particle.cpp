@@ -13,7 +13,6 @@
 Particle::Particle(int type_arg)
 {
   type = type_arg;
-  // std::cout << "Particle generated!" << std::endl;
   f = {0., 0., 0.};
   old_f = {0., 0., 0.};
 }

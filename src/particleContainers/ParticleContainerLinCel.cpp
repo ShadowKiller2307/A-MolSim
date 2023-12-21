@@ -78,7 +78,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     }
     buildLookUp();
     gGrav = gGrav_arg;
-    // std::cout << "constructor end\n";
     // initialize the thermostat
     // Thermostat temp {initT, tempTarget, maxDiff};
     // thermostat = temp;
@@ -167,7 +166,6 @@ void ParticleContainerLinCel::simulateParticles()
             double currentE = calculateKinEnergy();
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
-            // std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
             //  3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
@@ -205,9 +203,8 @@ void ParticleContainerLinCel::simulateParticles()
                 scaleVelocity(currentTemp, desiredTemp);
             }
             double tempAfterThermostat = calculateTemperature();
-            // std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
-         //std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+        std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
         /* std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
@@ -581,10 +578,8 @@ void ParticleContainerLinCel::iterBoundary2()
     {
         for (uint32_t x = 1; x < cellsX - 1; ++x)
         {
-            // std::cout << "Unten, Index: " << translate3DIndTo1D(x, 1, z) << std::endl;
             if (conditions[2] == BoundaryCondition::Reflecting)
             {
-                // std::cout << "Passt!" << std::endl;
                 auto lambda = createReflectingLambdaBoundary(1, 0);
                 lambda(x, 1, z);
                 //  createRefectingForce(x, 1, z, 1, 0);
@@ -601,7 +596,6 @@ void ParticleContainerLinCel::iterBoundary2()
     {
         for (uint32_t y = 1; y < cellsY - 1; ++y)
         {
-            // std::cout << "Rechts, Index: " << translate3DIndTo1D(cellsX - 2, y, z) << std::endl;
             if (conditions[1] == BoundaryCondition::Reflecting)
             {
                 auto lambda = createReflectingLambdaBoundary(0, static_cast<int>(domainSize_[0]));
@@ -620,7 +614,6 @@ void ParticleContainerLinCel::iterBoundary2()
         // from top right corner to top left corner
         for (uint32_t x = cellsX - 2; x > 0; --x)
         {
-            // std::cout <<"Oben, Index: " << translate3DIndTo1D(x, cellsY - 2, z) << std::endl;
             if (conditions[3] == BoundaryCondition::Reflecting)
             {
                 auto lambda = createReflectingLambdaBoundary(1, static_cast<int>(domainSize_[1]));

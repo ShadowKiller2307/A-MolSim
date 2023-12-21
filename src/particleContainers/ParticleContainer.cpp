@@ -27,7 +27,6 @@ void ParticleContainer::calculateForces()
 
 void ParticleContainer::calculateVelocity()
 {
-	// std::cout << "calculateVelocity begin: \n";
 	for (auto &p : particles_)
 	{
 		double factor = deltaT_ / (2 * p.getM());
@@ -39,7 +38,6 @@ void ParticleContainer::calculateVelocity()
 		// ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
 		p.setV(newVelocity);
 	}
-	// std::cout << "calculateVelocity end: \n";
 }
 
 void ParticleContainer::calculatePosition()
@@ -97,7 +95,6 @@ void ParticleContainer::simulateParticles()
 
 		// calculate new x
 		calculatePosition();
-		// std::cout << "bis hier ok: nach calculatePosition\n";
 		// calculate new f
 		calculateForces();
 		// calculate new v
@@ -151,7 +148,6 @@ void ParticleContainer::calcF(Particle &a, Particle &b)
 	{
 		// particles a and b are of different types
 		// apply the Lorentz-Berthelot mixing rule
-		// std::cout << "Falscher if Zweig" << std::endl;
 		sigma_new = (a.getSigma() + b.getSigma()) / 2.0;
 		epsilon_new = std::sqrt((a.getEpsilon() * b.getEpsilon()));
 	}
