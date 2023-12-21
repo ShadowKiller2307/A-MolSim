@@ -78,8 +78,17 @@ void XMLReader::extractCuboid() {
         }
         double mass = cuboid.mass();
         int type = cuboid.generateNumber();
+        double sigma = -1;
+        double epsilon = -1;
+        if(cuboid.sigma().present()){
+            sigma = cuboid.sigma().get();
+        }
+        if(cuboid.epsilon().present()){
+            epsilon = cuboid.epsilon().get();
+        }
 
-        CuboidConstructor cuboidConstructor(llfc, particlesPerDimension, velocity, h, mass, type);
+        CuboidConstructor cuboidConstructor(llfc, particlesPerDimension, velocity, h,
+                                            mass, type,sigma,epsilon);
         cuboidConstructors.push_back(cuboidConstructor);
 
     }
@@ -97,8 +106,17 @@ void XMLReader::extractSphere() {
             distance = sphere.distance().get();
         }
         double mass = sphere.mass();
+        double sigma = -1;
+        double epsilon = -1;
 
-        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass);
+        if(sphere.sigma().present()){
+            sigma = sphere.sigma().get();
+        }
+        if(sphere.epsilon().present()){
+            epsilon = sphere.epsilon().get();
+        }
+
+        SphereConstructor sphereConstructor(cCoord, iVel, radius, distance, mass,sigma,epsilon);
         sphereConstructors.push_back(sphereConstructor);
     }
 }

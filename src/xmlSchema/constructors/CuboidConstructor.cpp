@@ -2,13 +2,16 @@
 #include "CuboidConstructor.h"
 
 CuboidConstructor::CuboidConstructor(std::array<double, 3>& llfc, std::array<unsigned int, 3>& particlesPerDimension,
-                                     std::array<double, 3>& particleVelocity, double h, double mass, int type) {
+                                     std::array<double, 3>& particleVelocity,
+                                     double h, double mass, int type,double sigma, double epsilon) {
     this->llfc = llfc;
     this->particlesPerDimension = particlesPerDimension;
     this->particleVelocity = particleVelocity;
     this->h = h;
     this->mass = mass;
     this->type = type;
+    this->sigma = sigma;
+    this->epsilon =epsilon;
 
 }
 
@@ -34,4 +37,11 @@ double CuboidConstructor::getMass() const {
 
 int CuboidConstructor::getType() const {
     return type;
+}
+
+double CuboidConstructor::getSigma() const {
+    return sigma;
+}
+double CuboidConstructor::getEpsilon() const {
+    return epsilon;
 }

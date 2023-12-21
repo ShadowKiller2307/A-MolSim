@@ -249,6 +249,7 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 	int writeFrequency = clArgs.writeFrequency > 0 ? clArgs.writeFrequency : simConst.getWriteFrequency();
 	double cutOffRadius = clArgs.cutoffRadius > 0 ? clArgs.cutoffRadius : simConst.getCutOffRadius();
 
+
 	double gGrav = simConst.getGrav();
 	bool useThermostat = simConst.isUseThermostat();
 	double initT = simConst.getInitialTemp();
@@ -283,9 +284,19 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
             if(cuboid.getH()!=-1){
                 h = cuboid.getH();
             }
+            double sigma = sigma_;
+            if(cuboid.getSigma()!=-1){
+                sigma = cuboid.getSigma();
+            }
+
+            double epsilon = epsilon_;
+            if(cuboid.getEpsilon()!=-1){
+                epsilon = cuboid.getEpsilon();
+            }
+
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
-							  h, cuboid.getMass(), cuboid.getType());
+							  h, cuboid.getMass(), cuboid.getType(),epsilon,sigma);
 			LogManager::debugLog("Instantiated a cuboid from xml\n");
 		}
 		for (auto &sphere : sphereConst)
@@ -294,8 +305,17 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
             if(sphere.getDistance()!=-1){
                 h = sphere.getDistance();
             }
+            double sigma = sigma_;
+            if(sphere.getSigma()!=-1){
+                sigma = sphere.getSigma();
+            }
+
+            double epsilon = epsilon_;
+            if(sphere.getEpsilon()!=-1){
+                epsilon = sphere.getEpsilon();
+            }
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
-							  h, sphere.getMass(), true);
+							  h, sphere.getMass(), true,epsilon,sigma);
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
 	}

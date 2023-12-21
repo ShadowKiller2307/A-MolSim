@@ -495,6 +495,42 @@ class Cuboid: public ::xml_schema::type
   void
   generateNumber (const generateNumber_type& x);
 
+  // sigma
+  //
+  typedef ::xml_schema::double_ sigma_type;
+  typedef ::xsd::cxx::tree::optional< sigma_type > sigma_optional;
+  typedef ::xsd::cxx::tree::traits< sigma_type, char, ::xsd::cxx::tree::schema_type::double_ > sigma_traits;
+
+  const sigma_optional&
+  sigma () const;
+
+  sigma_optional&
+  sigma ();
+
+  void
+  sigma (const sigma_type& x);
+
+  void
+  sigma (const sigma_optional& x);
+
+  // epsilon
+  //
+  typedef ::xml_schema::double_ epsilon_type;
+  typedef ::xsd::cxx::tree::optional< epsilon_type > epsilon_optional;
+  typedef ::xsd::cxx::tree::traits< epsilon_type, char, ::xsd::cxx::tree::schema_type::double_ > epsilon_traits;
+
+  const epsilon_optional&
+  epsilon () const;
+
+  epsilon_optional&
+  epsilon ();
+
+  void
+  epsilon (const epsilon_type& x);
+
+  void
+  epsilon (const epsilon_optional& x);
+
   // Constructors.
   //
   Cuboid (const llfc_type&,
@@ -535,6 +571,8 @@ class Cuboid: public ::xml_schema::type
   h_optional h_;
   ::xsd::cxx::tree::one< mass_type > mass_;
   ::xsd::cxx::tree::one< generateNumber_type > generateNumber_;
+  sigma_optional sigma_;
+  epsilon_optional epsilon_;
 };
 
 class Sphere: public ::xml_schema::type
@@ -620,6 +658,42 @@ class Sphere: public ::xml_schema::type
   void
   mass (const mass_type& x);
 
+  // sigma
+  //
+  typedef ::xml_schema::double_ sigma_type;
+  typedef ::xsd::cxx::tree::optional< sigma_type > sigma_optional;
+  typedef ::xsd::cxx::tree::traits< sigma_type, char, ::xsd::cxx::tree::schema_type::double_ > sigma_traits;
+
+  const sigma_optional&
+  sigma () const;
+
+  sigma_optional&
+  sigma ();
+
+  void
+  sigma (const sigma_type& x);
+
+  void
+  sigma (const sigma_optional& x);
+
+  // epsilon
+  //
+  typedef ::xml_schema::double_ epsilon_type;
+  typedef ::xsd::cxx::tree::optional< epsilon_type > epsilon_optional;
+  typedef ::xsd::cxx::tree::traits< epsilon_type, char, ::xsd::cxx::tree::schema_type::double_ > epsilon_traits;
+
+  const epsilon_optional&
+  epsilon () const;
+
+  epsilon_optional&
+  epsilon ();
+
+  void
+  epsilon (const epsilon_type& x);
+
+  void
+  epsilon (const epsilon_optional& x);
+
   // Constructors.
   //
   Sphere (const centerCoordinates_type&,
@@ -658,6 +732,8 @@ class Sphere: public ::xml_schema::type
   ::xsd::cxx::tree::one< radius_type > radius_;
   distance_optional distance_;
   ::xsd::cxx::tree::one< mass_type > mass_;
+  sigma_optional sigma_;
+  epsilon_optional epsilon_;
 };
 
 class Thermostat: public ::xml_schema::type

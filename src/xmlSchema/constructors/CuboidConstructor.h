@@ -9,10 +9,13 @@ private:
     double h;
     double mass;
     int type;
+    double sigma;
+    double epsilon;
 
 public:
     CuboidConstructor(std::array<double,3>& llfc,std::array<unsigned int,3>& particlesPerDimension,
-                      std::array<double,3>& particleVelocity, double h, double mass, int type);
+                      std::array<double,3>& particleVelocity, double h, double mass,
+                      int type,double sigma, double epsilon);
 
     // Getter functions
 
@@ -27,4 +30,6 @@ public:
     double getMass() const;
 
     int getType() const;
+    double getSigma() const;
+    double getEpsilon() const;
 };
