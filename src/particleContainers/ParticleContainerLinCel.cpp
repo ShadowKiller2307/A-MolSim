@@ -163,7 +163,7 @@ void ParticleContainerLinCel::simulateParticles()
             double currentE = calculateKinEnergy();
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
-            std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
+            //std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
             // 3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
@@ -201,7 +201,7 @@ void ParticleContainerLinCel::simulateParticles()
                 scaleVelocity(currentTemp, desiredTemp);
             }
             double tempAfterThermostat = calculateTemperature();
-            std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
+            //std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
         /* std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
