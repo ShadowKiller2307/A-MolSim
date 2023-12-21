@@ -115,11 +115,6 @@ TEST_F(MolSimTest, testGetParticles)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
- * std::array<double, 3> domainSize{3.0, 3.0, 1.0};
- * double cutoffRadius{1.0};
- * ParticleContainerLinCel containerLinCel{0.5, 1, 1, domainSize, "rrrrrr", lennJon, 1.0}; // std::array<double, 3> domainSize, double cutoffRadius, std::vector<BoundaryCondition> &conditions
- */
 
 TEST_F(MolSimTest, testPositionIndexTranslation)
 {
@@ -293,11 +288,6 @@ TEST_F(MolSimTest, testForcesLinkedCells)
     EXPECT_EQ(containerDirSum.getParticles().at(1)->getF(), expectedValuesTwo);
     EXPECT_EQ(containerDirSum.getParticles().at(2)->getF(), expectedValuesThree);
 }*/
-
-
-
-
-
 
 ////////////////////////////////////////////////////// TESTS FOR THE XML INPUT BEGIN ///////////////////////////////////
 
@@ -486,7 +476,7 @@ TEST_F(MolSimTest, initializeTemperature) {
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};
-    particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0}, {10, 10, 1}, vel, 1, 1.0, 0, 40);
+    particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0}, {10, 10, 1}, vel, 1, 1.0, 0, 5, 1, 40);
    // double kineticEnergy = linCelInitTemp.calculateKinEnergy();
     double initTemp = linCelInitTemp.calculateTemperature();
     std::cout << initTemp << std::endl;
@@ -502,13 +492,13 @@ TEST_F(MolSimTest, initializeTemperature) {
 TEST_F(MolSimTest, testHeating) {
     double initialTemp = 40;
     double targetTemp = 60;
-    ParticleContainerLinCel linCelInitTemp{0.001, 100, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
-                                           true, 1000, true, 40, 60, 1.0, 0}; // parameters for the thermostat
+    ParticleContainerLinCel linCelInitTemp{0.001, 10, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 10, true, 40, 60, 1.0, 0}; // parameters for the thermostat
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};
     particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
-                                         {10, 10, 1}, vel, 1, 1.0, 0, initialTemp);
+                                         {10, 10, 1}, vel, 1, 1.0, 0, 5, 1, initialTemp);
     EXPECT_NEAR(linCelInitTemp.calculateTemperature(), initialTemp, 5.0);
     linCelInitTemp.simulateParticles();
     EXPECT_NEAR(linCelInitTemp.calculateTemperature(), targetTemp, 5.0);
@@ -522,13 +512,13 @@ TEST_F(MolSimTest, testHeating) {
 TEST_F(MolSimTest, testCooling) {
     double initialTemp = 40;
     double targetTemp = 20;
-    ParticleContainerLinCel linCelInitTemp{0.001, 100, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
-                                           true, 1000, true, 40, 20, 1.0, 0}; // parameters for the thermostat
+    ParticleContainerLinCel linCelInitTemp{0.001, 10, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 10, true, 40, 20, 1.0, 0}; // parameters for the thermostat
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};
     particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
-                                         {10, 10, 1}, vel, 1, 1.0, 0, initialTemp);
+                                         {10, 10, 1}, vel, 1, 1.0, 0, 5, 1, initialTemp);
     EXPECT_NEAR(linCelInitTemp.calculateTemperature(), initialTemp, 5.0);
     linCelInitTemp.simulateParticles();
     EXPECT_NEAR(linCelInitTemp.calculateTemperature(), targetTemp, 5.0);
@@ -540,14 +530,14 @@ TEST_F(MolSimTest, testCooling) {
 TEST_F(MolSimTest, testHoldingATemperature) {
     double initialTemp = 40;
     double targetTemp = 40;
-    ParticleContainerLinCel linCelInitTemp{0.001, 100, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
-                                           true, 1000, true, 40, 40, 1.0, 0}; // parameters for the thermostat
+    ParticleContainerLinCel linCelInitTemp{0.001, 10, 1, {120.0, 120.0, 1.0}, "rrrrrr", 3.0,
+                                           true, 10, true, 40, 40, 1.0, 0}; // parameters for the thermostat
     ParticleContainer *ptr = &linCelInitTemp;
     ParticleContainer **ptrptr = &ptr;
     std::array<double, 3> vel = {0.0, 0.0, 0.0};
     // initialize a cuboid with an initial temperature of 40
     particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
-                                         {10, 10, 1}, vel, 1.2, 1.0, 0, initialTemp);
+                                         {10, 10, 1}, vel, 1.2, 1.0, 0, 5, 1, initialTemp);
     EXPECT_NEAR(linCelInitTemp.calculateTemperature(), initialTemp, 5.0);
     linCelInitTemp.simulateParticles();
     // after the simulation loop, the system should still have a temperature around 40 degrees
@@ -568,9 +558,6 @@ TEST_F(MolSimTest, testScaleVelocity) {
 TEST(MolSimTests, testPeriodicBoundaryToTheLeft) {
     ParticleContainerLinCel linCelTest{0.1, 100, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
     linCelTest.add({0.01, 1.5, 0.5}, {-0.1, 0.0, 0.0}, 1, 0);
-   // linCelTest.add({2.8, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0);
- //   std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
- //   std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
     std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
     // linCelTest.getCells().at()
     linCelTest.simulateParticles();
@@ -579,9 +566,6 @@ TEST(MolSimTests, testPeriodicBoundaryToTheLeft) {
 TEST(MolSimTests, testPeriodicBoundaryToTheBottom) {
     ParticleContainerLinCel linCelTest{0.1, 100, 1, {3.0, 3.0, 1.0}, "pppppp", 1.0};
     linCelTest.add({0.5, 0.01, 0.5}, {0.0, -0.1, 0.0}, 1, 0);
-    // linCelTest.add({2.8, 1.5, 0.5}, {0.0, 0.0, 0.0}, 1, 0);
-    //   std::unique_ptr<std::array<double, 3>> position = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getX());
-    //   std::unique_ptr<std::array<double, 3>> force = std::make_unique<std::array<double, 3>>(linCelTest.getParticles().at(0).getF());
     std::cout << "Index: " << linCelTest.getCells().at(36).size() << std::endl;
     // linCelTest.getCells().at()
     linCelTest.simulateParticles();
@@ -594,29 +578,5 @@ TEST_F(MolSimTest, testParticleCreation) {
     EXPECT_EQ(a.getEpsilon(), 5);
 }
 
-TEST_F(MolSimTest, testPeriodicBoundary) {
-
-}
-
-TEST_F(MolSimTest, testRayleighTaylorInstability) {
-    double gGrav = -12.44;
-    double deltaT = 0.0005;
-    double t_end = 25;
-    std::array<double, 3> domainSize{65, 37.5, 1};
-    double cutoffRadius = 2.5;
-    double initT = 40;
-    unsigned int nThermostat = 1000;
-    ParticleContainerLinCel linCelTest{deltaT, t_end, 1, domainSize, "rrrrrr", cutoffRadius, true,
-                                       nThermostat, true, 40, 40, 1.0, -12.44};
-    ParticleContainer *ptr = &linCelTest;
-    ParticleContainer **ptrptr = &ptr;
-    std::array<double, 3> vel = {0.0, 0.0, 0.0};
-    // initialize a cuboid with an initial temperature of 40
-    particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
-                                         {10, 10, 1}, vel, 1.2, 1.0, 0, 40);
-    //particleGenerator::instantiateCuboid(ptr)
-
-
-}
 
 //////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY END /////////////////////
