@@ -207,13 +207,29 @@ void ParticleContainerLinCel::simulateParticles()
          std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
+        mup += getAmountOfParticles();
         startTime_ += deltaT_;
     }
     //  TODO (ADD): Log
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" : std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
-    // TODO: calculate MUPS
+    size_t mups = mup / (diff / 1000);
+    std::string unit = "mups";
+    if (mups > 1000)
+    {
+        if (mups > 1000000)
+        {
+            mups /= 1000000;
+            unit = "m" + unit;
+        }
+        else
+        {
+            mups /= 1000;
+            unit = "k" + unit;
+        }
+    }
+    std::cout << "About " << mups << " " << unit << "\n";
 }
 
 void ParticleContainerLinCel::calculateForces()
@@ -729,7 +745,7 @@ void ParticleContainerLinCel::iterHalo()
 void ParticleContainerLinCel::iterHalo2()
 {
     int z = 1;
-    for (int x = 0; x <= cellsX - 1; ++x)
+    for (uint32_t x = 0; x <= cellsX - 1; ++x)
     {
         if (conditions[2] == BoundaryCondition::Periodic)
         {
@@ -737,7 +753,7 @@ void ParticleContainerLinCel::iterHalo2()
             lambda(x, 0, z);
         }
     }
-    for (int y = 0; y <= cellsY - 1; ++y)
+    for (uint32_t y = 0; y <= cellsY - 1; ++y)
     {
         if (conditions[1] == BoundaryCondition::Periodic)
         {
@@ -745,20 +761,28 @@ void ParticleContainerLinCel::iterHalo2()
             lambda(cellsX - 1, y, z);
         }
     }
-    for (int x = cellsX - 1; x >= 0; --x)
+    for (uint32_t x = cellsX - 1; x >= 0; --x)
     {
         if (conditions[3] == BoundaryCondition::Periodic)
         {
             auto lambda = createPeriodicLambdaHalo();
             lambda(x, cellsY - 1, z);
         }
+        if (x == 0)
+        {
+            break;
+        }
     }
-    for (int y = cellsY - 1; y >= 0; --y)
+    for (uint32_t y = cellsY - 1; y >= 0; --y)
     {
         if (conditions[0] == BoundaryCondition::Periodic)
         {
             auto lambda = createPeriodicLambdaHalo();
             lambda(0, y, z);
+        }
+        if (y == 0)
+        {
+            break;
         }
     }
 }
