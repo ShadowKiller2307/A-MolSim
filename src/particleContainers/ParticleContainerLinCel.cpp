@@ -89,14 +89,14 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
     // thermostat{initT, tempTarget, maxDiff};
 }
 
-void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
+void ParticleContainerLinCel::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type, double epsilon, double sigma)
 {
     if (x_arg[0] >= 0 && x_arg[0] <= domainSize_[0] && // in x bounds
         x_arg[1] >= 0 && x_arg[1] <= domainSize_[1] && // in y bounds
         x_arg[2] >= 0 && x_arg[2] <= domainSize_[2])   // in z bounds
     {
         // compute the cell to which the particle will be added
-        cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type);
+        cells.at(translate3DPosTo1D(x_arg)).emplace_back(x_arg, v_arg, mass, type, epsilon, sigma);
     }
 }
 
@@ -203,8 +203,8 @@ void ParticleContainerLinCel::simulateParticles()
             double tempAfterThermostat = calculateTemperature();
             // std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
-        /* std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
-         std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
+         //std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+        /* std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
         startTime_ += deltaT_;
