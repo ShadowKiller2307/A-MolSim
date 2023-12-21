@@ -39,7 +39,15 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         }
         else if (c == 'p')
         {
-            conditions.push_back(BoundaryCondition::Periodic);
+            if (bounds.at(i + ((i % 2 == 0) ? 1 : -1)) != 'p')
+            {
+                LogManager::errorLog("Periodic bounds must be symmetrical");
+                exit(1);
+            }
+            else
+            {
+                conditions.push_back(BoundaryCondition::Periodic);
+            }
         }
         else
         {
