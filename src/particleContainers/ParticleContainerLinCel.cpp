@@ -20,7 +20,6 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
                                                  double tempTarget,
                                                  double maxDiff, double gGrav_arg) : ParticleContainer(deltaT, endTime, writeFrequency)
 {
-    mUpdates = 0;
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
     if (bounds.length() != 6)
@@ -41,7 +40,7 @@ ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, 
         }
         else if (c == 'p')
         {
-            if ((bounds.at(i) + (i % 2 == 0) ? 1 : -1) != 'p')
+            if (bounds.at(i + ((i % 2 == 0) ? 1 : -1)) != 'p')
             {
                 LogManager::errorLog("Periodic bounds must be symmetrical");
                 exit(1);
@@ -156,13 +155,10 @@ void ParticleContainerLinCel::simulateParticles()
 
         // calculate new x
         calculatePosition();
-        mUpdates++;
         // calculate new f
         calculateForces();
-        mUpdates++;
         // calculate new v
         calculateVelocity();
-        mUpdates++;
         // check whether the Thermostat should be applied
         if (useThermostat && ((iteration_ % nThermostat) == 0))
         {
@@ -213,18 +209,18 @@ void ParticleContainerLinCel::simulateParticles()
             double tempAfterThermostat = calculateTemperature();
             // std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
-        // std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
+         std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
         /* std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
         iteration_++;
+        mup += getAmountOfParticles();
         startTime_ += deltaT_;
     }
     //  TODO (ADD): Log
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " + (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" : std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
-    // TODO: calculate MUPS
-    std::cout<<"About "<<mUpdates/(diff/1000)<<" mups \n";
+    std::cout << "About " << mup / (diff / 1000) << " mups \n";
 }
 
 void ParticleContainerLinCel::calculateForces()
@@ -240,7 +236,7 @@ void ParticleContainerLinCel::calculateForces()
         }
     }
     iterOverInnerPairs(force_); // TODO: force_ parameter can be deleted, isn't used at the moment
-    iterBoundary2();
+    // iterBoundary2();
     if (gGrav != 0.0)
     {
         // the gravitational force will be added to every particle
@@ -402,7 +398,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                         {
                             calcF(ppi, ppj);
-                            mUpdates++;
                         }
                     }
                 }
@@ -417,7 +412,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                         {
                             calcF(ppi, ppj);
-                            mUpdates++;
                         }
                     }
                 }
@@ -431,7 +425,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                         {
                             calcF(ppi, ppj);
-                            mUpdates++;
                         }
                     }
                 }
@@ -445,7 +438,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                         if (ArrayUtils::L2Norm(ppj.getX() - ppi.getX()) <= cutoffRadius_)
                         {
                             calcF(ppi, ppj);
-                            mUpdates++;
                         }
                     }
                 }
@@ -475,7 +467,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 // TODO: another check whether the force is really repulsing
                 //     std::cout << "Difference: " << (ArrayUtils::L2Norm(p.getX() - ghostParticle.getX())) << std::endl;
                 calcF(p, ghostParticle);
-                mUpdates++;
                 /*   std::cout << "Particle velocity: " << p.getV() << std::endl;
                    std::cout << "Particle force: " << p.getF() << std::endl;*/
             }
@@ -483,7 +474,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     };
     return lambda;
 }
-
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary()
 {
@@ -705,14 +695,17 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     };
 }
 
-std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaHalo2() {
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaHalo2()
+{
     return [=](uint32_t x, uint32_t y, uint32_t z)
     {
         cell &current = cells.at(translate3DIndTo1D(x, y, z));
         std::vector<Particle> updatedParticles;
-        //lower left cell
-        if (x == 0 && y == 0) {
-            for (auto &p: current) {
+        // lower left cell
+        if (x == 0 && y == 0)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(0) = p.getX().at(0) + domainSize_.at(0);
                 pos.at(1) = p.getX().at(1) + domainSize_.at(1);
@@ -721,9 +714,11 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 current.clear();
             }
         }
-        //left upper cell
-        if (x == 0 && y == cellsY-1) {
-            for (auto &p: current) {
+        // left upper cell
+        if (x == 0 && y == cellsY - 1)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(0) = p.getX().at(0) + domainSize_.at(0);
                 pos.at(1) = p.getX().at(1) - domainSize_.at(1);
@@ -732,9 +727,11 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 current.clear();
             }
         }
-        //left column(no corner cell)
-        if (x == 0 && y != 0 && y != cellsY-1) {
-            for (auto &p: current) {
+        // left column(no corner cell)
+        if (x == 0 && y != 0 && y != cellsY - 1)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(0) = p.getX().at(0) + domainSize_.at(0);
                 p.setX(pos);
@@ -743,8 +740,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             }
         }
         // lower right cell
-        if (x == cellsX-1 && y == 0) {
-            for (auto &p: current) {
+        if (x == cellsX - 1 && y == 0)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(0) = p.getX().at(0) - domainSize_.at(0);
                 pos.at(1) = p.getX().at(1) + domainSize_.at(1);
@@ -754,8 +753,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             }
         }
         // upper right cell
-        if (x == cellsX-1 && y == cellsY-1) {
-            for (auto &p: current) {
+        if (x == cellsX - 1 && y == cellsY - 1)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(0) = p.getX().at(0) - domainSize_.at(0);
                 pos.at(1) = p.getX().at(1) - domainSize_.at(1);
@@ -765,8 +766,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             }
         }
         // right column without corner cells
-        if (x == cellsX-1 && y != 0 && y != cellsY-1) {
-            for (auto &p: current) {
+        if (x == cellsX - 1 && y != 0 && y != cellsY - 1)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(0) = p.getX().at(0) - domainSize_.at(0);
                 p.setX(pos);
@@ -775,8 +778,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             }
         }
         // upper row wihout corner cells
-        if (y == cellsY-1 && x != 0 && x != cellsX-1) {
-            for (auto &p: current) {
+        if (y == cellsY - 1 && x != 0 && x != cellsX - 1)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(1) = p.getX().at(1) - domainSize_.at(1);
                 p.setX(pos);
@@ -784,9 +789,11 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 current.clear();
             }
         }
-        //lower row without corner cells
-        if (y == 0 && x != 0 && x != cellsX-1) {
-            for (auto &p: current) {
+        // lower row without corner cells
+        if (y == 0 && x != 0 && x != cellsX - 1)
+        {
+            for (auto &p : current)
+            {
                 std::array<double, 3> pos = p.getX();
                 pos.at(1) = p.getX().at(1) + domainSize_.at(1);
                 p.setX(pos);
@@ -794,7 +801,8 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 current.clear();
             }
         }
-        for (auto &p : updatedParticles) {
+        for (auto &p : updatedParticles)
+        {
             unsigned int index = translate3DPosTo1D(p.getX());
             cells.at(index).emplace_back(p);
         }

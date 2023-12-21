@@ -33,7 +33,7 @@ private:
     uint32_t amountOfCells = 0;
     /// @brief currently unused lookuptable to speed up 3D to 1D translations
     std::vector<std::vector<std::vector<int>>> lookup;
-    unsigned int mUpdates;
+    size_t mup = 0;
     /**
      * @brief the cells can be divided into inner, boundary and halo cells
      *
