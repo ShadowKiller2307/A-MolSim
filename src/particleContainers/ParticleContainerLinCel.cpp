@@ -195,7 +195,6 @@ void ParticleContainerLinCel::simulateParticles()
                         //           std::cout << "Desired Temp: " << desiredTemp << std::endl;
                     }
                     scaleVelocity(currentTemp, desiredTemp);
-                    mUpdates++;
                 }
             }
             else
@@ -204,7 +203,6 @@ void ParticleContainerLinCel::simulateParticles()
                 //    std::cout << "Hier 4" << std::endl;
                 //   std::cout << "Desired Temp: " << desiredTemp << std::endl;
                 scaleVelocity(currentTemp, desiredTemp);
-                mUpdates++;
             }
             double tempAfterThermostat = calculateTemperature();
             // std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
@@ -386,7 +384,6 @@ void ParticleContainerLinCel::iterOverInnerPairs(const std::function<void(Partic
                 {
                     Particle &ppj = current.at(j);
                     calcF(ppi, ppj);
-                    mUpdates++;
                 }
                 // right cell
                 if (x != cellsX - 2)
