@@ -703,6 +703,120 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     };
 }
 
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaHalo2()
+{
+    return [=](uint32_t x, uint32_t y, uint32_t z)
+    {
+        cell &current = cells.at(translate3DIndTo1D(x, y, z));
+        std::vector<Particle> updatedParticles;
+        // lower left cell
+        if (x == 0 && y == 0)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(0) = p.getX().at(0) + domainSize_.at(0);
+                pos.at(1) = p.getX().at(1) + domainSize_.at(1);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // left upper cell
+        if (x == 0 && y == cellsY - 1)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(0) = p.getX().at(0) + domainSize_.at(0);
+                pos.at(1) = p.getX().at(1) - domainSize_.at(1);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // left column(no corner cell)
+        if (x == 0 && y != 0 && y != cellsY - 1)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(0) = p.getX().at(0) + domainSize_.at(0);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // lower right cell
+        if (x == cellsX - 1 && y == 0)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(0) = p.getX().at(0) - domainSize_.at(0);
+                pos.at(1) = p.getX().at(1) + domainSize_.at(1);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // upper right cell
+        if (x == cellsX - 1 && y == cellsY - 1)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(0) = p.getX().at(0) - domainSize_.at(0);
+                pos.at(1) = p.getX().at(1) - domainSize_.at(1);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // right column without corner cells
+        if (x == cellsX - 1 && y != 0 && y != cellsY - 1)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(0) = p.getX().at(0) - domainSize_.at(0);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // upper row wihout corner cells
+        if (y == cellsY - 1 && x != 0 && x != cellsX - 1)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(1) = p.getX().at(1) - domainSize_.at(1);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        // lower row without corner cells
+        if (y == 0 && x != 0 && x != cellsX - 1)
+        {
+            for (auto &p : current)
+            {
+                std::array<double, 3> pos = p.getX();
+                pos.at(1) = p.getX().at(1) + domainSize_.at(1);
+                p.setX(pos);
+                updatedParticles.emplace_back(p);
+                current.clear();
+            }
+        }
+        for (auto &p : updatedParticles)
+        {
+            unsigned int index = translate3DPosTo1D(p.getX());
+            cells.at(index).emplace_back(p);
+        }
+    };
+}
+
 void ParticleContainerLinCel::iterHalo()
 {
     // TODO: uncomment 3D
@@ -752,6 +866,11 @@ void ParticleContainerLinCel::iterHalo2()
             auto lambda = createPeriodicLambdaHalo();
             lambda(x, 0, z);
         }
+        if (conditions[2] == BoundaryCondition::Outflow)
+        {
+            auto lambda = createOutflowLambdaHalo();
+            lambda(x, 0, z);
+        }
     }
     for (uint32_t y = 0; y <= cellsY - 1; ++y)
     {
@@ -760,12 +879,22 @@ void ParticleContainerLinCel::iterHalo2()
             auto lambda = createPeriodicLambdaHalo();
             lambda(cellsX - 1, y, z);
         }
+        if (conditions[1] == BoundaryCondition::Outflow)
+        {
+            auto lambda = createOutflowLambdaHalo();
+            lambda(cellsX - 1, y, z);
+        }
     }
     for (uint32_t x = cellsX - 1; x >= 0; --x)
     {
         if (conditions[3] == BoundaryCondition::Periodic)
         {
             auto lambda = createPeriodicLambdaHalo();
+            lambda(x, cellsY - 1, z);
+        }
+        if (conditions[3] == BoundaryCondition::Outflow)
+        {
+            auto lambda = createOutflowLambdaHalo();
             lambda(x, cellsY - 1, z);
         }
         if (x == 0)
@@ -778,6 +907,11 @@ void ParticleContainerLinCel::iterHalo2()
         if (conditions[0] == BoundaryCondition::Periodic)
         {
             auto lambda = createPeriodicLambdaHalo();
+            lambda(0, y, z);
+        }
+        if (conditions[0] == BoundaryCondition::Outflow)
+        {
+            auto lambda = createOutflowLambdaHalo();
             lambda(0, y, z);
         }
         if (y == 0)

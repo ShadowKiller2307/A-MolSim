@@ -1,0 +1,49 @@
+{
+  "params":{
+    "numParticles": 2,
+    "deltaT": 0.0002,
+    "endTime": 15,
+    "containerType": "LinCel",
+    "writeFrequency": 100,
+    "boundaries": "oooooo",
+    "cutoffRadius": 3.0,
+    "domainSize": [120, 60, 1]
+  },
+  "particles": [{
+    "shape": "cuboid",
+    "x": [
+      1.0,
+      1.0,
+      0.0
+    ],
+    "v": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "N": [
+      40,
+      8,
+      1
+    ]
+  },
+    {
+      "shape": "cuboid",
+      "x": [
+        15.0,
+        15.0,
+        0.0
+      ],
+      "v": [
+        0.0,
+        -10.0,
+        0.0
+      ],
+      "N": [
+        8,
+        8,
+        1
+      ]
+    }
+  ]
+}

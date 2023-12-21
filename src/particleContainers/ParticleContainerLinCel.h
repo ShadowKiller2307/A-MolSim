@@ -142,6 +142,7 @@ public:
 
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createOutflowLambdaHalo();
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaHalo();
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaHalo2();
 
     /**
      * @brief iterate over the particles which are currectly located in the halo zone and
