@@ -15,10 +15,23 @@ class ParticleContainerLinCel : public ParticleContainer
 {
 
 private:
+    /// @brief vector holding all particles belonging to that cell
     using cell = std::vector<Particle>;
+    /// @brief 1D vector of cells
     std::vector<cell> cells;
+    /**
+     * @brief the boundary conditions of each face of the domain
+     * 0: towards negative x
+     * 1: towards positive x
+     * 2: towards negative y
+     * 3: towards positive y
+     * 4: towards negative z
+     * 5: towards positive z
+     */
     std::vector<BoundaryCondition> conditions;
+    /// @brief how many cells there are, equivalent to cells.size()
     uint32_t amountOfCells = 0;
+    /// @brief currently unused lookuptable to speed up 3D to 1D translations
     std::vector<std::vector<std::vector<int>>> lookup;
     /**
      * @brief the cells can be divided into inner, boundary and halo cells
@@ -35,15 +48,16 @@ private:
      * 3D cell: cutoffRadius * cutoffRadius * cutoffRadius
      */
     double cutoffRadius_;
-    // amount of Cells in each dimension can only be an unsigned integer
+    /// @brief how many cells there are in each dimension respactively
     uint32_t cellsX, cellsY, cellsZ = 0;
+    /// @brief a way to access cellsX, cellsY, cellsZ by index, 0 is for X, 1 for Y, 2 for Z
     std::array<uint32_t, 3> cellCountByIndex;
 
-    // specifies if you want to use a thermostat
+    /// @brief specifies if the simulation uses a thermostat
     bool useThermostat;
-    // after how many iterations should the thermostat be applied
+    /// @brief after how many iterations the thermostat should be applied each time
     unsigned int nThermostat = 100;
-    // isGradual ? gradual velocity scaling : direct temperature setting;
+    /// @brief specifies if the velocity scaling is gradual or direct
     bool isGradual;
     // the thermostat for this container
     // Thermostat thermostat;
@@ -75,7 +89,7 @@ public:
                             double gGrav = 0);
 
     /**
-     * @brief destructor
+     * @brief destructor for Linked Cells Container
      */
     ~ParticleContainerLinCel() = default;
 
@@ -89,6 +103,12 @@ public:
      */
     void add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
 
+    /**
+     * @brief adds a fully constructed particle to the container
+     *
+     * @param p the particle to add
+     * @return void
+     */
     void addCompleteParticle(Particle &p) override;
 
     /// @brief runs the simulation loop
@@ -102,17 +122,35 @@ public:
      */
     void calculateForces() override;
 
+    /**
+     * @brief calculates the forces between the particles of two cells which are passed as coordinates.
+     * If the cells are not next to each other the particls will be temporarily be moved in order to get the correct forces and use the cutoffRadius
+     *
+     * @param myCoordinates coordinates of the first cell
+     * @param otherCoordinates coordinates of the second cell
+     * @return void
+     */
     void calculateForcesWithIndices(std::array<uint32_t, 3> &myCoordinates, std::array<uint32_t, 3> &otherCoordinates);
 
     /**
-     * @brief overriding the position calculation, so that the particles and cells get updated
+     * @brief updates the positions of all particles according to their forces and velocities
      * @param None
      * @return void
      */
     void calculatePosition() override;
 
+    /**
+     * @brief updates the velocities of all particles according to their forces
+     * @param None
+     * @return void
+     */
     void calculateVelocity() override;
 
+    /**
+     * @brief iterates over all particles individually and applies the function to each one. The function itself is responsible for advancing the iterator or not
+     * @param f the function to be applied
+     * @return void
+     */
     void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
     /**
@@ -130,7 +168,7 @@ public:
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary();
     /**
-     * @brief iterate over the particles which are currectly located in the boundary zone and
+     * @brief iterate over the particles which are located in the boundary zone and
      * apply the boundary condition, the cells at the corner will be iterated over twice
      * @param None
      * @return void
@@ -143,8 +181,8 @@ public:
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaHalo();
 
     /**
-     * @brief iterate over the particles which are currectly located in the halo zone and
-     * delete them
+     * @brief iterate over the particles which are located in the halo zone and
+     * delete or move them according to the boundary condition
      * @param None
      * @return void
      */
@@ -158,14 +196,14 @@ public:
      * @param x xIndex of the cell
      * @param y yIndex of the cell
      * @param z zIndex of the cell
-     * @return 1D index for our cells vector
+     * @return 1D index for the cells vector
      */
     unsigned int translate3DIndTo1D(unsigned int x, unsigned int y, unsigned int z) const;
 
     /**
      * @brief translate 3d coordinates to an index of our cells vector
      * @param position the position as 3D coordinate
-     * @return the index in our vector
+     * @return the index in the vector
      */
     unsigned int translate3DPosTo1D(std::array<double, 3> position) const;
 
@@ -176,22 +214,32 @@ public:
      */
     size_t getAmountOfParticles() const override;
 
+    /**
+     * @brief return all particles stored in a single vector
+     * @param None
+     * @return std::vector<Particle>
+     */
     std::vector<Particle> getParticles();
 
     /**
-     * @brief return of how many cells the current LinCel container consists
+     * @brief return the number of cells the current LinCel container consists of
      * @param None
-     * @return void
+     * @return number of cells as a uint32_t
      */
     unsigned int getAmountOfCells() const;
 
     /**
-     * @brief return a vector of the cells
+     * @brief return the cells as a vector of vectors
      * @param None
-     * @return void
+     * @return std::vector<std::vector<Particle>>& cells
      */
     std::vector<std::vector<Particle>> &getCells();
 
+    /**
+     * @brief return the boundary conditions as a vector
+     * @param None
+     * @return const std::vector<BoundaryCondition>& boundary conditions
+     */
     const std::vector<BoundaryCondition> &getConditions();
 
     const std::array<double, 3> &getDomainSize();

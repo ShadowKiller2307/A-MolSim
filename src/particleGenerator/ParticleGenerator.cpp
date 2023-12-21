@@ -26,7 +26,7 @@ int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, in
 void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
 										  const std::array<unsigned int, 3> &particlesPerDimension,
 										  std::array<double, 3> &particleVelocity, double h, double m, int type = -1,
-										  double initT)
+										  double epsilon, double sigma_, double initT)
 {
 	if (type < 0)
 	{
@@ -63,7 +63,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 
 void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
 										  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
-										  double h, double m, bool is2D, int type = -1, double initT)
+										  double h, double m, bool is2D, int type = -1, double epsilon, double sigma_, double initT)
 {
 	if (type < 0)
 	{
@@ -181,15 +181,18 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 		double h = j.contains("h") ? static_cast<double>(j["h"]) : h_;
 		double m = j.contains("m") ? static_cast<double>(j["m"]) : m_;
 		double type = j.contains("type") ? static_cast<double>(j["type"]) : generateNumber_++;
+		// TODO:
+		double sigm = j.contains("sigma") ? static_cast<double>(j["sigma"]) : sigma_;
+		double epsi = j.contains("epsilon") ? static_cast<double>(j["epsilon"]) : epsilon_;
 		if (j["shape"] == "cuboid")
 		{
 			std::array<unsigned int, 3UL> particlePerDimension = j["N"];
-			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, type);
+			instantiateCuboid(container, pos, particlePerDimension, particleVelocity, h, m, type, sigm, epsi);
 		}
 		else if (j["shape"] == "sphere")
 		{
 			uint32_t radius = j["R"];
-			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type);
+			instantiateSphere(container, pos, radius, particleVelocity, h, m, true, type, sigm, epsi);
 		}
 		else if (j["shape"] == "particle")
 		{
@@ -198,6 +201,8 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 			particle.setOldF(f);
 			auto old_f = static_cast<std::array<double, 3>>(j["f"]);
 			particle.setF(old_f);
+			particle.setEpsilon(epsi);
+			particle.setSigma(sigm);
 			(*container)->addCompleteParticle(particle);
 		}
 		else
