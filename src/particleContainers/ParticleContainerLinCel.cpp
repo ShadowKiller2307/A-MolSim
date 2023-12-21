@@ -230,6 +230,7 @@ void ParticleContainerLinCel::calculateForces()
     }
     iterOverInnerPairs(force_); // TODO: force_ parameter can be deleted, isn't used at the moment
     iterBoundary2();
+
     if (gGrav != 0.0)
     {
         // the gravitational force will be added to every particle
