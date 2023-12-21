@@ -52,6 +52,7 @@ private:
     void buildLookUp();
     double initT = 0;
     double gGrav;
+    size_t mup = 0;
 
 public:
     /**
