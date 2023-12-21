@@ -149,6 +149,12 @@ void ParticleContainerLinCel::simulateParticles()
                 std::cout << "ETA: " << min << sec << std::flush;
             }
         }
+        // calculate new x
+        calculatePosition();
+        // calculate new f
+        calculateForces();
+        // calculate new v
+        calculateVelocity();
         // check whether the Thermostat should be applied
         if (useThermostat && ((iteration_ % nThermostat) == 0))
         {
@@ -157,7 +163,7 @@ void ParticleContainerLinCel::simulateParticles()
             double currentE = calculateKinEnergy();
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
-            //std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
+            std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
             // 3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
@@ -195,14 +201,8 @@ void ParticleContainerLinCel::simulateParticles()
                 scaleVelocity(currentTemp, desiredTemp);
             }
             double tempAfterThermostat = calculateTemperature();
-            //std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
+            std::cout << "Temp after applying the thermostat: " << tempAfterThermostat << " °C" << std::endl;
         }
-        // calculate new f
-        calculateForces();
-        // calculate new x
-        calculatePosition();
-        // calculate new v
-        calculateVelocity();
         /* std::cout << "Iteration: " << iteration_ << ", Particle position: " << getParticles().at(0).getX() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle force: " << getParticles().at(0).getF() << std::endl;
          std::cout << "Iteration: " << iteration_ << ", Particle velocity: " << getParticles().at(0).getV() << std::endl;*/
@@ -210,16 +210,11 @@ void ParticleContainerLinCel::simulateParticles()
         startTime_ += deltaT_;
     }
     //printing the velocities of all particles after all iterations:
-   /* for (auto &current : cells) {
+    for (auto &current : cells) {
         for (auto &p : current) {
             std::cout << "Velocity: " << p.getV() << std::endl;
         }
-    }*/
-
-
-
-
-
+    }
     //  TODO (ADD): Log
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();

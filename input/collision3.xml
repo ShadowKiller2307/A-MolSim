@@ -1,0 +1,34 @@
+<Configuration>
+    <baseName>collision3</baseName>
+    <writeFrequency>100</writeFrequency>
+    <t_end>15</t_end>
+    <delta_t>0.0002</delta_t>
+    <logLevel>2</logLevel>
+    <domainSize>120 60 1</domainSize>
+    <containerType>LinCel</containerType>
+    <boundaries>pppppp</boundaries>
+    <cutOffRadius>3.0</cutOffRadius>
+    <gGrav>10</gGrav>
+    <useThermostat>false</useThermostat>
+
+    <Cuboid>
+        <llfc>1 1 0</llfc>
+        <particlePerDimension>40 8 1</particlePerDimension>
+        <particleVelocity>0 0 0</particleVelocity>
+        <h>8</h>
+        <mass>1</mass>
+        <generateNumber>1</generateNumber>
+    </Cuboid>
+
+    <Cuboid>
+        <llfc>15 15 0</llfc>
+        <particlePerDimension>8 8 1</particlePerDimension>
+        <particleVelocity>0 -10 0</particleVelocity>
+        <h>8</h>
+        <mass>1</mass>
+        <generateNumber>2</generateNumber>
+    </Cuboid>
+
+
+
+</Configuration>

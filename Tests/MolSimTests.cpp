@@ -590,8 +590,20 @@ TEST_F(MolSimTest, testPeriodicBoundary) {
 TEST_F(MolSimTest, testRayleighTaylorInstability) {
     double gGrav = -12.44;
     double deltaT = 0.0005;
-    double t_end = 100;
-
+    double t_end = 25;
+    std::array<double, 3> domainSize{65, 37.5, 1};
+    double cutoffRadius = 2.5;
+    double initT = 40;
+    unsigned int nThermostat = 1000;
+    ParticleContainerLinCel linCelTest{deltaT, t_end, 1, domainSize, "rrrrrr", cutoffRadius, true,
+                                       nThermostat, true, 40, 40, 1.0, -12.44};
+    ParticleContainer *ptr = &linCelTest;
+    ParticleContainer **ptrptr = &ptr;
+    std::array<double, 3> vel = {0.0, 0.0, 0.0};
+    // initialize a cuboid with an initial temperature of 40
+    particleGenerator::instantiateCuboid(ptrptr, {1.0, 1.0, 0.0},
+                                         {10, 10, 1}, vel, 1.2, 1.0, 0, 40);
+    //particleGenerator::instantiateCuboid(ptr)
 
 
 }
