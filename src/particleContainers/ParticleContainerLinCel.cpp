@@ -622,6 +622,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
 
         //for the right column and upper row the force calculation has already been done through the left column and lower row!
     };
+
     return lambda;
 }
 
