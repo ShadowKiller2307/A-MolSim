@@ -580,46 +580,157 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             cell &current = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
             // force calculation upper right cell
             cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
-
-
+            for (auto &pi : current) {
+                for (auto &pj : upperRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
             // force calculation with lower left cell
             cell &lowerLeft = cells.at(translate3DIndTo1D(0, 0, 1));
-
+            for (auto &pi : current) {
+                for (auto &pj : lowerLeft) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(1) = oldX.at(1)+domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
             // force calculation with lower right cell
-            cell &lowerRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
-
-
+            cell &lowerRight = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : lowerRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    newX.at(1) = oldX.at(1)+domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
         }
 
         // left column excluding the upper left cell and lower left cell
         if (x == 0 && y != 0 && y != cellsY-1) {
             // force calculation with the right column
-
+            cell &current = cells.at(translate3DIndTo1D(x, y, 1));
+            cell &opposite = cells.at(translate3DIndTo1D(cellsX-1, y, 1));
+            for (auto &pi : current) {
+                for (auto &pj : opposite) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
         }
 
         // lower left cell
         if (x == 0 && y == 0) {
             // force calculation with upper left cell already done!
             // force calculation with upper right cell
-
+            cell &current = cells.at(translate3DIndTo1D(0, 0, 1));
+            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : upperRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    newX.at(1) = oldX.at(1)-domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
             // force calculation with lower right cell
-
+            cell &lowerRight = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : lowerRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
         }
 
         // lower row excluding the lower left cell and lower right cell
         if (x != 0 && x != cellsX-1 && y == 0) {
             // force calculation with the upper row
-
+            cell &current = cells.at(translate3DIndTo1D(x, y, 1));
+            cell &opposite = cells.at(translate3DIndTo1D(x, cellsY-1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : opposite) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(1)-domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
         }
-
         //lower right corner
         if (x == cellsX-1 && y == 0) {
             // force calculation with upper left cell already done!
             // force calculation with lower left cell already done!
             // force calculation with upper right cell
-
+            cell &current = cells.at(translate3DIndTo1D(cellsX-1, 0, 1));
+            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : upperRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(1) = oldX.at(1)-domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
         }
-
         //for the right column and upper row the force calculation has already been done through the left column and lower row!
     };
 
@@ -683,7 +794,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary();
+                auto lambda = createPeriodicLambdaBoundary2();
                 lambda(x, 1, z);
             }
         }
@@ -702,7 +813,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary();
+                auto lambda = createPeriodicLambdaBoundary2();
                 lambda(cellsX - 2, y, z);
             }
         }
@@ -721,7 +832,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary();
+                auto lambda = createPeriodicLambdaBoundary2();
                 lambda(x, cellsY - 2, z);
             }
         }
@@ -740,7 +851,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary();
+                auto lambda = createPeriodicLambdaBoundary2();
                 lambda(1, y, z);
             }
         }
