@@ -320,11 +320,15 @@ void ParticleContainerLinCel::calculateForcesWithIndices(std::array<uint32_t, 3>
             {
                 if (myCoordinates[i] == 1)
                 {
+                    std::cout<<"domainSize at "<<i<<": "<<domainSize_[i]<<"\n";
                     moveVec[i] -= domainSize_[i];
+                    std::cout<<"new moveVec at "<<i<<" after -: "<<moveVec[i]<<"\n";
                 }
                 else if (myCoordinates[i] == cellCountByIndex[i] - 2)
                 {
+                    std::cout<<"domainSize at "<<i<<": "<<domainSize_[i]<<"\n";
                     moveVec[i] += domainSize_[i];
+                    std::cout<<"new moveVec at "<<i<<" after +: "<<moveVec[i]<<"\n";
                 }
             }
 
@@ -333,6 +337,8 @@ void ParticleContainerLinCel::calculateForcesWithIndices(std::array<uint32_t, 3>
             if (ArrayUtils::L2Norm(p.getX() - p2.getX()) <= cutoffRadius_)
             {
                 calcF(p, p2);
+                std::cout<<"p force: "<<p.getF()<<"\n";
+                std::cout<<"p2 force "<<p2.getF()<<"\n";
             }
             // move p2 back
             moveVec = -1 * moveVec;
@@ -486,6 +492,11 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
     // returns a std::array<uint32_t, 3> containing the coordinates of the correct boundary cell if x2, y2, z2 is in the halo cells and we therefore should calculate the interactions
     auto isBoundaryOnTheOtherSide = [=](std::array<uint32_t, 3> &myCoordinates, uint32_t x2, uint32_t y2, uint32_t z2)
     {
+        //used for checking the pass by value
+        std::cout<<"myCoodinates: "<<myCoordinates<<"\n";
+        std::cout<<"x2: "<<x2<<"\n";
+        std::cout<<"y2: "<<y2<<"\n";
+        std::cout<<"z2: "<<z2<<"\n";
         std::array<uint32_t, 3> coordinates = {x2, y2, z2}; // to access them by index
         bool changed = false;
 
@@ -498,6 +509,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             {
                 changed = true;
                 coordinates[i] += cellCountByIndex[i] - 2;
+                std::cout<<"old coord at "<<i<<" + "<<cellCountByIndex[i]-2<<": "<<coordinates[i]<<"\n";
             }
             // we are left of a boundary and try to access a cell right from us -> access through the bound
             // this is the same for the other dimensions for example y:
@@ -506,6 +518,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             {
                 changed = true;
                 coordinates[i] -= cellCountByIndex[i] - 2;
+                std::cout<<"old coord at "<<i<<" - "<<cellCountByIndex[i]-2<<": "<<coordinates[i]<<"\n";
             }
         }
 
@@ -528,29 +541,90 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         opt = isBoundaryOnTheOtherSide(myCoordinates, x + 1, y, z);
         if (opt.has_value())
         {
+            std::cout<<"if: right cell\n";
             calculateForcesWithIndices(myCoordinates, opt.value());
         }
         // right upper cell
         opt = isBoundaryOnTheOtherSide(myCoordinates, x + 1, y + 1, z);
         if (opt.has_value())
         {
+            std::cout<<"if: right upper cell\n";
             calculateForcesWithIndices(myCoordinates, opt.value());
         }
         // upper cell
         opt = isBoundaryOnTheOtherSide(myCoordinates, x, y + 1, z);
         if (opt.has_value())
         {
+            std::cout<<"if: upper cell\n";
             calculateForcesWithIndices(myCoordinates, opt.value());
         }
         // left upper cell
         opt = isBoundaryOnTheOtherSide(myCoordinates, x - 1, y + 1, z);
         if (opt.has_value())
         {
+            std::cout<<"if: left upper cell\n";
             calculateForcesWithIndices(myCoordinates, opt.value());
         }
         // TODO add 9 cells in z direction for 3D
     };
 }
+
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary2()
+{
+    auto lambda = [=](uint32_t x, uint32_t y, uint32_t z)
+    {
+        // Important, as it is a sort of force calculation newton 3rd's law has to be incorporated
+        // force calculation for the left column(including upper left corner), lower row (excluding lower right corner)
+        // upper left corner
+        if (x == 0 && y == cellsY - 1) {
+            cell &current = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+            // force calculation upper right cell
+            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+
+
+            // force calculation with lower left cell
+            cell &lowerLeft = cells.at(translate3DIndTo1D(0, 0, 1));
+
+            // force calculation with lower right cell
+            cell &lowerRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+
+
+        }
+
+        // left column excluding the upper left cell and lower left cell
+        if (x == 0 && y != 0 && y != cellsY-1) {
+            // force calculation with the right column
+
+        }
+
+        // lower left cell
+        if (x == 0 && y == 0) {
+            // force calculation with upper left cell already done!
+            // force calculation with upper right cell
+
+            // force calculation with lower right cell
+
+        }
+
+        // lower row excluding the lower left cell and lower right cell
+        if (x != 0 && x != cellsX-1 && y == 0) {
+            // force calculation with the upper row
+
+        }
+
+        //lower right corner
+        if (x == cellsX-1 && y == 0) {
+            // force calculation with upper left cell already done!
+            // force calculation with lower left cell already done!
+            // force calculation with upper right cell
+
+        }
+
+        //for the right column and upper row the force calculation has already been done through the left column and lower row!
+    };
+    return lambda;
+}
+
 
 void ParticleContainerLinCel::iterBoundary()
 {

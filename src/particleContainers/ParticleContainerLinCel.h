@@ -128,6 +128,7 @@ public:
 
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary();
+    std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary2();
     /**
      * @brief iterate over the particles which are currectly located in the boundary zone and
      * apply the boundary condition, the cells at the corner will be iterated over twice
