@@ -275,7 +275,13 @@ void ParticleContainerLinCel::calculatePosition()
                     std::array<double, 3> force = particle.getF(); // TODO: maybe replace with old_F
                     double factor = std::pow(deltaT_, 2) / (2 * particle.getM());
                     force = factor * force;
+                    if (i == 0) {
+                        std::cout << "Old position: " << particle.getX() << std::endl;
+                    }
                     std::array<double, 3> newPosition = (particle.getX()) + deltaT_ * (particle.getV()) + force; // calculate position
+                    if (i == 0) {
+                        std::cout << "new position: " << newPosition << std::endl;
+                    }
                     unsigned int afterCellIndex = translate3DPosTo1D(newPosition);
                     if (translate3DIndTo1D(x, y, z) == afterCellIndex)
                     {
@@ -361,7 +367,9 @@ void ParticleContainerLinCel::calculateVelocity()
 
             // TODO (ADD): Log
             // ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
-            p.setV(newVelocity);
+            if(newVelocity[0] > -50 && newVelocity[0] < 50 && newVelocity[1] > -50 && newVelocity[1] < 50 && newVelocity[2] > -50 && newVelocity[2] < 50) {
+                p.setV(newVelocity);
+            }
             //  std::cout << "particle velocity: " << p.getV() << std::endl;
         }
     }
@@ -576,10 +584,16 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         // Important, as it is a sort of force calculation newton 3rd's law has to be incorporated
         // force calculation for the left column(including upper left corner), lower row (excluding lower right corner)
         // upper left corner
-        if (x == 0 && y == cellsY - 1) {
-            cell &current = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+        bool upperLeftCell = (x == 1 && y == cellsY - 2);
+        bool leftColumn = (x == 1 && y != 1 && y != cellsY-2);
+        bool lowerLeftCorner = (x == 1 && y == 1);
+        bool lowerRow = (x != 1 && x != cellsX-2 && y == 1);
+        bool lowerRightCorner = (x == cellsX-2 && y == 1);
+
+        if (upperLeftCell) {
+            cell &current = cells.at(translate3DIndTo1D(1, cellsY-2, 1));
             // force calculation upper right cell
-            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-2, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : upperRight) {
                     // move pj
@@ -595,7 +609,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 }
             }
             // force calculation with lower left cell
-            cell &lowerLeft = cells.at(translate3DIndTo1D(0, 0, 1));
+            cell &lowerLeft = cells.at(translate3DIndTo1D(1, 1, 1));
             for (auto &pi : current) {
                 for (auto &pj : lowerLeft) {
                     // move pj
@@ -611,7 +625,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 }
             }
             // force calculation with lower right cell
-            cell &lowerRight = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+            cell &lowerRight = cells.at(translate3DIndTo1D(1, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : lowerRight) {
                     // move pj
@@ -630,10 +644,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         }
 
         // left column excluding the upper left cell and lower left cell
-        if (x == 0 && y != 0 && y != cellsY-1) {
+        if (leftColumn) {
             // force calculation with the right column
             cell &current = cells.at(translate3DIndTo1D(x, y, 1));
-            cell &opposite = cells.at(translate3DIndTo1D(cellsX-1, y, 1));
+            cell &opposite = cells.at(translate3DIndTo1D(cellsX-2, y, 1));
             for (auto &pi : current) {
                 for (auto &pj : opposite) {
                     // move pj
@@ -651,11 +665,11 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         }
 
         // lower left cell
-        if (x == 0 && y == 0) {
+        if (lowerLeftCorner) {
             // force calculation with upper left cell already done!
             // force calculation with upper right cell
-            cell &current = cells.at(translate3DIndTo1D(0, 0, 1));
-            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+            cell &current = cells.at(translate3DIndTo1D(1, 1, 1));
+            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-2, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : upperRight) {
                     // move pj
@@ -672,7 +686,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 }
             }
             // force calculation with lower right cell
-            cell &lowerRight = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+            cell &lowerRight = cells.at(translate3DIndTo1D(1, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : lowerRight) {
                     // move pj
@@ -690,10 +704,10 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         }
 
         // lower row excluding the lower left cell and lower right cell
-        if (x != 0 && x != cellsX-1 && y == 0) {
+        if (lowerRow) {
             // force calculation with the upper row
             cell &current = cells.at(translate3DIndTo1D(x, y, 1));
-            cell &opposite = cells.at(translate3DIndTo1D(x, cellsY-1, 1));
+            cell &opposite = cells.at(translate3DIndTo1D(x, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : opposite) {
                     // move pj
@@ -709,13 +723,14 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 }
             }
         }
+
         //lower right corner
-        if (x == cellsX-1 && y == 0) {
+        if (lowerRightCorner) {
             // force calculation with upper left cell already done!
             // force calculation with lower left cell already done!
             // force calculation with upper right cell
-            cell &current = cells.at(translate3DIndTo1D(cellsX-1, 0, 1));
-            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-1, cellsY-1, 1));
+            cell &current = cells.at(translate3DIndTo1D(cellsX-2, 1, 1));
+            cell &upperRight = cells.at(translate3DIndTo1D(cellsX-2, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : upperRight) {
                     // move pj
@@ -996,13 +1011,13 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
         // lower row without corner cells
         if (y == 0 && x != 0 && x != cellsX - 1)
         {
-            /*for (auto &p : current)
+            for (auto &p : current)
             {
                 std::array<double, 3> pos = p.getX();
                 pos.at(1) = p.getX().at(1) + domainSize_.at(1);
                 p.setX(pos);
                 updatedParticles.emplace_back(p);
-            }*/
+            }
             current.clear();
         }
         for (auto &p : updatedParticles)
@@ -1060,7 +1075,7 @@ void ParticleContainerLinCel::iterHalo2()
     {
         if (conditions[2] == BoundaryCondition::Periodic)
         {
-            auto lambda = createPeriodicLambdaHalo();
+            auto lambda = createPeriodicLambdaHalo2();
             lambda(x, 0, z);
         }
         if (conditions[2] == BoundaryCondition::Outflow)
