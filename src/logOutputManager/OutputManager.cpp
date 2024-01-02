@@ -1,5 +1,3 @@
-#include "particleContainers/ParticleContainerLinCel.h"
-#include "particleContainers/ParticleContainer.h"
 #include "logOutputManager/OutputManager.h"
 #include "Particle.h"
 
@@ -27,7 +25,7 @@ void OutputManager::plotParticles(const std::vector<Particle> &particles, const 
 	w.writeFile("../output/MD_vtk", iteration);
 }
 
-void OutputManager::writeJSON(std::string &name, ParticleContainer *container)
+void OutputManager::writeJSON(std::string &name, ParticleContainerLinCel *container)
 {
 	std::string containerType;
 	if (dynamic_cast<ParticleContainerLinCel *>(container) != nullptr)

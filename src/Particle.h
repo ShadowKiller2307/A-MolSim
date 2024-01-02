@@ -50,6 +50,15 @@ private:
 
   double epsilon = 5;
 
+  /**
+   * @brief stores pointers to the 8 neighbours of each particle in the following order:
+   * 1 2 3
+   * 4 p 5
+   * 6 7 8
+   * where p is the particle itself. If no neighbours is present at that position, a nullpointer is stored instead
+   */
+  std::array<std::shared_ptr<Particle>, 8> neighbours;
+
 public:
   explicit Particle(int type = 0);
 

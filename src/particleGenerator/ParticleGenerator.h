@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <vector>
 
-class ParticleContainer;
+class ParticleContainerLinCel;
 
 /*
     to use, pass for example to a function
@@ -43,7 +43,7 @@ public:
      * @param type
      * @return void
      */
-    static void instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
+    static void instantiateCuboid(ParticleContainerLinCel **container, const std::array<double, 3> &llfc,
                                   const std::array<unsigned int, 3> &particlesPerDimension, std::array<double, 3> &particleVelocity, double h,
                                   double m, int type, double epsilon, double sigma, double initT);
 
@@ -59,14 +59,12 @@ public:
      * @param type
      * @return void
      */
-    static void instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
+    static void instantiateSphere(ParticleContainerLinCel **container, const std::array<double, 3> &center,
                                   const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity, double h, double m, bool is2D, int type, double epsilon, double sigma, double initT);
 
-    static void instantiateJSON(ParticleContainer **container, const std::string &path, Force &force, SimParams clArgs);
+    static void instantiateJSON(ParticleContainerLinCel **container, const std::string &path, Force &force, SimParams clArgs);
 
-    static void instantiatePicture(ParticleContainer **container, const std::string &path, Force &force, SimParams clArgs);
+    static void instantiatePicture(ParticleContainerLinCel **container, const std::string &path, Force &force, SimParams clArgs);
 
-    static void instantiateTxt(ParticleContainer **container, const std::string &path, Force &force, SimParams clArgs);
-
-    static void instantiateXML(ParticleContainer **container, std::string &path, Force &force, SimParams clArgs);
+    static void instantiateXML(ParticleContainerLinCel **container, std::string &path, Force &force, SimParams clArgs);
 };
