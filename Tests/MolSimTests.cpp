@@ -573,4 +573,14 @@ TEST_F(MolSimTest, testParticleCreation) {
 }
 
 
+TEST_F(MolSimTest, testPeriodicForce) {
+
+
+
+
+
+
+}
+
+
 //////////////////////////////////////////////////// TESTS FOR THE RAYLEIGH TAYLOR INSTABILITY END /////////////////////

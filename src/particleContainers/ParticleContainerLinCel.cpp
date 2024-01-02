@@ -250,7 +250,7 @@ void ParticleContainerLinCel::calculateForces()
         }
     }
     iterOverInnerPairs(force_); // TODO: force_ parameter can be deleted, isn't used at the moment
-    iterBoundary2();
+   // iterBoundary2();
     if (gGrav != 0.0)
     {
         // the gravitational force will be added to every particle
@@ -275,13 +275,13 @@ void ParticleContainerLinCel::calculatePosition()
                     std::array<double, 3> force = particle.getF(); // TODO: maybe replace with old_F
                     double factor = std::pow(deltaT_, 2) / (2 * particle.getM());
                     force = factor * force;
-                    if (i == 0) {
+                    /*if (i == 0) {
                         std::cout << "Old position: " << particle.getX() << std::endl;
-                    }
+                    }*/
                     std::array<double, 3> newPosition = (particle.getX()) + deltaT_ * (particle.getV()) + force; // calculate position
-                    if (i == 0) {
+                    /*if (i == 0) {
                         std::cout << "new position: " << newPosition << std::endl;
-                    }
+                    }*/
                     unsigned int afterCellIndex = translate3DPosTo1D(newPosition);
                     if (translate3DIndTo1D(x, y, z) == afterCellIndex)
                     {
@@ -608,6 +608,21 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                     pj.setX(oldX);
                 }
             }
+            cell &rightOppositeLower = cells.at(translate3DIndTo1D(cellsX-2, cellsY-3, 1));
+            for (auto &pi : current) {
+                for (auto &pj : rightOppositeLower) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
             // force calculation with lower left cell
             cell &lowerLeft = cells.at(translate3DIndTo1D(1, 1, 1));
             for (auto &pi : current) {
@@ -625,7 +640,7 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 }
             }
             // force calculation with lower right cell
-            cell &lowerRight = cells.at(translate3DIndTo1D(1, cellsY-2, 1));
+            cell &lowerRight = cells.at(translate3DIndTo1D(cellsX-2, 1, 1));
             for (auto &pi : current) {
                 for (auto &pj : lowerRight) {
                     // move pj
@@ -643,10 +658,11 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             }
         }
 
+
         // left column excluding the upper left cell and lower left cell
         if (leftColumn) {
             // force calculation with the right column
-            cell &current = cells.at(translate3DIndTo1D(x, y, 1));
+            cell &current = cells.at(translate3DIndTo1D(1, y, 1));
             cell &opposite = cells.at(translate3DIndTo1D(cellsX-2, y, 1));
             for (auto &pi : current) {
                 for (auto &pj : opposite) {
@@ -654,6 +670,36 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                     auto oldX = pj.getX();
                     auto newX = oldX;
                     newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
+            cell &upperOpposite = cells.at(translate3DIndTo1D(cellsX-2, y+1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : upperOpposite) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0) - domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
+            cell &lowerOpposite = cells.at(translate3DIndTo1D(cellsX-2, y-1, 1));
+            for (auto &pi : current) {
+                for (auto &pj : lowerOpposite) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0) - domainSize_.at(0);
                     pj.setX(newX);
                     //check for cutoffRadius
                     if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
@@ -685,10 +731,42 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                     pj.setX(oldX);
                 }
             }
+            cell &upperOppositeRight = cells.at(translate3DIndTo1D(2, cellsY-2, 1));
+            for (auto &pi : current) {
+                for (auto &pj : upperOppositeRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
+
             // force calculation with lower right cell
-            cell &lowerRight = cells.at(translate3DIndTo1D(1, cellsY-2, 1));
+            cell &lowerRight = cells.at(translate3DIndTo1D(cellsX-2, 1, 1));
             for (auto &pi : current) {
                 for (auto &pj : lowerRight) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(0)-domainSize_.at(0);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
+
+            cell &rightOppositeUpper = cells.at(translate3DIndTo1D(cellsX-2, 2, 1));
+            for (auto &pi : current) {
+                for (auto &pj : rightOppositeUpper) {
                     // move pj
                     auto oldX = pj.getX();
                     auto newX = oldX;
@@ -710,6 +788,36 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
             cell &opposite = cells.at(translate3DIndTo1D(x, cellsY-2, 1));
             for (auto &pi : current) {
                 for (auto &pj : opposite) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(1)-domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
+            cell &leftOpposite = cells.at(translate3DIndTo1D(x-1, cellsY-2, 1));
+            for (auto &pi : current) {
+                for (auto &pj : leftOpposite) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(0) = oldX.at(1)-domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
+            cell &rightOpposite = cells.at(translate3DIndTo1D(x+1, cellsY-2, 1));
+            for (auto &pi : current) {
+                for (auto &pj : rightOpposite) {
                     // move pj
                     auto oldX = pj.getX();
                     auto newX = oldX;
@@ -745,12 +853,31 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                     pj.setX(oldX);
                 }
             }
+            cell &upperOppositeLeft = cells.at(translate3DIndTo1D(cellsX-3, cellsY-2, 1));
+            for (auto &pi : current) {
+                for (auto &pj : upperOppositeLeft) {
+                    // move pj
+                    auto oldX = pj.getX();
+                    auto newX = oldX;
+                    newX.at(1) = oldX.at(1)-domainSize_.at(1);
+                    pj.setX(newX);
+                    //check for cutoffRadius
+                    if (ArrayUtils::L2Norm(pi.getX() - pj.getX()) <= cutoffRadius_) {
+                        calcF(pi, pj);
+                    }
+                    pj.setX(oldX);
+                }
+            }
         }
+
         //for the right column and upper row the force calculation has already been done through the left column and lower row!
     };
 
     return lambda;
 }
+
+
+
 
 
 void ParticleContainerLinCel::iterBoundary()
@@ -809,7 +936,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary2();
+                auto lambda = createPeriodicLambdaBoundary3(1, 0);
                 lambda(x, 1, z);
             }
         }
@@ -828,7 +955,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary2();
+                auto lambda = createPeriodicLambdaBoundary3(0, static_cast<int>(domainSize_[0]));
                 lambda(cellsX - 2, y, z);
             }
         }
@@ -847,7 +974,7 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary2();
+                auto lambda = createPeriodicLambdaBoundary3(1, static_cast<int>(domainSize_[1]));
                 lambda(x, cellsY - 2, z);
             }
         }
@@ -866,12 +993,153 @@ void ParticleContainerLinCel::iterBoundary2()
             }
             else
             {
-                auto lambda = createPeriodicLambdaBoundary2();
+                auto lambda = createPeriodicLambdaBoundary3(0, 0);
                 lambda(1, y, z);
             }
         }
     }
 }
+
+// try to temporarily move the boundary particles in the opposite halo cells
+std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createPeriodicLambdaBoundary3(int direction, int position) {
+    if (direction == 0 && position == 0) {
+        // später implementieren
+    }
+    if (direction == 0 && position == domainSize_[0]) {
+        // später implementieren
+    }
+    // unten
+    if (direction == 1 && position == 0) {
+       //kopiere obere reihe
+        for (int x = 1; x < cellsX - 1; ++x) {
+            cell &upperCell = cells.at(translate3DIndTo1D(x, cellsY-2, 1));
+            cell &lowerCell = cells.at(translate3DIndTo1D(x, 0, 1));
+            for (int i = 0; i < upperCell.size(); ++i) {
+                lowerCell.emplace_back(upperCell.at(i));
+            }
+        }
+        //oben rechts(boundary) nach unten links(halo)
+        cell &upperRight = cells.at(translate3DIndTo1D(cellsX-2, cellsY-2, 1));
+        cell &lowerLeft = cells.at(translate3DIndTo1D(0, 0, 1));
+        for (int i = 0; i < upperRight.size(); ++i) {
+            lowerLeft.emplace_back(upperRight.at(i));
+        }
+        //oben links(boundary) nach unten rechts(halo)
+        cell &upperLeft = cells.at(translate3DIndTo1D(1, cellsY - 2, 1));
+        cell &lowerRight = cells.at(translate3DIndTo1D(cellsX-1, 0, 1));
+        for (int i = 0; i < upperLeft.size(); ++i) {
+            lowerRight.emplace_back(upperLeft.at(i));
+        }
+        // change the position for the particles in the halo cells to complete the move
+        for (int i = 0; i < cellsX; ++i) {
+            cell &current = cells.at(translate3DIndTo1D(i, 0, 1));
+            for (auto &p : current) {
+                auto pos = p.getX();
+                pos.at(1) -= domainSize_.at(1);
+                p.setX(pos);
+            }
+        }
+        //calculate the forces
+        for (int i = 1; i < cellsX-1; ++i) {
+            cell &current = cells.at(translate3DIndTo1D(i, 1, 1));
+            // force calculation with left lower, lower and right lower cell
+            cell &lowerLeftCurrent = cells.at(translate3DIndTo1D(i-1, 0, 1));
+            cell &lowerCurrent = cells.at(translate3DIndTo1D(i, 0, 1));
+            cell &lowerRightCurrent = cells.at(translate3DIndTo1D(i+1, 0, 1));
+            for (auto &pi : current) {
+                for (auto &pll : lowerLeftCurrent) {
+                    if (ArrayUtils::L2Norm(pi.getX() - pll.getX()) <= cutoffRadius_)
+                    {
+                        calcF(pi, pll);
+                    }
+                }
+                for (auto &lowerParticle : lowerCurrent) {
+                    if (ArrayUtils::L2Norm(pi.getX() - lowerParticle.getX()) <= cutoffRadius_)
+                    {
+                        calcF(pi, lowerParticle);
+                    }
+                }
+                for (auto &plr : lowerRightCurrent) {
+                    if (ArrayUtils::L2Norm(pi.getX() - plr.getX()) <= cutoffRadius_)
+                    {
+                        calcF(pi, plr);
+                    }
+                }
+            }
+        }
+        //clear the halo cells
+        for (int i = 0; i < cellsX; ++i) {
+            cells.at(translate3DIndTo1D(i, 0, 1)).clear();
+        }
+    }
+    std::cout << "bis hier" << std::endl;
+    // oben
+    if (direction == 1 && position == domainSize_[1]) {
+        //kopiere untere reihe
+        for (int x = 1; x < cellsX - 1; ++x) {
+            cell &lowerCell = cells.at(translate3DIndTo1D(x, 1, 1));
+            cell &upperCell = cells.at(translate3DIndTo1D(x, cellsY-1, 1));
+            for (int i = 0; i < lowerCell.size(); ++i) {
+                upperCell.emplace_back(lowerCell.at(i));
+            }
+        }
+        //unten rechts(boundary) nach oben links(halo)
+        cell &upperLeft = cells.at(translate3DIndTo1D(0, cellsY-1, 1));
+        cell &lowerRight = cells.at(translate3DIndTo1D(cellsX-1, 1, 1));
+        for (int i = 0; i < lowerRight.size(); ++i) {
+            upperLeft.emplace_back(lowerRight.at(i));
+        }
+        //unten links(boundary) nach oben rechts(halo)
+        cell &upperRight = cells.at(translate3DIndTo1D(cellsX - 2, cellsY - 2, 1));
+        cell &lowerLeft = cells.at(translate3DIndTo1D(0, 0, 1));
+        for (int i = 0; i < lowerLeft.size(); ++i) {
+            upperRight.emplace_back(lowerLeft.at(i));
+        }
+        // change the position for the particles in the halo cells to complete the move
+        for (int i = 0; i < cellsX; ++i) {
+            cell &current = cells.at(translate3DIndTo1D(i, cellsY-1, 1));
+            for (auto &p : current) {
+                auto pos = p.getX();
+                pos.at(1) += domainSize_.at(1);
+                p.setX(pos);
+            }
+        }
+        //calculate the forces
+        for (int i = 1; i < cellsX-1; ++i) {
+            cell &current = cells.at(translate3DIndTo1D(i, cellsY-2, 1));
+            // force calculation with left lower, lower and right lower cell
+            cell &upperLeftCurrent = cells.at(translate3DIndTo1D(i-1, cellsY-1, 1));
+            cell &upperCurrent = cells.at(translate3DIndTo1D(i, cellsY-1, 1));
+            cell &upperRightCurrent = cells.at(translate3DIndTo1D(i+1, cellsY-1, 1));
+            for (auto &pi : current) {
+                for (auto &pll : upperLeftCurrent) {
+                    if (ArrayUtils::L2Norm(pi.getX() - pll.getX()) <= cutoffRadius_)
+                    {
+                        calcF(pi, pll);
+                    }
+                }
+                for (auto &lowerParticle : upperCurrent) {
+                    if (ArrayUtils::L2Norm(pi.getX() - lowerParticle.getX()) <= cutoffRadius_)
+                    {
+                        calcF(pi, lowerParticle);
+                    }
+                }
+                for (auto &plr : upperRightCurrent) {
+                    if (ArrayUtils::L2Norm(pi.getX() - plr.getX()) <= cutoffRadius_)
+                    {
+                        calcF(pi, plr);
+                    }
+                }
+            }
+        }
+        //clear the halo cells
+        for (int i = 0; i < cellsX; ++i) {
+            cells.at(translate3DIndTo1D(i, cellsY-1, 1)).clear();
+        }
+    }
+    std::cout << "bis hier" << std::endl;
+}
+
 
 std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel::createOutflowLambdaHalo()
 {
