@@ -11,16 +11,6 @@ class OutputManager;
 class ParticleContainer
 {
 protected:
-	double deltaT_, startTime_, endTime_;
-	int outputEveryNIterations_;
-	size_t iteration_;
-	std::vector<Particle> particles_;
-	OutputManager *outManager_;
-	std::function<void(Particle &a, Particle &b)> force_;
-	int epsilon = 5;
-	int omega = 1;
-	ParticleContainer(double deltaT, double endTime, int writeFrequency);
-
 public:
 	virtual ~ParticleContainer() = 0;
 

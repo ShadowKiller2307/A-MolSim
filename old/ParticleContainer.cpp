@@ -1,60 +1,10 @@
 #include "particleContainers/ParticleContainer.h"
 #include "logOutputManager/LogManager.h"
-#include "forces/LennJon.h"
 #include <iostream>
 #include <iomanip>
 
-ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFrequency) : deltaT_(deltaT), endTime_(endTime)
+ParticleContainer::ParticleContainer(double deltaT, double endTime, int writeFrequency) :
 {
-	outManager_ = new OutputManager();
-	startTime_ = 0.0;
-	if (writeFrequency <= 0)
-	{
-		outManager_->outputFiles = false;
-	}
-	outputEveryNIterations_ = writeFrequency;
-	LennJon lennJon{5, 1};
-	force_ = lennJon.innerPairs();
-}
-
-/*void ParticleContainer::iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f)
-{
-}
-
-void ParticleContainer::calculateForces()
-{
-}*/
-
-void ParticleContainer::calculateVelocity()
-{
-	// std::cout << "calculateVelocity begin: \n";
-	for (auto &p : particles_)
-	{
-		double factor = deltaT_ / (2 * p.getM());
-		std::array<double, 3> sumOfForces = p.getOldF() + p.getF();
-		sumOfForces = factor * sumOfForces;
-		std::array<double, 3> newVelocity = p.getV() + sumOfForces;
-
-		// TODO (ADD): Log
-		// ParticleContainer::debugLog("The new velocity for particle {} is {}.\n", i, ArrayUtils::to_string(newVelocity));
-		p.setV(newVelocity);
-	}
-	// std::cout << "calculateVelocity end: \n";
-}
-
-void ParticleContainer::calculatePosition()
-{
-	for (auto &p : particles_)
-	{
-		std::array<double, 3> force = p.getF();
-		double factor = std::pow(deltaT_, 2) / (2 * p.getM());
-		force = factor * force;
-		std::array<double, 3> newPosition = p.getX() + deltaT_ * p.getV() + force;
-		// TODO (ADD): Log
-		// ParticleContainer::debugLog("The new position for particle {} is {}.\n", i, ArrayUtils::to_string(newPosition));
-
-		p.setX(newPosition);
-	}
 }
 
 /*void ParticleContainer::add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type)
@@ -140,30 +90,4 @@ std::vector<Particle> &ParticleContainer::getParticles()
 void ParticleContainer::setParticles(std::vector<Particle> &particles)
 {
 	this->particles_ = particles;
-}
-
-void ParticleContainer::calcF(Particle &a, Particle &b)
-{
-    double sigma_new;
-    double epsilon_new;
-    if ((a.getSigma() != b.getSigma()) || (a.getEpsilon() != b.getEpsilon())) { //particles a and b are of different types
-        //apply the Lorentz-Berthelot mixing rule
-        sigma_new = (a.getSigma()+b.getSigma())/2.0;
-        epsilon_new = std::sqrt((a.getEpsilon()*b.getEpsilon()));
-    }
-    else { //particles a and b are of the same type
-        sigma_new = a.getSigma();
-        epsilon_new = a.getEpsilon();
-    }
-    auto diff = a.getX() - b.getX();
-    double norm = ArrayUtils::L2Norm(diff);
-    double first = (-24 * epsilon_new) / (norm * norm);
-    double frac = sigma_new / norm;
-    double pow6 = std::pow(frac, 6);
-    double pow12 = 2 * std::pow(pow6, 2);
-    double middle = (pow6 - pow12);
-    auto force = (first * middle) * diff;
-    a.addF(force);
-    force = -1 * force;
-    b.addF(force);
 }

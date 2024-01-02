@@ -1,9 +1,7 @@
-#include "particleContainers/ParticleContainerDirSum.h"
 #include "particleContainers/ParticleContainerLinCel.h"
 #include "particleGenerator/ParticleGenerator.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
 #include "logOutputManager/LogManager.h"
-#include "fileReader/FileReader.h"
 #include "xmlSchema/XMLReader.h"
 #include "ParticleGenerator.h"
 #include "utils/ArrayUtils.h"
@@ -23,7 +21,7 @@ using json = nlohmann::json;
 
 int particleGenerator::generateNumber_ = 0; // to make the compiler is happy, initialize the member here
 
-void particleGenerator::instantiateCuboid(ParticleContainer **container, const std::array<double, 3> &llfc,
+void particleGenerator::instantiateCuboid(ParticleContainerLinCel **container, const std::array<double, 3> &llfc,
 										  const std::array<unsigned int, 3> &particlesPerDimension,
 										  std::array<double, 3> &particleVelocity, double h, double m, int type, double epsilon, double sigma, double initT = 0.0)
 {
@@ -64,7 +62,7 @@ void particleGenerator::instantiateCuboid(ParticleContainer **container, const s
 	}
 }
 
-void particleGenerator::instantiateSphere(ParticleContainer **container, const std::array<double, 3> &center,
+void particleGenerator::instantiateSphere(ParticleContainerLinCel **container, const std::array<double, 3> &center,
 										  const int32_t &sphereRadius, const std::array<double, 3> &particleVelocity,
 										  double h, double m, bool is2D, int type, double epsilon, double sigma, double initT = 0.0)
 {
@@ -132,7 +130,7 @@ void particleGenerator::instantiateSphere(ParticleContainer **container, const s
 	}
 }
 
-void particleGenerator::instantiateJSON(ParticleContainer **container, const std::string &path, Force &force,
+void particleGenerator::instantiateJSON(ParticleContainerLinCel **container, const std::string &path, Force &force,
 										SimParams params)
 {
 	std::ifstream f(path);
@@ -158,11 +156,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 			writeFrequency = 100;
 		}
 
-		if (containerType == "DirSum")
-		{
-			(*container) = new ParticleContainerDirSum(deltaT, endTime, writeFrequency);
-		}
-		else if (containerType == "LinCel")
+		if (containerType == "LinCel")
 		{
 			std::string bounds =
 				params.boundaries != "" ? params.boundaries : static_cast<std::string>(JSONparams["boundaries"]);
@@ -250,22 +244,7 @@ void particleGenerator::instantiateJSON(ParticleContainer **container, const std
 	}
 }
 
-void particleGenerator::instantiateTxt(ParticleContainer **container, const std::string &path, Force &force,
-									   SimParams params)
-{
-	if (!(*container))
-	{
-		(*container) = new ParticleContainerDirSum(params.deltaT, params.endTime, params.writeFrequency);
-	}
-	FileReader fr = FileReader();
-	auto actualPath = std::string("_.txt").compare(path) == 0 ? "../input/eingabe-sonne.txt" : path;
-	char *charPath = new char[actualPath.size() + 1];
-	strcpy(charPath, actualPath.c_str()); // covert std::string to char*
-	charPath[actualPath.size()] = '\0';	  // explicitly set null terminator
-	fr.readFile(container, charPath);
-}
-
-void particleGenerator::instantiateXML(ParticleContainer **container, std::string &path, Force &force, SimParams clArgs)
+void particleGenerator::instantiateXML(ParticleContainerLinCel **container, std::string &path, Force &force, SimParams clArgs)
 {
 
 	XMLReader xmlReader(path);
@@ -316,18 +295,21 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 
 		for (auto &cuboid : cuboidConst)
 		{
-            double h = h_;
-            if(cuboid.getH()!=-1){
-                h = cuboid.getH();
-            }
-            double epsilon = 5;
-            double sigma = 1;
-            if(cuboid.getSigma()!=-1){
-                sigma = cuboid.getSigma();
-            }
-            if(cuboid.getEpsilon()!=-1){
-                epsilon = cuboid.getEpsilon();
-            }
+			double h = h_;
+			if (cuboid.getH() != -1)
+			{
+				h = cuboid.getH();
+			}
+			double epsilon = 5;
+			double sigma = 1;
+			if (cuboid.getSigma() != -1)
+			{
+				sigma = cuboid.getSigma();
+			}
+			if (cuboid.getEpsilon() != -1)
+			{
+				epsilon = cuboid.getEpsilon();
+			}
 			instantiateCuboid(container, cuboid.getLlfc(), cuboid.getParticlesPerDimension(),
 							  const_cast<std::array<double, 3> &>(cuboid.getParticleVelocity()),
 							  h, cuboid.getMass(), cuboid.getType(), epsilon, sigma);
@@ -335,27 +317,26 @@ void particleGenerator::instantiateXML(ParticleContainer **container, std::strin
 		}
 		for (auto &sphere : sphereConst)
 		{
-            double h = h_;
-            if(sphere.getDistance()!=-1){
-                h = sphere.getDistance();
-            }
-            double epsilon = 5;
-            double sigma = 1;
-            if(sphere.getSigma()!=-1){
-                sigma = sphere.getSigma();
-            }
-            if(sphere.getEpsilon()!=-1){
-                epsilon = sphere.getEpsilon();
-            }
-            int type = sphere.getType();
+			double h = h_;
+			if (sphere.getDistance() != -1)
+			{
+				h = sphere.getDistance();
+			}
+			double epsilon = 5;
+			double sigma = 1;
+			if (sphere.getSigma() != -1)
+			{
+				sigma = sphere.getSigma();
+			}
+			if (sphere.getEpsilon() != -1)
+			{
+				epsilon = sphere.getEpsilon();
+			}
+			int type = sphere.getType();
 			instantiateSphere(container, sphere.getCenterCoordinates(), sphere.getRadius(), sphere.getInitialVelocity(),
 							  h, sphere.getMass(), true, type, epsilon, sigma);
 			LogManager::debugLog("Instantiated a sphere from xml\n");
 		}
-	}
-	else if (containerT == "DirSum")
-	{
-		(*container) = new ParticleContainerDirSum(delta_t, t_end, writeFrequency);
 	}
 	else
 	{

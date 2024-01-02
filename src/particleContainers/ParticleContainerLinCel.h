@@ -1,5 +1,6 @@
 #pragma once
-#include "particleContainers/ParticleContainer.h"
+#include "particleContainers/ParticleContainerLinCel.h"
+#include "logOutputManager/OutputManager.h"
 #include "forces/Force.h"
 #include <array>
 
@@ -10,10 +11,18 @@ enum class BoundaryCondition
     Outflow
 };
 
-class ParticleContainerLinCel : public ParticleContainer
+class OutputManager;
+
+class ParticleContainerLinCel
 {
 
 private:
+    double deltaT_, startTime_, endTime_;
+    int outputEveryNIterations_;
+    size_t iteration_;
+    std::vector<Particle> particles_;
+    OutputManager *outManager_;
+    std::function<void(Particle &a, Particle &b)> force_;
     using cell = std::vector<Particle>;
     std::vector<cell> cells;
     std::vector<BoundaryCondition> conditions;
@@ -86,12 +95,12 @@ public:
      * @param mass mass of the particle
      * @param type typenumber of the particle
      */
-    Particle *add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type) override;
+    Particle *add(const std::array<double, 3> &x_arg, const std::array<double, 3> &v_arg, double mass, int type);
 
-    void addCompleteParticle(Particle &p) override;
+    void addCompleteParticle(Particle &p);
 
     /// @brief runs the simulation loop
-    void simulateParticles() override;
+    void simulateParticles();
 
     /**
      * @brief overriding the force calculation for the demands of the LinCel container, including iterating over the
@@ -99,18 +108,20 @@ public:
      * @param None
      * @return void
      */
-    void calculateForces() override;
+    void calculateForces();
 
     void calculateForcesWithIndices(std::array<uint32_t, 3> &myCoordinates, std::array<uint32_t, 3> &otherCoordinates);
+
+    void calcF(Particle &a, Particle &b);
 
     /**
      * @brief overriding the position calculation, so that the particles and cells get updated
      * @param None
      * @return void
      */
-    void calculatePosition() override;
+    void calculatePosition();
 
-    void calculateVelocity() override;
+    void calculateVelocity();
 
     void iterOverAllParticles(const std::function<void(ParticleContainerLinCel::cell::iterator)> &f);
 
@@ -124,7 +135,7 @@ public:
      *        \ Cell -- > Calc
      *
      */
-    void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f) override;
+    void iterOverInnerPairs(const std::function<void(Particle &a, Particle &b)> &f);
 
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createReflectingLambdaBoundary(int direction, int position);
     std::function<void(uint32_t x, uint32_t y, uint32_t z)> createPeriodicLambdaBoundary();
@@ -169,12 +180,16 @@ public:
      */
     unsigned int translate3DPosTo1D(std::array<double, 3> position) const;
 
+    void writeJSON(std::string &name);
+
+    void addGravitationalForce();
+
     /**
      * @brief return the number of all particles in all the cells of the LinCel container
      * @param None
      * @return number of particles in the domain
      */
-    size_t getAmountOfParticles() const override;
+    size_t getAmountOfParticles() const;
 
     std::vector<Particle> getParticles();
 
@@ -198,7 +213,9 @@ public:
 
     const double getCutOffRadius();
 
-    void addGravitationalForce();
+    const double getDeltaT() const;
+
+    const double getEndTime() const;
 
     /////////////////////////////THERMOSTAT BEGIN //////////////////////////////////////////////////////////////////////
 

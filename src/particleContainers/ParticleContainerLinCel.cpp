@@ -1,6 +1,8 @@
 #include "particleContainers/ParticleContainerLinCel.h"
+#include "logOutputManager/OutputManager.h"
 #include "logOutputManager/LogManager.h"
 #include "utils/ArrayUtils.h"
+#include "forces/LennJon.h"
 #include <iostream>
 #include <optional>
 #include <array>
@@ -11,14 +13,19 @@
  * "pppppp"
  */
 
-ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency,
-                                                 const std::array<double, 3> &domainSize,
-                                                 const std::string &bounds, double cutoffRadius,
-                                                 bool useThermostat, unsigned int nThermostat,
-                                                 bool isGradual, double initT,
-                                                 double tempTarget,
-                                                 double maxDiff, double gGrav_arg) : ParticleContainer(deltaT, endTime, writeFrequency)
+ParticleContainerLinCel::ParticleContainerLinCel(double deltaT, double endTime, int writeFrequency, const std::array<double, 3> &domainSize,
+                                                 const std::string &bounds, double cutoffRadius, bool useThermostat, unsigned int nThermostat,
+                                                 bool isGradual, double initT, double tempTarget, double maxDiff, double gGrav_arg)
+    : deltaT_(deltaT), endTime_(endTime), startTime_(0.0), domainSize_(domainSize), cutoffRadius_(cutoffRadius)
 {
+    outManager_ = new OutputManager();
+    if (writeFrequency <= 0)
+    {
+        outManager_->outputFiles = false;
+    }
+    outputEveryNIterations_ = writeFrequency;
+    LennJon lennJon{5, 1};
+    force_ = lennJon.innerPairs();
     domainSize_ = domainSize;
     cutoffRadius_ = cutoffRadius;
     if (bounds.length() < 6)
@@ -168,12 +175,11 @@ void ParticleContainerLinCel::simulateParticles()
         if (useThermostat && ((iteration_ % nThermostat) == 0))
         {
             // apply thermostat
-            //  1. calculate the kinetic energy
-            double currentE = calculateKinEnergy();
+            // 1. calculate the kinetic energy and
             // 2. calculate the current temperature
             double currentTemp = calculateTemperature();
             // std::cout << "Temperature before the thermostat: " << currentTemp << std::endl;
-            //  3. calculate the new desired temperature
+            // 3. calculate the new desired temperature
             double desiredTemp;
             double currentDiff = tempTarget - currentTemp;
             if (isGradual)
@@ -222,14 +228,18 @@ void ParticleContainerLinCel::simulateParticles()
     auto end = std::chrono::high_resolution_clock::now();
     size_t diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
     std::cout << "Output written, took " + std::to_string(diff) + " milliseconds. (about " +
-                (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" :
-                std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
-    double mups = static_cast<double>(mup) / (diff / 1000.0);        std::string unit = "mups";
-    if (mups > 1000) {
-        if (mups > 1000000) {
+                     (iteration_ > diff ? std::to_string(static_cast<double>(iteration_) / diff) + " iter/ms" : std::to_string(static_cast<double>(diff) / iteration_) + " ms/iter") + ") Terminating...\n";
+    double mups = static_cast<double>(mup) / (diff / 1000.0);
+    std::string unit = "mups";
+    if (mups > 1000)
+    {
+        if (mups > 1000000)
+        {
             mups /= 1000000;
             unit = "m" + unit;
-        } else {
+        }
+        else
+        {
             mups /= 1000;
             unit = "k" + unit;
         }
@@ -256,6 +266,34 @@ void ParticleContainerLinCel::calculateForces()
         // the gravitational force will be added to every particle
         addGravitationalForce();
     }
+}
+
+void ParticleContainerLinCel::calcF(Particle &a, Particle &b)
+{
+    double sigma_new;
+    double epsilon_new;
+    if ((a.getSigma() != b.getSigma()) || (a.getEpsilon() != b.getEpsilon()))
+    { // particles a and b are of different types
+        // apply the Lorentz-Berthelot mixing rule
+        sigma_new = (a.getSigma() + b.getSigma()) / 2.0;
+        epsilon_new = std::sqrt((a.getEpsilon() * b.getEpsilon()));
+    }
+    else
+    { // particles a and b are of the same type
+        sigma_new = a.getSigma();
+        epsilon_new = a.getEpsilon();
+    }
+    auto diff = a.getX() - b.getX();
+    double norm = ArrayUtils::L2Norm(diff);
+    double first = (-24 * epsilon_new) / (norm * norm);
+    double frac = sigma_new / norm;
+    double pow6 = std::pow(frac, 6);
+    double pow12 = 2 * std::pow(pow6, 2);
+    double middle = (pow6 - pow12);
+    auto force = (first * middle) * diff;
+    a.addF(force);
+    force = -1 * force;
+    b.addF(force);
 }
 
 void ParticleContainerLinCel::calculatePosition()
@@ -738,7 +776,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 pos.at(1) = p.getX().at(1) - domainSize_.at(1);
                 p.setX(pos);
                 updatedParticles.emplace_back(p);
-
             }
             current.clear();
         }
@@ -751,7 +788,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 pos.at(0) = p.getX().at(0) + domainSize_.at(0);
                 p.setX(pos);
                 updatedParticles.emplace_back(p);
-
             }
             current.clear();
         }
@@ -765,7 +801,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 pos.at(1) = p.getX().at(1) + domainSize_.at(1);
                 p.setX(pos);
                 updatedParticles.emplace_back(p);
-
             }
             current.clear();
         }
@@ -779,7 +814,6 @@ std::function<void(uint32_t x, uint32_t y, uint32_t z)> ParticleContainerLinCel:
                 pos.at(1) = p.getX().at(1) - domainSize_.at(1);
                 p.setX(pos);
                 updatedParticles.emplace_back(p);
-
             }
             current.clear();
         }
@@ -1058,6 +1092,21 @@ void ParticleContainerLinCel::addGravitationalForce()
             p.setF(newForce);
         }
     }
+}
+
+void ParticleContainerLinCel::writeJSON(std::string &name)
+{
+    outManager_->writeJSON(name, this);
+}
+
+const double ParticleContainerLinCel::getDeltaT() const
+{
+    return deltaT_;
+}
+
+const double ParticleContainerLinCel::getEndTime() const
+{
+    return endTime_;
 }
 
 ////////////////////////////////////////////////////////THERMOSTAT BEGIN////////////////////////////////////////////////
